@@ -8,6 +8,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.9.1-alpha] - 2026-11-03
+
+### Changed / 変更
+- **EN**:
+  - Differentiated textures for Mana Ore Shards and Fairy Catalyst Shards.
+  - Mana Ore Shards now feature raw crystal protruding from stone matrix.
+  - Fairy Catalyst Shards feature crescent-shaped cracked catalyst glass with gold rim and glowing essence.
+  - Filtered shard textures strictly to Tier 1, 3, 5, 7, and 9 (even-grid table deconstruction only; odd grids have central slot and require no shards).
+- **JA**:
+  - マナ鉱石破片（`mana_ore_shard`）と妖精触媒破片（`fairy_catalyst_shard`）のテクスチャを個別デザイン化。
+  - 鉱石破片は石の母岩から鋭く突き出る原石結晶デザインを採用。
+  - 触媒破片は金の口金と割れたガラスフラスコ、内部に輝く触媒エッセンスを表現した三日月状デザインを採用。
+  - 偶数グリッド解体用（Tier 1, 3, 5, 7, 9）のみに限定・整理（奇数グリッドは中央1マス配置のため破片不要）。
+
 ## [0.9.0-alpha] - 2026-11-03
 
 ### Added / 追加

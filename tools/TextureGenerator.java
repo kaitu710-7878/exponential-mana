@@ -98,10 +98,10 @@ public class TextureGenerator {
         save(createFairyCatalyst(PURE_COLORS), new File(itemDir, "pure_fairy_catalyst.png"));
         save(createFairyResidue(), new File(itemDir, "fairy_residue.png"));
 
-        // 6. Shards & Mini Tables
+        // 6. Shards & Mini Tables (Tier 1, 3, 5, 7, 9 only for even-grid tables)
         for (int t : new int[]{1, 3, 5, 7, 9}) {
-            save(createShard(TIER_COLORS[t]), new File(itemDir, "tier" + t + "_mana_ore_shard.png"));
-            save(createShard(TIER_COLORS[t]), new File(itemDir, "tier" + t + "_fairy_catalyst_shard.png"));
+            save(createOreShard(TIER_COLORS[t]), new File(itemDir, "tier" + t + "_mana_ore_shard.png"));
+            save(createCatalystShard(TIER_COLORS[t]), new File(itemDir, "tier" + t + "_fairy_catalyst_shard.png"));
             save(createMiniTable(t), new File(itemDir, "tier" + t + "_mini_crafting_table.png"));
         }
 
@@ -637,16 +637,102 @@ public class TextureGenerator {
         return img;
     }
 
-    public static BufferedImage createShard(Color[] pal) {
+    public static BufferedImage createOreShard(Color[] pal) {
         BufferedImage img = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
-        for (int y = 4; y <= 11; y++) {
-            for (int x = 4; x <= 11; x++) {
-                if (x + y >= 11 && x + y <= 17 && Math.abs(x - y) <= 3) {
-                    img.setRGB(x, y, pal[1].getRGB());
-                }
-            }
-        }
+        Color stoneDark = new Color(75, 75, 75);
+        Color stoneMid = new Color(115, 115, 115);
+        Color stoneLight = new Color(150, 150, 150);
+
+        // 石の母岩ベース（破片の根本）
+        img.setRGB(4, 11, stoneDark.getRGB());
+        img.setRGB(5, 11, stoneDark.getRGB());
+        img.setRGB(6, 11, stoneDark.getRGB());
+        img.setRGB(4, 10, stoneMid.getRGB());
+        img.setRGB(5, 10, stoneMid.getRGB());
+        img.setRGB(6, 10, stoneDark.getRGB());
+        img.setRGB(5, 9, stoneLight.getRGB());
+        img.setRGB(6, 9, stoneMid.getRGB());
+
+        // 石から突き出た結晶破片（原石クリスタル）
+        img.setRGB(7, 10, pal[0].getRGB());
+        img.setRGB(7, 9, pal[1].getRGB());
+        img.setRGB(8, 9, pal[0].getRGB());
+
+        img.setRGB(7, 8, pal[2].getRGB());
+        img.setRGB(8, 8, pal[1].getRGB());
+        img.setRGB(9, 8, pal[0].getRGB());
+
+        img.setRGB(7, 7, pal[1].getRGB());
+        img.setRGB(8, 7, pal[2].getRGB());
+        img.setRGB(9, 7, pal[1].getRGB());
+        img.setRGB(10, 7, pal[0].getRGB());
+
+        img.setRGB(8, 6, pal[2].getRGB());
+        img.setRGB(9, 6, pal[2].getRGB());
+        img.setRGB(10, 6, pal[1].getRGB());
+
+        img.setRGB(9, 5, pal[2].getRGB());
+        img.setRGB(10, 5, pal[1].getRGB());
+        img.setRGB(11, 5, pal[0].getRGB());
+
+        img.setRGB(10, 4, pal[2].getRGB()); // 鋭い切っ先
+        img.setRGB(11, 4, pal[0].getRGB());
         return img;
+    }
+
+    public static BufferedImage createCatalystShard(Color[] pal) {
+        BufferedImage img = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+        Color glassEdge = new Color(200, 240, 255, 230);
+        Color glassShine = new Color(255, 255, 255, 250);
+        Color goldCap = new Color(245, 215, 115);
+        Color goldDark = new Color(170, 130, 50);
+
+        // 触媒ボトルの金キャップの破片
+        img.setRGB(5, 4, goldDark.getRGB());
+        img.setRGB(6, 4, goldCap.getRGB());
+        img.setRGB(7, 4, goldCap.getRGB());
+        img.setRGB(6, 5, goldDark.getRGB());
+
+        // 割れた触媒ガラスの鋭利な外枠
+        img.setRGB(4, 6, glassEdge.getRGB());
+        img.setRGB(5, 5, glassShine.getRGB());
+        img.setRGB(4, 7, glassEdge.getRGB());
+
+        // 内部に閉じ込められた高密度妖精触媒のエッセンス
+        img.setRGB(5, 6, pal[2].getRGB());
+        img.setRGB(6, 6, pal[1].getRGB());
+        img.setRGB(7, 5, pal[2].getRGB());
+
+        img.setRGB(5, 7, pal[1].getRGB());
+        img.setRGB(6, 7, pal[2].getRGB());
+        img.setRGB(7, 6, pal[1].getRGB());
+        img.setRGB(8, 6, glassEdge.getRGB());
+
+        img.setRGB(5, 8, pal[0].getRGB());
+        img.setRGB(6, 8, pal[1].getRGB());
+        img.setRGB(7, 7, pal[2].getRGB());
+        img.setRGB(8, 7, pal[1].getRGB());
+
+        img.setRGB(6, 9, pal[0].getRGB());
+        img.setRGB(7, 8, pal[1].getRGB());
+        img.setRGB(8, 8, pal[2].getRGB());
+        img.setRGB(9, 8, glassEdge.getRGB());
+
+        img.setRGB(7, 9, pal[0].getRGB());
+        img.setRGB(8, 9, pal[1].getRGB());
+        img.setRGB(9, 9, glassShine.getRGB()); // 割れ口のハイライト
+
+        img.setRGB(8, 10, pal[0].getRGB());
+        img.setRGB(9, 10, pal[1].getRGB());
+        img.setRGB(10, 10, glassEdge.getRGB());
+
+        img.setRGB(9, 11, glassShine.getRGB()); // 鋭角な底部のガラス尖端
+        img.setRGB(10, 11, glassEdge.getRGB());
+        return img;
+    }
+
+    public static BufferedImage createShard(Color[] pal) {
+        return createOreShard(pal);
     }
 
     public static BufferedImage createMiniTable(int tier) {
