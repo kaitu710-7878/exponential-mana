@@ -133,6 +133,13 @@ public class ModBlocks {
     public static final RegistryObject<Block> COMPRESSED_FAIRY_BLOCK_10 = registerBlock("compressed_fairy_block_10",
             () -> new com.exponentialmana.mod.block.FairyBlock(10));
 
+    public static final java.util.List<RegistryObject<Block>> COMPRESSED_FAIRY_BLOCKS = java.util.List.of(
+            COMPRESSED_FAIRY_BLOCK_1, COMPRESSED_FAIRY_BLOCK_2, COMPRESSED_FAIRY_BLOCK_3,
+            COMPRESSED_FAIRY_BLOCK_4, COMPRESSED_FAIRY_BLOCK_5, COMPRESSED_FAIRY_BLOCK_6,
+            COMPRESSED_FAIRY_BLOCK_7, COMPRESSED_FAIRY_BLOCK_8, COMPRESSED_FAIRY_BLOCK_9,
+            COMPRESSED_FAIRY_BLOCK_10
+    );
+
     // Fairy Attractor (Lures/generates a fairy every 5 minutes)
     public static final RegistryObject<Block> FAIRY_ATTRACTOR = registerBlock("fairy_attractor",
             com.exponentialmana.mod.block.FairyAttractorBlock::new);
@@ -164,6 +171,13 @@ public class ModBlocks {
             () -> new com.exponentialmana.mod.block.ExtendedCraftingTableBlock(9));
     public static final RegistryObject<Block> TIER10_EXTENDED_CRAFTING_TABLE = registerBlock("tier10_extended_crafting_table",
             () -> new com.exponentialmana.mod.block.ExtendedCraftingTableBlock(10));
+
+    public static final java.util.List<RegistryObject<Block>> EXTENDED_CRAFTING_TABLES = java.util.List.of(
+            TIER1_EXTENDED_CRAFTING_TABLE, TIER2_EXTENDED_CRAFTING_TABLE, TIER3_EXTENDED_CRAFTING_TABLE,
+            TIER4_EXTENDED_CRAFTING_TABLE, TIER5_EXTENDED_CRAFTING_TABLE, TIER6_EXTENDED_CRAFTING_TABLE,
+            TIER7_EXTENDED_CRAFTING_TABLE, TIER8_EXTENDED_CRAFTING_TABLE, TIER9_EXTENDED_CRAFTING_TABLE,
+            TIER10_EXTENDED_CRAFTING_TABLE
+    );
 
     private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block) {
         RegistryObject<T> registeredBlock = BLOCKS.register(name, block);

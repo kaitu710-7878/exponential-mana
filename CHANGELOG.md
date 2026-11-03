@@ -8,6 +8,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.10.0-alpha] - 2026-11-03
+
+### Added / 追加
+- **EN**:
+  - Full GUI / UI for all block entities (`FairyBlock`, `Thawer`, `BatchOreBreaker`, `ExtendedCraftingTable`, `FairyAttractor`) utilizing vanilla inventory textures.
+  - Tier 0 Mana passive generation for Fairy Blocks operating without any catalyst.
+  - Safe NBT-preserved block dismantling: Blocks with internal inventories no longer scatter items on break; contents are securely packed into the dropped item's `BlockEntityTag` and restored upon placement.
+  - Optional JEI integration plugin (`ExponentialManaJeiPlugin`):
+    - Recipe browsing and catalyst registration for Extended Crafting Tables and Fairies.
+    - Comprehensive acquisition guides for Tier 0 Mana and Inactive Ores.
+    - In-depth info guides for all machines, Batch Compressed Mana, and Infinite Mana.
+  - Natural Overworld surface world generation for Fairy Blocks (`fairy_block_patch`).
+- **JA**:
+  - バニラインベントリテクスチャを流用した全ブロックエンティティ用GUI（`FairyBlock`, `Thawer`, `BatchOreBreaker`, `ExtendedCraftingTable`, `FairyAttractor`）を追加。
+  - 触媒を持たない妖精ブロックによる Tier 0 マナのパッシブ自動生産機能を追加。
+  - 内部インベントリを持つ全ブロックの安全なNBT保持ドロップ化：破壊時に地面にアイテムをばら撒かず、ブロックアイテム自身の `BlockEntityTag` に内部データを記録・保持し、再設置時に完全復元。
+  - JEI（Just Enough Items）オプション連携機能の追加：
+    - 拡張作業台および妖精ブロックの全レシピ表示・触媒登録。
+    - Tier 0 マナおよび非活性鉱石の詳細な入手方法ガイドの追加。
+    - 全機械（一括破壊機、解凍機、妖精、妖精誘引機、一括圧縮マナ、無限のマナ、根源装備）の解説ガイドの追加。
+  - 妖精ブロックの地上（オーバーワールド地表草ブロック上）への自然生成を追加。
+
 ## [0.9.1-alpha] - 2026-11-03
 
 ### Changed / 変更

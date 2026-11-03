@@ -1,11 +1,15 @@
 package com.exponentialmana.mod.block.entity;
 
+import com.exponentialmana.mod.menu.ExtendedCraftingMenu;
 import com.exponentialmana.mod.registry.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.Containers;
-import net.minecraft.world.SimpleContainer;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -20,8 +24,9 @@ import org.jetbrains.annotations.Nullable;
 /**
  * BlockEntity for Extended Crafting Tables (Tier 1: 4x4 up to Tier 10: 13x13).
  * Operates without energy and supports automated crafting via AE2 pattern providers and automation pipes.
+ * Supports GUI and preserves contents on block pickup.
  */
-public class ExtendedCraftingTableBlockEntity extends BlockEntity {
+public class ExtendedCraftingTableBlockEntity extends BlockEntity implements MenuProvider {
     private final int tier;
     private final int gridSize;
     private final int totalInputSlots;
@@ -78,16 +83,6 @@ public class ExtendedCraftingTableBlockEntity extends BlockEntity {
         return itemHandler;
     }
 
-    public void drops() {
-        SimpleContainer inventory = new SimpleContainer(itemHandler.getSlots());
-        for (int i = 0; i < itemHandler.getSlots(); i++) {
-            inventory.setItem(i, itemHandler.getStackInSlot(i));
-        }
-        if (level != null) {
-            Containers.dropContents(level, worldPosition, inventory);
-        }
-    }
-
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
         if (cap == ForgeCapabilities.ITEM_HANDLER) {
@@ -100,6 +95,22 @@ public class ExtendedCraftingTableBlockEntity extends BlockEntity {
     public void invalidateCaps() {
         super.invalidateCaps();
         lazyItemHandler.invalidate();
+    }
+
+    public void saveToItem(ItemStack stack) {
+        CompoundTag tag = stack.getOrCreateTagElement("BlockEntityTag");
+        saveAdditional(tag);
+    }
+
+    @Override
+    public Component getDisplayName() {
+        return Component.translatable("block.exponential_mana.tier" + tier + "_extended_crafting_table");
+    }
+
+    @Nullable
+    @Override
+    public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
+        return new ExtendedCraftingMenu(containerId, playerInventory, this);
     }
 
     @Override

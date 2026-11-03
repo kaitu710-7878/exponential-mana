@@ -3,9 +3,13 @@ package com.exponentialmana.mod.block;
 import com.exponentialmana.mod.block.entity.BatchOreBreakerBlockEntity;
 import com.exponentialmana.mod.util.CompactStackFormatter;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
@@ -21,6 +25,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -28,7 +33,7 @@ import java.util.List;
 /**
  * Batch Ore Breaker Block.
  * Processes 10x10 slots of inactive ores into compressed mana.
- * Does NOT scatter items on break; drops a single NBT-packed Batch Compressed Mana.
+ * Opens 10x10 GUI. Preserves contents via item NBT on break without scattering items.
  */
 public class BatchOreBreakerBlock extends BaseEntityBlock {
     public BatchOreBreakerBlock() {
@@ -63,31 +68,10 @@ public class BatchOreBreakerBlock extends BaseEntityBlock {
         if (!level.isClientSide) {
             BlockEntity be = level.getBlockEntity(pos);
             if (be instanceof BatchOreBreakerBlockEntity breakerBe) {
-                ItemStack heldItem = player.getItemInHand(hand);
-
-                // Quick insert if holding inactive ore
-                if (!heldItem.isEmpty() && heldItem.getItem() instanceof BlockItem bi &&
-                        (bi.getBlock() instanceof InactiveManaOreBlock || bi.getBlock() == com.exponentialmana.mod.registry.ModBlocks.INACTIVE_TIER0_MANA_ORE.get())) {
-                    
-                    ItemStack remaining = heldItem.copy();
-                    for (int slot = 0; slot < BatchOreBreakerBlockEntity.SLOTS; slot++) {
-                        remaining = breakerBe.getItemHandler().insertItem(slot, remaining, false);
-                        if (remaining.isEmpty()) break;
-                    }
-
-                    heldItem.setCount(remaining.getCount());
-                    player.sendSystemMessage(Component.translatable("message.exponential_mana.breaker.inserted"));
-                    return InteractionResult.SUCCESS;
+                if (player instanceof ServerPlayer serverPlayer) {
+                    NetworkHooks.openScreen(serverPlayer, breakerBe, pos);
+                    return InteractionResult.CONSUME;
                 }
-
-                // Show status
-                long[] pool = breakerBe.getManaPool();
-                long totalMana = 0;
-                for (long c : pool) totalMana += c;
-
-                player.sendSystemMessage(Component.translatable("message.exponential_mana.breaker.status",
-                        CompactStackFormatter.formatCount(totalMana)));
-                return InteractionResult.SUCCESS;
             }
         }
         return InteractionResult.sidedSuccess(level.isClientSide);
@@ -95,16 +79,58 @@ public class BatchOreBreakerBlock extends BaseEntityBlock {
 
     @Override
     public void playerDestroy(Level level, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool) {
-        if (!level.isClientSide && blockEntity instanceof BatchOreBreakerBlockEntity breakerBe) {
-            ItemStack drop = breakerBe.createDropStack();
-            popResource(level, pos, drop);
+        if (!level.isClientSide && !player.isCreative() && blockEntity instanceof BatchOreBreakerBlockEntity breakerBe) {
+            ItemStack dropStack = new ItemStack(this);
+            breakerBe.saveToItem(dropStack);
+            popResource(level, pos, dropStack);
         }
         super.playerDestroy(level, player, pos, state, blockEntity, tool);
     }
 
     @Override
+    public void playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+        BlockEntity be = level.getBlockEntity(pos);
+        if (be instanceof BatchOreBreakerBlockEntity breakerBe) {
+            if (!level.isClientSide && player.isCreative()) {
+                ItemStack dropStack = new ItemStack(this);
+                breakerBe.saveToItem(dropStack);
+                if (dropStack.hasTag() && dropStack.getTag().contains("BlockEntityTag")) {
+                    CompoundTag tag = dropStack.getTagElement("BlockEntityTag");
+                    if (tag != null && (tag.contains("inventory") || tag.contains("ManaPool"))) {
+                        ItemEntity itemEntity = new ItemEntity(level, (double)pos.getX() + 0.5D, (double)pos.getY() + 0.5D, (double)pos.getZ() + 0.5D, dropStack);
+                        itemEntity.setDefaultPickUpDelay();
+                        level.addFreshEntity(itemEntity);
+                    }
+                }
+            }
+        }
+        super.playerWillDestroy(level, pos, state, player);
+    }
+
+    @Override
+    public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
+        super.setPlacedBy(level, pos, state, placer, stack);
+        if (!level.isClientSide && stack.hasTag() && stack.getTag().contains("BlockEntityTag")) {
+            BlockEntity be = level.getBlockEntity(pos);
+            if (be instanceof BatchOreBreakerBlockEntity breakerBe) {
+                CompoundTag tag = stack.getTagElement("BlockEntityTag");
+                if (tag != null) {
+                    breakerBe.load(tag);
+                    breakerBe.setChanged();
+                }
+            }
+        }
+    }
+
+    @Override
     public void appendHoverText(ItemStack stack, @Nullable BlockGetter level, List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(Component.translatable("tooltip.exponential_mana.batch_ore_breaker.desc"));
+        if (stack.hasTag() && stack.getTag().contains("BlockEntityTag")) {
+            CompoundTag beTag = stack.getTagElement("BlockEntityTag");
+            if (beTag != null && (beTag.contains("inventory") || beTag.contains("ManaPool"))) {
+                tooltip.add(Component.translatable("tooltip.exponential_mana.preserved_contents"));
+            }
+        }
         super.appendHoverText(stack, level, tooltip, flag);
     }
 }

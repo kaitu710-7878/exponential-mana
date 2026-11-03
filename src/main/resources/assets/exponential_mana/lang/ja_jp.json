@@ -200,5 +200,19 @@
   "block.exponential_mana.tier7_extended_crafting_table": "Tier7 拡張作業台 (10×10)",
   "block.exponential_mana.tier8_extended_crafting_table": "Tier8 拡張作業台 (11×11)",
   "block.exponential_mana.tier9_extended_crafting_table": "Tier9 拡張作業台 (12×12)",
-  "block.exponential_mana.tier10_extended_crafting_table": "Tier10 拡張作業台 (13×13)"
+  "block.exponential_mana.tier10_extended_crafting_table": "Tier10 拡張作業台 (13×13)",
+
+  "tooltip.exponential_mana.preserved_contents": "§b✦ 内部アイテム保持中§r",
+
+  "jei.exponential_mana.tier0_mana.info": "【Tier 0 マナ（シアン球体）の取得方法】\n1. 地上（オーバーワールド地表の草ブロック上）に自然生成される「妖精ブロック」を回収して設置します。触媒を与えずに放置すると、60秒ごとにTier0マナをパッシブ自動生産します！\n2. 地下に生成される「非活性Tier0マナ鉱石」をプレイヤーが破壊して活性化させ、時間内に採掘することでも入手可能です。",
+  "jei.exponential_mana.inactive_tier0_ore.info": "【非活性Tier0 マナ鉱石】\n地下深くに生成されます。非活性状態の間はクァーリー等の自動採掘機では一切破壊されません。プレイヤーの手で破壊すると活性化し、5分間のカウントダウン後に消失します。",
+  "jei.exponential_mana.batch_ore_breaker.info": "【鉱石一括破壊機】\n10×10（100スロット、各スロット上限Int_MAX）の超巨大インベントリを備えた粉砕機。大量の非活性マナ鉱石をサーバーラグ一切なしで内部マナプールへ溶解・変換します。撤去時もアイテムを地面に散らかさず、ブロックアイテム自身のNBTに内部データを完全保持します。",
+  "jei.exponential_mana.thawer.info": "【解凍機】\n「一括圧縮マナ」などの高密度NBTアイテムを、チャンク落ちやエンティティ溢れの危険なく安全に実アイテムとして解凍・展開する設備です。ブロック撤去時も内部インベントリをNBTで保持します。",
+  "jei.exponential_mana.fairy_block.info": "【妖精ブロック】\n触媒を持たない場合はTier0マナを自動生産します。対応する妖精触媒（Tier1〜10、無垢）をセットすると、触媒を一切消費せずに各Tierのマナを60秒ごとに自動生産します！撤去時も触媒や生成マナをブロックNBT内に完全保持します。",
+  "jei.exponential_mana.compressed_fairy.info": "【圧縮妖精ブロック (1段階〜10段階)】\n下位の妖精ブロック9個を合成して作られる超高倍率生産ブロック（9倍〜9^10倍）。生産周期は60秒のまま、乗数倍のマナを爆発的に生産します。チック加速器（Torcherino等）にも完全対応しています。",
+  "jei.exponential_mana.fairy_attractor.info": "【妖精誘引機】\n設置しておくと、周囲の野生の妖精を惹きつけ、一定時間ごとに妖精ブロックを内部チェストに自動誘引・生成します。",
+  "jei.exponential_mana.batch_compressed_mana.info": "【一括圧縮マナ】\n最大21億個（Integer.MAX_VALUE）以上のマナを、ラグを起こさずに1つのアイテム内に安全に封入した超圧縮NBTアイテム。解凍機に投入することで実体アイテムとして安全に取り出せます。",
+  "jei.exponential_mana.infinite_mana.info": "【無限のマナ】\n宇宙の特異点を閉じ込めた究極のマナ。作業台でクラフトすると、NBTを持たないアイテムスタックを「64倍」に無限増殖させます。無限の自己再帰やクラッシュを防ぐため、NBTを持つアイテムの増殖は厳格に遮断されています。",
+  "jei.exponential_mana.extended_crafting_table.info": "【拡張作業台】\nTier1（4×4）からTier10（13×13、169スロット）までの巨大グリッド作業台。エネルギー消費ゼロで動作し、AE2の自動クラフトやパイプ搬入出にも完全対応しています。",
+  "jei.exponential_mana.origin_equipment.info": "【根源シリーズ装備】\nTier10エンドゲーム究極装備。クリエイティブ飛行、奈落や/killコマンドに対する完全無敵化、そして相手を/kill即死消滅させる根源の剣で構成されます。"
 }

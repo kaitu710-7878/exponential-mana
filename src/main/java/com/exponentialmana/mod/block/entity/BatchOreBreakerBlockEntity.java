@@ -1,12 +1,19 @@
 package com.exponentialmana.mod.block.entity;
 
 import com.exponentialmana.mod.block.InactiveManaOreBlock;
+import com.exponentialmana.mod.menu.BatchOreBreakerMenu;
 import com.exponentialmana.mod.registry.ModBlockEntities;
 import com.exponentialmana.mod.registry.ModBlocks;
 import com.exponentialmana.mod.registry.ModItems;
+import com.exponentialmana.mod.registry.ModMenuTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -25,9 +32,9 @@ import org.jetbrains.annotations.Nullable;
  * BlockEntity for the Batch Ore Breaker.
  * Features a 10x10 (100 slots) inventory, each slot holding up to Int_MAX.
  * Processes inactive mana ores in batches into internal mana pools.
- * Drops safe Batch Compressed Mana (NBT) on dismantle without scattering items.
+ * Supports GUI and preserves contents on block pickup.
  */
-public class BatchOreBreakerBlockEntity extends BlockEntity {
+public class BatchOreBreakerBlockEntity extends BlockEntity implements MenuProvider {
     public static final int SLOTS = 100; // 10x10 grid
     public static final int BATCH_INTERVAL_TICKS = 20; // Process every 1 second
     private int timer = BATCH_INTERVAL_TICKS;
@@ -158,6 +165,22 @@ public class BatchOreBreakerBlockEntity extends BlockEntity {
     public void invalidateCaps() {
         super.invalidateCaps();
         lazyItemHandler.invalidate();
+    }
+
+    public void saveToItem(ItemStack stack) {
+        CompoundTag tag = stack.getOrCreateTagElement("BlockEntityTag");
+        saveAdditional(tag);
+    }
+
+    @Override
+    public Component getDisplayName() {
+        return Component.translatable("block.exponential_mana.batch_ore_breaker");
+    }
+
+    @Nullable
+    @Override
+    public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
+        return new BatchOreBreakerMenu(containerId, playerInventory, this);
     }
 
     @Override

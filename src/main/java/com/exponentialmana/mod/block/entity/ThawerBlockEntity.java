@@ -1,12 +1,19 @@
 package com.exponentialmana.mod.block.entity;
 
+import com.exponentialmana.mod.menu.ThawerMenu;
 import com.exponentialmana.mod.registry.ModBlockEntities;
 import com.exponentialmana.mod.registry.ModItems;
+import com.exponentialmana.mod.registry.ModMenuTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.Containers;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -23,8 +30,9 @@ import org.jetbrains.annotations.Nullable;
 /**
  * BlockEntity for the Thawer.
  * Safely extracts real item-form mana from Batch Compressed Mana into output slots.
+ * Supports GUI and preserves contents on block pickup.
  */
-public class ThawerBlockEntity extends BlockEntity {
+public class ThawerBlockEntity extends BlockEntity implements MenuProvider {
     // Slot 0: Input Batch Compressed Mana
     // Slot 1 to 11: Output Mana for Tier 0 to 10
     public static final int TOTAL_SLOTS = 12;
@@ -128,6 +136,10 @@ public class ThawerBlockEntity extends BlockEntity {
         };
     }
 
+    public boolean isThawing() {
+        return !itemHandler.getStackInSlot(0).isEmpty();
+    }
+
     public ItemStackHandler getItemHandler() {
         return itemHandler;
     }
@@ -154,6 +166,22 @@ public class ThawerBlockEntity extends BlockEntity {
     public void invalidateCaps() {
         super.invalidateCaps();
         lazyItemHandler.invalidate();
+    }
+
+    public void saveToItem(ItemStack stack) {
+        CompoundTag tag = stack.getOrCreateTagElement("BlockEntityTag");
+        saveAdditional(tag);
+    }
+
+    @Override
+    public Component getDisplayName() {
+        return Component.translatable("block.exponential_mana.thawer");
+    }
+
+    @Nullable
+    @Override
+    public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
+        return new ThawerMenu(containerId, playerInventory, this);
     }
 
     @Override

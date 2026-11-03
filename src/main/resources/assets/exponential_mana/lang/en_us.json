@@ -200,5 +200,19 @@
   "block.exponential_mana.tier7_extended_crafting_table": "Tier 7 Extended Crafting Table (10x10)",
   "block.exponential_mana.tier8_extended_crafting_table": "Tier 8 Extended Crafting Table (11x11)",
   "block.exponential_mana.tier9_extended_crafting_table": "Tier 9 Extended Crafting Table (12x12)",
-  "block.exponential_mana.tier10_extended_crafting_table": "Tier 10 Extended Crafting Table (13x13)"
+  "block.exponential_mana.tier10_extended_crafting_table": "Tier 10 Extended Crafting Table (13x13)",
+
+  "tooltip.exponential_mana.preserved_contents": "§b✦ Stored contents preserved inside§r",
+
+  "jei.exponential_mana.tier0_mana.info": "Tier 0 Mana (Cyan Sphere):\n1. Found in the wild as Fairy Blocks on the Overworld surface. When harvested and placed without a catalyst, a Fairy Block passively generates Tier 0 Mana every 60 seconds.\n2. Inactive Tier 0 Mana Ore also spawns underground or can be harvested and activated.",
+  "jei.exponential_mana.inactive_tier0_ore.info": "Inactive Tier 0 Mana Ore:\nSpawns deep underground. Cannot be broken by automated quarry machines while inactive. Once broken by a player, it enters an active state with a 5-minute countdown.",
+  "jei.exponential_mana.batch_ore_breaker.info": "Batch Ore Breaker:\nFeatures a 10x10 (100 slots) internal inventory with Int_MAX item capacity. Safely dissolves masses of inactive mana ores into high-density mana pools without causing server lag. Safely preserves contents inside item NBT upon removal.",
+  "jei.exponential_mana.thawer.info": "Thawer:\nSafely unpacks Batch Compressed Mana or stored mana items into physical form without risk of chunk overflows or entity crashes. Features real-time thawing chamber and internal NBT preservation.",
+  "jei.exponential_mana.fairy_block.info": "Fairy Block:\nProduces Tier 0 Mana when operating without any catalyst. When provided with a Fairy Catalyst (Tier 1-10 or Pure), it generates corresponding tiered mana every 60 seconds without consuming the catalyst! Internal contents are safely stored in block item NBT when dismantled.",
+  "jei.exponential_mana.compressed_fairy.info": "Compressed Fairy Blocks (1x - 10x):\nCrafted by combining 9 lower-tier fairies (9^1 to 9^10). Features exponential production multipliers while maintaining the same 60-second cycle. Compatible with tick acceleration tools.",
+  "jei.exponential_mana.fairy_attractor.info": "Fairy Attractor:\nPassively lures and captures wild Overworld fairies into its internal chamber over time.",
+  "jei.exponential_mana.batch_compressed_mana.info": "Batch Compressed Mana:\nHigh-density NBT storage item that bundles up to Integer.MAX_VALUE mana items safely into a single unscattered stack. Feed into a Thawer to extract physical items.",
+  "jei.exponential_mana.infinite_mana.info": "Infinite Mana:\nUltimate cosmic singularity catalyst. Multiplies any non-NBT item stack by 64 in the crafting table. Strictly blocks NBT/container items to prevent infinite recursive recursion.",
+  "jei.exponential_mana.extended_crafting_table.info": "Extended Crafting Tables:\nTier 1 (4x4) through Tier 10 (13x13, 169 slots) huge crafting grids. Requires zero energy and fully integrates with AE2 automation and item handlers.",
+  "jei.exponential_mana.origin_equipment.info": "Origin Series Equipment:\nTier 10 endgame gear providing Creative Flight, complete immunity to the Void and /kill commands, and an instant-deletion /kill attack."
 }

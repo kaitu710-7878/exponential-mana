@@ -2,11 +2,18 @@ package com.exponentialmana.mod.block.entity;
 
 import com.exponentialmana.mod.registry.ModBlockEntities;
 import com.exponentialmana.mod.registry.ModItems;
+import com.exponentialmana.mod.registry.ModMenuTypes;
+import com.exponentialmana.mod.menu.FairyMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.Containers;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -22,10 +29,11 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * BlockEntity for Fairy Blocks and Compressed Fairy Blocks.
- * Automatically generates tiered mana every 60 seconds (1200 ticks) without consuming catalysts.
+ * Automatically generates tiered mana or Tier 0 mana without catalysts every 60 seconds (1200 ticks).
  * Supports Int_MAX catalyst capacity and 9^compression production multiplier.
+ * Preserves internal items via NBT on block pickup.
  */
-public class FairyBlockEntity extends BlockEntity {
+public class FairyBlockEntity extends BlockEntity implements MenuProvider {
     public static final int BASE_COOLDOWN = 1200; // 60 seconds at 20 TPS
     private int cooldown = BASE_COOLDOWN;
     private final int compressionTier; // 0 for base, 1 to 10 for compressed
@@ -65,16 +73,34 @@ public class FairyBlockEntity extends BlockEntity {
         }
 
         ItemStack catalystStack = entity.itemHandler.getStackInSlot(0);
-        if (!catalystStack.isEmpty() && isCatalyst(catalystStack.getItem())) {
-            entity.cooldown--;
-            if (entity.cooldown <= 0) {
-                entity.cooldown = BASE_COOLDOWN;
-                entity.produceMana(catalystStack);
-            }
-        } else {
-            // Reset cooldown when no catalyst is present
+        entity.cooldown--;
+        if (entity.cooldown <= 0) {
             entity.cooldown = BASE_COOLDOWN;
+            if (!catalystStack.isEmpty() && isCatalyst(catalystStack.getItem())) {
+                entity.produceMana(catalystStack);
+            } else {
+                // When fairy has no catalyst, produce Tier 0 mana!
+                entity.produceTier0Mana();
+            }
         }
+    }
+
+    private void produceTier0Mana() {
+        Item tier0 = ModItems.TIER0_MANA.get();
+        long multiplier = 1;
+        for (int i = 0; i < compressionTier; i++) {
+            multiplier *= 9L;
+        }
+
+        ItemStack currentOutput = itemHandler.getStackInSlot(1);
+        if (currentOutput.isEmpty()) {
+            itemHandler.setStackInSlot(1, new ItemStack(tier0, (int) Math.min((long) Integer.MAX_VALUE, multiplier)));
+        } else if (currentOutput.is(tier0)) {
+            long newCount = (long) currentOutput.getCount() + multiplier;
+            currentOutput.setCount((int) Math.min((long) Integer.MAX_VALUE, newCount));
+            itemHandler.setStackInSlot(1, currentOutput);
+        }
+        setChanged();
     }
 
     private void produceMana(ItemStack catalystStack) {
@@ -165,6 +191,25 @@ public class FairyBlockEntity extends BlockEntity {
     public void invalidateCaps() {
         super.invalidateCaps();
         lazyItemHandler.invalidate();
+    }
+
+    public void saveToItem(ItemStack stack) {
+        CompoundTag tag = stack.getOrCreateTagElement("BlockEntityTag");
+        saveAdditional(tag);
+    }
+
+    @Override
+    public Component getDisplayName() {
+        if (compressionTier == 0) {
+            return Component.translatable("block.exponential_mana.fairy_block");
+        }
+        return Component.translatable("block.exponential_mana.compressed_fairy_block_" + compressionTier);
+    }
+
+    @Nullable
+    @Override
+    public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
+        return new FairyMenu(containerId, playerInventory, this);
     }
 
     @Override

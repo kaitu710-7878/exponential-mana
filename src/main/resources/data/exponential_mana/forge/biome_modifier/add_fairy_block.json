@@ -1,0 +1,6 @@
+{
+  "type": "forge:add_features",
+  "biomes": "#minecraft:is_overworld",
+  "features": "exponential_mana:fairy_block_patch",
+  "step": "vegetal_decoration"
+}

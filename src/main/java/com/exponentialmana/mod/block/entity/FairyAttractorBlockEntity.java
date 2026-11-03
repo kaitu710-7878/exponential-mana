@@ -1,12 +1,18 @@
 package com.exponentialmana.mod.block.entity;
 
+import com.exponentialmana.mod.menu.FairyAttractorMenu;
 import com.exponentialmana.mod.registry.ModBlockEntities;
 import com.exponentialmana.mod.registry.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.Containers;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -22,8 +28,9 @@ import org.jetbrains.annotations.Nullable;
 /**
  * BlockEntity for the Fairy Attractor.
  * Generates 1 Fairy Block every 5 minutes (6000 ticks).
+ * Supports GUI and preserves contents on block pickup.
  */
-public class FairyAttractorBlockEntity extends BlockEntity {
+public class FairyAttractorBlockEntity extends BlockEntity implements MenuProvider {
     public static final int LURE_TICKS = 6000; // 5 minutes (300 sec * 20 ticks)
     private int timer = LURE_TICKS;
 
@@ -95,6 +102,22 @@ public class FairyAttractorBlockEntity extends BlockEntity {
     public void invalidateCaps() {
         super.invalidateCaps();
         lazyItemHandler.invalidate();
+    }
+
+    public void saveToItem(ItemStack stack) {
+        CompoundTag tag = stack.getOrCreateTagElement("BlockEntityTag");
+        saveAdditional(tag);
+    }
+
+    @Override
+    public Component getDisplayName() {
+        return Component.translatable("block.exponential_mana.fairy_attractor");
+    }
+
+    @Nullable
+    @Override
+    public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
+        return new FairyAttractorMenu(containerId, playerInventory, this);
     }
 
     @Override

@@ -3,9 +3,13 @@ package com.exponentialmana.mod.block;
 import com.exponentialmana.mod.block.entity.FairyBlockEntity;
 import com.exponentialmana.mod.util.CompactStackFormatter;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -20,13 +24,14 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
 /**
  * Fairy Block and Compressed Fairy Block.
- * Handles insertion and status of Fairy Catalysts.
+ * Opens GUI on normal right-click. Preserves inventory in ItemStack NBT on removal.
  */
 public class FairyBlock extends BaseEntityBlock {
     private final int compressionTier;
@@ -69,58 +74,9 @@ public class FairyBlock extends BaseEntityBlock {
         if (!level.isClientSide) {
             BlockEntity be = level.getBlockEntity(pos);
             if (be instanceof FairyBlockEntity fairyBe) {
-                ItemStack heldItem = player.getItemInHand(hand);
-
-                if (player.isShiftKeyDown()) {
-                    // Extract all produced mana
-                    ItemStack output = fairyBe.getItemHandler().getStackInSlot(1);
-                    if (!output.isEmpty()) {
-                        if (!player.getInventory().add(output)) {
-                            player.drop(output, false);
-                        }
-                        fairyBe.getItemHandler().setStackInSlot(1, ItemStack.EMPTY);
-                        player.sendSystemMessage(Component.translatable("message.exponential_mana.fairy.collected_mana"));
-                        return InteractionResult.SUCCESS;
-                    }
-
-                    // If output empty, retrieve catalyst
-                    ItemStack catalyst = fairyBe.getItemHandler().getStackInSlot(0);
-                    if (!catalyst.isEmpty()) {
-                        if (!player.getInventory().add(catalyst)) {
-                            player.drop(catalyst, false);
-                        }
-                        fairyBe.getItemHandler().setStackInSlot(0, ItemStack.EMPTY);
-                        player.sendSystemMessage(Component.translatable("message.exponential_mana.fairy.retrieved_catalyst"));
-                        return InteractionResult.SUCCESS;
-                    }
-                } else {
-                    // Insert catalyst
-                    if (!heldItem.isEmpty() && FairyBlockEntity.isCatalyst(heldItem.getItem())) {
-                        ItemStack currentCatalyst = fairyBe.getItemHandler().getStackInSlot(0);
-                        if (currentCatalyst.isEmpty()) {
-                            fairyBe.getItemHandler().setStackInSlot(0, heldItem.copy());
-                            heldItem.setCount(0);
-                            player.sendSystemMessage(Component.translatable("message.exponential_mana.fairy.inserted_catalyst"));
-                            return InteractionResult.SUCCESS;
-                        } else if (ItemStack.isSameItemSameTags(currentCatalyst, heldItem)) {
-                            long total = (long) currentCatalyst.getCount() + heldItem.getCount();
-                            currentCatalyst.setCount((int) Math.min((long) Integer.MAX_VALUE, total));
-                            fairyBe.getItemHandler().setStackInSlot(0, currentCatalyst);
-                            heldItem.setCount(0);
-                            player.sendSystemMessage(Component.translatable("message.exponential_mana.fairy.inserted_catalyst"));
-                            return InteractionResult.SUCCESS;
-                        }
-                    }
-
-                    // Display status
-                    ItemStack catalyst = fairyBe.getItemHandler().getStackInSlot(0);
-                    ItemStack output = fairyBe.getItemHandler().getStackInSlot(1);
-
-                    String catStr = catalyst.isEmpty() ? "None" : catalyst.getItem().getDescription().getString() + " x" + CompactStackFormatter.formatCount(catalyst.getCount());
-                    String outStr = output.isEmpty() ? "None" : output.getItem().getDescription().getString() + " x" + CompactStackFormatter.formatCount(output.getCount());
-
-                    player.sendSystemMessage(Component.translatable("message.exponential_mana.fairy.status", catStr, outStr, fairyBe.getCooldown() / 20));
-                    return InteractionResult.SUCCESS;
+                if (player instanceof ServerPlayer serverPlayer && !player.isShiftKeyDown()) {
+                    NetworkHooks.openScreen(serverPlayer, fairyBe, pos);
+                    return InteractionResult.CONSUME;
                 }
             }
         }
@@ -128,12 +84,54 @@ public class FairyBlock extends BaseEntityBlock {
     }
 
     @Override
-    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (!state.is(newState.getBlock())) {
+    public void playerDestroy(Level level, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool) {
+        if (!level.isClientSide && !player.isCreative() && blockEntity instanceof FairyBlockEntity fairyBe) {
+            ItemStack dropStack = new ItemStack(this);
+            fairyBe.saveToItem(dropStack);
+            popResource(level, pos, dropStack);
+        }
+        super.playerDestroy(level, player, pos, state, blockEntity, tool);
+    }
+
+    @Override
+    public void playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+        BlockEntity be = level.getBlockEntity(pos);
+        if (be instanceof FairyBlockEntity fairyBe) {
+            if (!level.isClientSide && player.isCreative()) {
+                ItemStack dropStack = new ItemStack(this);
+                fairyBe.saveToItem(dropStack);
+                if (dropStack.hasTag() && dropStack.getTag().contains("BlockEntityTag")) {
+                    CompoundTag tag = dropStack.getTagElement("BlockEntityTag");
+                    if (tag != null && tag.contains("inventory")) {
+                        ItemEntity itemEntity = new ItemEntity(level, (double)pos.getX() + 0.5D, (double)pos.getY() + 0.5D, (double)pos.getZ() + 0.5D, dropStack);
+                        itemEntity.setDefaultPickUpDelay();
+                        level.addFreshEntity(itemEntity);
+                    }
+                }
+            }
+        }
+        super.playerWillDestroy(level, pos, state, player);
+    }
+
+    @Override
+    public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
+        super.setPlacedBy(level, pos, state, placer, stack);
+        if (!level.isClientSide && stack.hasTag() && stack.getTag().contains("BlockEntityTag")) {
             BlockEntity be = level.getBlockEntity(pos);
             if (be instanceof FairyBlockEntity fairyBe) {
-                fairyBe.drops();
+                CompoundTag tag = stack.getTagElement("BlockEntityTag");
+                if (tag != null) {
+                    fairyBe.load(tag);
+                    fairyBe.setChanged();
+                }
             }
+        }
+    }
+
+    @Override
+    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
+        if (!state.is(newState.getBlock())) {
+            // Do NOT scatter internal items to world! Items are safely preserved inside the dropped block item NBT.
             super.onRemove(state, level, pos, newState, isMoving);
         }
     }
@@ -146,6 +144,13 @@ public class FairyBlock extends BaseEntityBlock {
             long multiplier = 1;
             for (int i = 0; i < compressionTier; i++) multiplier *= 9L;
             tooltip.add(Component.translatable("tooltip.exponential_mana.compressed_fairy.desc", multiplier));
+        }
+
+        if (stack.hasTag() && stack.getTag().contains("BlockEntityTag")) {
+            CompoundTag beTag = stack.getTagElement("BlockEntityTag");
+            if (beTag != null && beTag.contains("inventory")) {
+                tooltip.add(Component.translatable("tooltip.exponential_mana.preserved_contents"));
+            }
         }
         super.appendHoverText(stack, level, tooltip, flag);
     }

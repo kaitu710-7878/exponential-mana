@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 @Mod(ExponentialMana.MOD_ID)
 public class ExponentialMana {
     public static final String MOD_ID = "exponential_mana";
-    public static final String VERSION = "0.9.1-alpha";
+    public static final String VERSION = "0.10.0-alpha";
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public ExponentialMana() {
@@ -37,6 +37,7 @@ public class ExponentialMana {
         ModBlocks.register(modEventBus);
         ModBlockEntities.register(modEventBus);
         ModCreativeModeTabs.register(modEventBus);
+        com.exponentialmana.mod.registry.ModMenuTypes.register(modEventBus);
         com.exponentialmana.mod.registry.ModRecipeSerializers.register(modEventBus);
 
         // Register lifecycle events
@@ -66,7 +67,24 @@ public class ExponentialMana {
     public static class ClientModEvents {
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
-            LOGGER.info("Exponential Mana: Client setup initialized.");
+            event.enqueueWork(() -> {
+                net.minecraft.client.gui.screens.MenuScreens.register(
+                        com.exponentialmana.mod.registry.ModMenuTypes.FAIRY_MENU.get(),
+                        com.exponentialmana.mod.client.gui.FairyScreen::new);
+                net.minecraft.client.gui.screens.MenuScreens.register(
+                        com.exponentialmana.mod.registry.ModMenuTypes.THAWER_MENU.get(),
+                        com.exponentialmana.mod.client.gui.ThawerScreen::new);
+                net.minecraft.client.gui.screens.MenuScreens.register(
+                        com.exponentialmana.mod.registry.ModMenuTypes.BATCH_ORE_BREAKER_MENU.get(),
+                        com.exponentialmana.mod.client.gui.BatchOreBreakerScreen::new);
+                net.minecraft.client.gui.screens.MenuScreens.register(
+                        com.exponentialmana.mod.registry.ModMenuTypes.EXTENDED_CRAFTING_MENU.get(),
+                        com.exponentialmana.mod.client.gui.ExtendedCraftingScreen::new);
+                net.minecraft.client.gui.screens.MenuScreens.register(
+                        com.exponentialmana.mod.registry.ModMenuTypes.FAIRY_ATTRACTOR_MENU.get(),
+                        com.exponentialmana.mod.client.gui.FairyAttractorScreen::new);
+            });
+            LOGGER.info("Exponential Mana: Client GUI screens registered successfully.");
         }
     }
 }
