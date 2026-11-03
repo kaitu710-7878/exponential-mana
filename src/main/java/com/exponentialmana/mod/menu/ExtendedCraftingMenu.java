@@ -49,7 +49,8 @@ public class ExtendedCraftingMenu extends AbstractContainerMenu {
         int gridWidth = gridSize * 18;
         int gridHeight = gridSize * 18;
 
-        this.imageWidth = Math.max(184, gridWidth + 86);
+        // Ensure width is at least 254px so that the 70x48 SideConfigWidget fits cleanly in the bottom-right
+        this.imageWidth = Math.max(254, gridWidth + 86);
 
         // 1. Input matrix slots (18x18 pitch always, matching Extended Crafting Reforked)
         for (int row = 0; row < gridSize; row++) {
@@ -73,26 +74,46 @@ public class ExtendedCraftingMenu extends AbstractContainerMenu {
             }
 
             @Override
+            public int getMaxStackSize() {
+                return Integer.MAX_VALUE;
+            }
+
+            @Override
+            public int getMaxStackSize(@NotNull ItemStack stack) {
+                return Integer.MAX_VALUE;
+            }
+
+            @Override
             public void onTake(@NotNull Player player, @NotNull ItemStack stack) {
                 blockEntity.onManualTake();
                 super.onTake(player, stack);
             }
         });
 
-        // 3. Material Buffer (18 slots: 2 rows of 9) - Mekanism Formulaic Assemblicator stock
-        this.bufferStartX = (imageWidth - 162) / 2;
+        // 3. Material Buffer (18 slots: 2 rows of 9) - Mekanism Formulaic Assemblicator stock (Int_MAX stack limit)
+        this.bufferStartX = 12;
         this.bufferStartY = gridStartY + gridHeight + 12;
 
         for (int row = 0; row < 2; row++) {
             for (int col = 0; col < 9; col++) {
                 int bIndex = bufferSlotStart + col + row * 9;
                 this.addSlot(new SlotItemHandler(blockEntity.getItemHandler(), bIndex,
-                        bufferStartX + col * 18, bufferStartY + row * 18));
+                        bufferStartX + col * 18, bufferStartY + row * 18) {
+                    @Override
+                    public int getMaxStackSize() {
+                        return Integer.MAX_VALUE;
+                    }
+
+                    @Override
+                    public int getMaxStackSize(@NotNull ItemStack stack) {
+                        return Integer.MAX_VALUE;
+                    }
+                });
             }
         }
 
-        // 4. Player Inventory (centered horizontally)
-        this.playerInvX = (imageWidth - 162) / 2;
+        // 4. Player Inventory (left-aligned at X=12, leaves right side open for SideConfigWidget)
+        this.playerInvX = 12;
         this.playerInvY = bufferStartY + 2 * 18 + 12;
 
         for (int row = 0; row < 3; row++) {
@@ -175,11 +196,37 @@ public class ExtendedCraftingMenu extends AbstractContainerMenu {
                     return ItemStack.EMPTY;
                 }
             } else {
-                // Player inventory -> Material buffer first, else grid
+                // Player inventory -> Material buffer first (Int_MAX stack support)
                 int bufferStartInMenu = totalInputSlots + 1; // Slot index in menu for buffer
                 int bufferEndInMenu = bufferStartInMenu + bufferSlotsCount;
-                if (!this.moveItemStackTo(slotStack, bufferStartInMenu, bufferEndInMenu, false)) {
-                    // Try grid slots
+
+                // Merge into existing buffer stacks up to Integer.MAX_VALUE
+                for (int b = bufferStartInMenu; b < bufferEndInMenu && !slotStack.isEmpty(); b++) {
+                    Slot targetSlot = this.slots.get(b);
+                    ItemStack targetStack = targetSlot.getItem();
+                    if (!targetStack.isEmpty() && ItemStack.isSameItemSameTags(targetStack, slotStack)) {
+                        long space = (long) Integer.MAX_VALUE - targetStack.getCount();
+                        if (space > 0) {
+                            int toMove = (int) Math.min(space, (long) slotStack.getCount());
+                            targetStack.grow(toMove);
+                            slotStack.shrink(toMove);
+                            targetSlot.setChanged();
+                        }
+                    }
+                }
+
+                // Place into empty buffer slots
+                for (int b = bufferStartInMenu; b < bufferEndInMenu && !slotStack.isEmpty(); b++) {
+                    Slot targetSlot = this.slots.get(b);
+                    if (!targetSlot.hasItem() && targetSlot.mayPlace(slotStack)) {
+                        targetSlot.set(slotStack.copy());
+                        slotStack.setCount(0);
+                        targetSlot.setChanged();
+                    }
+                }
+
+                // If any remaining, try grid slots
+                if (!slotStack.isEmpty()) {
                     if (!this.moveItemStackTo(slotStack, 0, totalInputSlots, false)) {
                         return ItemStack.EMPTY;
                     }

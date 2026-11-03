@@ -31,9 +31,9 @@ public class ExtendedCraftingScreen extends AbstractContainerScreen<ExtendedCraf
         this.leftPos = (this.width - this.imageWidth) / 2;
         this.topPos = (this.height - this.imageHeight) / 2;
 
-        // Position Side Config Widget on the right side of the screen
-        int widgetX = this.leftPos + this.imageWidth + 4;
-        int widgetY = this.topPos + 4;
+        // Position Side Config Widget inside the bottom-right corner of the table screen
+        int widgetX = this.leftPos + this.imageWidth - 70 - 6;
+        int widgetY = this.topPos + this.imageHeight - 48 - 6;
         this.sideConfigWidget = new SideConfigWidget(widgetX, widgetY,
                 menu.getBlockEntity().getBlockPos(), menu.getBlockEntity());
         this.addRenderableWidget(sideConfigWidget);
@@ -89,6 +89,23 @@ public class ExtendedCraftingScreen extends AbstractContainerScreen<ExtendedCraf
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         renderBackground(guiGraphics);
         super.render(guiGraphics, mouseX, mouseY, partialTick);
+
+        // Render compact stack text (K, M, B) for slots with >= 1000 items
+        for (Slot slot : menu.slots) {
+            if (slot.hasItem()) {
+                int count = slot.getItem().getCount();
+                if (count >= 1000) {
+                    String formatted = com.exponentialmana.mod.util.CompactStackFormatter.formatCount(count);
+                    int textX = this.leftPos + slot.x + 19 - this.font.width(formatted);
+                    int textY = this.topPos + slot.y + 16 - 9;
+                    guiGraphics.pose().pushPose();
+                    guiGraphics.pose().translate(0.0F, 0.0F, 250.0F);
+                    guiGraphics.drawString(this.font, formatted, textX, textY, 0xFFFFFF, true);
+                    guiGraphics.pose().popPose();
+                }
+            }
+        }
+
         renderTooltip(guiGraphics, mouseX, mouseY);
         if (sideConfigWidget != null) {
             sideConfigWidget.renderTooltips(guiGraphics, mouseX, mouseY);

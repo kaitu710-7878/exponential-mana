@@ -37,7 +37,8 @@ import java.util.*;
  * BlockEntity for Extended Crafting Tables (Tier 1: 4x4 up to Tier 10: 13x13).
  * Features:
  * - Real-time Recipe Matching for Manual Crafting & JEI Transfer.
- * - Mekanism Formulaic Assemblicator-style automation: 18-slot Material Buffer with 1 craft/1t auto-crafting.
+ * - Mekanism Formulaic Assemblicator (定式組立機) style automation:
+ *   18-slot Material Buffer (Int_MAX stack per slot) crafting as many items as possible per tick (1t batch craft).
  * - Side Configuration (DISABLED, INPUT, OUTPUT, BOTH) with Auto-Eject.
  * - Int_MAX stack support for output and material buffer.
  */
@@ -113,7 +114,7 @@ public class ExtendedCraftingTableBlockEntity extends BlockEntity implements Men
     }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, ExtendedCraftingTableBlockEntity be) {
-        // 1. Auto-crafting (Mekanism Formulaic Assemblicator behavior at 1 craft / 1t)
+        // 1. Auto-crafting (Mekanism Formulaic Assemblicator / 定式組立機 behavior: batch craft as many as possible per tick)
         be.tickAutoCraft();
 
         // 2. Auto-eject to adjacent inventories
@@ -121,7 +122,7 @@ public class ExtendedCraftingTableBlockEntity extends BlockEntity implements Men
     }
 
     /**
-     * Ticks 1 craft/1t automation using the material buffer.
+     * Crafts as many items as possible in 1 tick based on materials in the material buffer.
      */
     private void tickAutoCraft() {
         ExtendedCraftingRecipe recipe = ExtendedCraftingRecipeManager.findMatchingRecipe(tier, new IItemHandler() {
@@ -148,7 +149,7 @@ public class ExtendedCraftingTableBlockEntity extends BlockEntity implements Men
             if (currentOut.getCount() >= Integer.MAX_VALUE) return;
         }
 
-        // Count required items for this recipe
+        // Count required items for this recipe (per single craft)
         Map<ItemStackKey, Integer> required = new HashMap<>();
         for (int i = 0; i < totalInputSlots; i++) {
             ItemStack inGrid = itemHandler.getStackInSlot(i);
@@ -160,44 +161,55 @@ public class ExtendedCraftingTableBlockEntity extends BlockEntity implements Men
 
         if (required.isEmpty()) return;
 
-        // Check if material buffer has all required items
-        Map<ItemStackKey, Integer> available = new HashMap<>();
+        // Count available items in material buffer
+        Map<ItemStackKey, Long> available = new HashMap<>();
         for (int b = bufferSlotStart; b < totalSlots; b++) {
             ItemStack stack = itemHandler.getStackInSlot(b);
             if (!stack.isEmpty()) {
                 ItemStackKey key = new ItemStackKey(stack);
-                available.put(key, available.getOrDefault(key, 0) + stack.getCount());
+                available.put(key, available.getOrDefault(key, 0L) + stack.getCount());
             }
         }
 
-        boolean canCraft = true;
+        // Determine maximum possible crafts in this tick based on available materials
+        long maxCrafts = Long.MAX_VALUE;
         for (Map.Entry<ItemStackKey, Integer> req : required.entrySet()) {
-            if (available.getOrDefault(req.getKey(), 0) < req.getValue()) {
-                canCraft = false;
-                break;
+            long avail = available.getOrDefault(req.getKey(), 0L);
+            long possible = avail / req.getValue();
+            if (possible < maxCrafts) {
+                maxCrafts = possible;
             }
         }
 
-        if (!canCraft) return;
+        // Check output slot capacity limit
+        int outPerCraft = Math.max(1, output.getCount());
+        long space = currentOut.isEmpty() ? (long) Integer.MAX_VALUE : ((long) Integer.MAX_VALUE - currentOut.getCount());
+        long maxBySpace = space / outPerCraft;
+        maxCrafts = Math.min(maxCrafts, maxBySpace);
 
-        // Consume required items from buffer
+        if (maxCrafts <= 0) return;
+
+        // Consume required materials (each key needs req.getValue() * maxCrafts)
         for (Map.Entry<ItemStackKey, Integer> req : required.entrySet()) {
-            int toConsume = req.getValue();
+            long toConsume = (long) req.getValue() * maxCrafts;
             for (int b = bufferSlotStart; b < totalSlots && toConsume > 0; b++) {
                 ItemStack inSlot = itemHandler.getStackInSlot(b);
                 if (!inSlot.isEmpty() && new ItemStackKey(inSlot).equals(req.getKey())) {
-                    int taken = Math.min(inSlot.getCount(), toConsume);
+                    int taken = (int) Math.min((long) inSlot.getCount(), toConsume);
                     inSlot.shrink(taken);
                     toConsume -= taken;
                 }
             }
         }
 
-        // Produce output
+        // Add produced output (outPerCraft * maxCrafts)
+        long totalProduced = (long) outPerCraft * maxCrafts;
         if (currentOut.isEmpty()) {
-            itemHandler.setStackInSlot(outputSlotIndex, output.copy());
+            ItemStack newOut = output.copy();
+            newOut.setCount((int) totalProduced);
+            itemHandler.setStackInSlot(outputSlotIndex, newOut);
         } else {
-            currentOut.grow(output.getCount());
+            currentOut.grow((int) totalProduced);
         }
         setChanged();
     }

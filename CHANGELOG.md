@@ -8,6 +8,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.13.1-beta] - 2026-11-04
+
+### Changed / 変更
+- **EN**:
+  - **Mekanism Formulaic Assemblicator-style Batch Crafting**:
+    - Upgraded Extended Crafting Table auto-crafting from 1 craft/tick to **unlimited batch crafting per tick**: As long as materials exist in the Material Buffer, it will craft as many items as possible in a single tick (e.g. 10x materials = 10 crafts in 1t).
+    - Unlocked `Integer.MAX_VALUE` stack limit for Material Buffer slots in the GUI and shift-click quick move logic.
+  - **UI Alignment**:
+    - Relocated the Side Configuration widget (U, D, N, S, W, E, EJ) inside the bottom-right corner of the Extended Crafting Table screen.
+    - Added compact stack counter overlay (`1.5K`, `20M`, `2.1B`) for buffer/output slots holding $\ge 1,000$ items.
+  - **Terminology**:
+    - Updated references to Mekanism's machine name to Formulaic Assemblicator (定式組立機).
+- **JA**:
+  - **定式組立機（Formulaic Assemblicator）仕様の全量一括クラフト**:
+    - 拡張作業台の自動クラフトを「1tにつき保持しているアイテムの限り全量クラフト」へ強化。素材インベントリ内に10回分の素材があれば1tで10回分、1億回分あれば1tで1億回分を一括でクラフトして出力します。
+    - GUI操作およびシフトクリック時において、自動クラフト用素材置きスロット（Material Buffer）のスタック上限を `Integer.MAX_VALUE` に完全引き上げ。
+  - **UI配置の改善**:
+    - 拡張作業台の面設定ウィジェット（UDNSWEおよび自動搬出トグル）を、作業台テクスチャ内の右下隅（プレイヤーインベントリ右横）に配置。
+    - 素材バッファや出力スロットで1,000個以上のアイテムがある場合に「1.5K」「20M」「2.1B」と描画するコンパクトスタック表示を実装。
+  - **用語統一**:
+    - Mekanismの機械名称の表記を「定式組立機（Formulaic Assemblicator）」に統一。
+
+---
+
 ## [0.13.0-beta] - 2026-11-03
 
 ### Added / 追加
