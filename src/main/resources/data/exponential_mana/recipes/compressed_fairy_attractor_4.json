@@ -1,0 +1,17 @@
+﻿{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "AAA",
+    "AAA",
+    "AAA"
+  ],
+  "key": {
+    "A": {
+      "item": "exponential_mana:compressed_fairy_attractor_3"
+    }
+  },
+  "result": {
+    "item": "exponential_mana:compressed_fairy_attractor_4",
+    "count": 1
+  }
+}

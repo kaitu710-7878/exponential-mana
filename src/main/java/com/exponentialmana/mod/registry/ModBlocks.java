@@ -139,9 +139,37 @@ public class ModBlocks {
             COMPRESSED_FAIRY_BLOCK_10
     );
 
-    // Fairy Attractor (Lures/generates a fairy every 5 minutes)
+    // Fairy Attractor (Lures/generates a fairy every 5 minutes, 8x8 inventory holding up to Int_MAX)
     public static final RegistryObject<Block> FAIRY_ATTRACTOR = registerBlock("fairy_attractor",
-            com.exponentialmana.mod.block.FairyAttractorBlock::new);
+            () -> new com.exponentialmana.mod.block.FairyAttractorBlock(0));
+
+    public static final RegistryObject<Block> COMPRESSED_FAIRY_ATTRACTOR_1 = registerBlock("compressed_fairy_attractor_1",
+            () -> new com.exponentialmana.mod.block.FairyAttractorBlock(1));
+    public static final RegistryObject<Block> COMPRESSED_FAIRY_ATTRACTOR_2 = registerBlock("compressed_fairy_attractor_2",
+            () -> new com.exponentialmana.mod.block.FairyAttractorBlock(2));
+    public static final RegistryObject<Block> COMPRESSED_FAIRY_ATTRACTOR_3 = registerBlock("compressed_fairy_attractor_3",
+            () -> new com.exponentialmana.mod.block.FairyAttractorBlock(3));
+    public static final RegistryObject<Block> COMPRESSED_FAIRY_ATTRACTOR_4 = registerBlock("compressed_fairy_attractor_4",
+            () -> new com.exponentialmana.mod.block.FairyAttractorBlock(4));
+    public static final RegistryObject<Block> COMPRESSED_FAIRY_ATTRACTOR_5 = registerBlock("compressed_fairy_attractor_5",
+            () -> new com.exponentialmana.mod.block.FairyAttractorBlock(5));
+    public static final RegistryObject<Block> COMPRESSED_FAIRY_ATTRACTOR_6 = registerBlock("compressed_fairy_attractor_6",
+            () -> new com.exponentialmana.mod.block.FairyAttractorBlock(6));
+    public static final RegistryObject<Block> COMPRESSED_FAIRY_ATTRACTOR_7 = registerBlock("compressed_fairy_attractor_7",
+            () -> new com.exponentialmana.mod.block.FairyAttractorBlock(7));
+    public static final RegistryObject<Block> COMPRESSED_FAIRY_ATTRACTOR_8 = registerBlock("compressed_fairy_attractor_8",
+            () -> new com.exponentialmana.mod.block.FairyAttractorBlock(8));
+    public static final RegistryObject<Block> COMPRESSED_FAIRY_ATTRACTOR_9 = registerBlock("compressed_fairy_attractor_9",
+            () -> new com.exponentialmana.mod.block.FairyAttractorBlock(9));
+    public static final RegistryObject<Block> COMPRESSED_FAIRY_ATTRACTOR_10 = registerBlock("compressed_fairy_attractor_10",
+            () -> new com.exponentialmana.mod.block.FairyAttractorBlock(10));
+
+    public static final java.util.List<RegistryObject<Block>> COMPRESSED_FAIRY_ATTRACTORS = java.util.List.of(
+            COMPRESSED_FAIRY_ATTRACTOR_1, COMPRESSED_FAIRY_ATTRACTOR_2, COMPRESSED_FAIRY_ATTRACTOR_3,
+            COMPRESSED_FAIRY_ATTRACTOR_4, COMPRESSED_FAIRY_ATTRACTOR_5, COMPRESSED_FAIRY_ATTRACTOR_6,
+            COMPRESSED_FAIRY_ATTRACTOR_7, COMPRESSED_FAIRY_ATTRACTOR_8, COMPRESSED_FAIRY_ATTRACTOR_9,
+            COMPRESSED_FAIRY_ATTRACTOR_10
+    );
 
     // Batch Ore Breaker & Thawer
     public static final RegistryObject<Block> BATCH_ORE_BREAKER = registerBlock("batch_ore_breaker",

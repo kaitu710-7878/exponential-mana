@@ -3,6 +3,7 @@ package com.exponentialmana.mod.recipe;
 import com.exponentialmana.mod.registry.ModBlocks;
 import com.exponentialmana.mod.registry.ModItems;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.items.IItemHandler;
@@ -464,6 +465,9 @@ public class ExtendedCraftingRecipeManager {
                 Component.translatable("item.exponential_mana.compressed_origin_alloy")));
 
         // 4. World Wisdom & 4 Root Manas
+        // Mana Knowledge: 13x13 recipe requiring all tiers (0-10) of Mana, Ore, and Catalyst (T0 fairy)
+        map.get(10).add(createManaKnowledgeRecipe());
+
         // Mana Wisdom: Mana Knowledge x169
         map.get(10).add(createFullGridRecipe(10, 13,
                 new ItemStack(ModItems.MANA_KNOWLEDGE.get()), new ItemStack(ModItems.MANA_WISDOM.get()),
@@ -832,5 +836,52 @@ public class ExtendedCraftingRecipeManager {
             }
         }
         return new ExtendedCraftingRecipe(10, gridSize, inputs, output, name);
+    }
+
+    private static ExtendedCraftingRecipe createManaKnowledgeRecipe() {
+        int gridSize = 13;
+        List<List<ItemStack>> inputs = new ArrayList<>(gridSize * gridSize);
+        for (int i = 0; i < gridSize * gridSize; i++) {
+            inputs.add(Collections.emptyList());
+        }
+
+        Item[] manas = new Item[]{
+                ModItems.TIER0_MANA.get(), ModItems.TIER1_MANA.get(), ModItems.TIER2_MANA.get(),
+                ModItems.TIER3_MANA.get(), ModItems.TIER4_MANA.get(), ModItems.TIER5_MANA.get(),
+                ModItems.TIER6_MANA.get(), ModItems.TIER7_MANA.get(), ModItems.TIER8_MANA.get(),
+                ModItems.TIER9_MANA.get(), ModItems.TIER10_MANA.get(), ModItems.PURE_MANA.get()
+        };
+
+        Item[] ores = new Item[]{
+                ModBlocks.TIER0_MANA_ORE.get().asItem(), ModBlocks.TIER1_MANA_ORE.get().asItem(),
+                ModBlocks.TIER2_MANA_ORE.get().asItem(), ModBlocks.TIER3_MANA_ORE.get().asItem(),
+                ModBlocks.TIER4_MANA_ORE.get().asItem(), ModBlocks.TIER5_MANA_ORE.get().asItem(),
+                ModBlocks.TIER6_MANA_ORE.get().asItem(), ModBlocks.TIER7_MANA_ORE.get().asItem(),
+                ModBlocks.TIER8_MANA_ORE.get().asItem(), ModBlocks.TIER9_MANA_ORE.get().asItem(),
+                ModBlocks.TIER10_MANA_ORE.get().asItem(), ModBlocks.PURE_MANA_ORE.get().asItem()
+        };
+
+        Item[] catalysts = new Item[]{
+                ModBlocks.FAIRY_BLOCK.get().asItem(),
+                ModItems.TIER1_FAIRY_CATALYST.get(), ModItems.TIER2_FAIRY_CATALYST.get(),
+                ModItems.TIER3_FAIRY_CATALYST.get(), ModItems.TIER4_FAIRY_CATALYST.get(),
+                ModItems.TIER5_FAIRY_CATALYST.get(), ModItems.TIER6_FAIRY_CATALYST.get(),
+                ModItems.TIER7_FAIRY_CATALYST.get(), ModItems.TIER8_FAIRY_CATALYST.get(),
+                ModItems.TIER9_FAIRY_CATALYST.get(), ModItems.TIER10_FAIRY_CATALYST.get(),
+                ModItems.PURE_FAIRY_CATALYST.get()
+        };
+
+        for (int t = 0; t <= 11; t++) {
+            int col = 1 + t;
+            inputs.set(5 * gridSize + col, Collections.singletonList(new ItemStack(manas[t])));
+            inputs.set(6 * gridSize + col, Collections.singletonList(new ItemStack(ores[t])));
+            inputs.set(7 * gridSize + col, Collections.singletonList(new ItemStack(catalysts[t])));
+        }
+
+        return new ExtendedCraftingRecipe(
+                10, gridSize, inputs,
+                new ItemStack(ModItems.MANA_KNOWLEDGE.get()),
+                Component.translatable("item.exponential_mana.mana_knowledge")
+        );
     }
 }

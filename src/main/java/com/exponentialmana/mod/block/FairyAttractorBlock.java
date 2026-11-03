@@ -29,15 +29,28 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 /**
- * Fairy Attractor Block.
- * Lures 1 fairy every 5 minutes.
+ * Fairy Attractor Block (Tier 0 to Tier 10 Compressed).
+ * Features an 8x8 inventory holding up to Integer.MAX_VALUE stacks per slot.
+ * Generates 9^compressionTier fairies every 5 minutes.
  * Opens GUI and preserves contents on block pickup.
  */
 public class FairyAttractorBlock extends BaseEntityBlock {
+    private final int compressionTier;
+
     public FairyAttractorBlock() {
+        this(0);
+    }
+
+    public FairyAttractorBlock(int compressionTier) {
         super(BlockBehaviour.Properties.of()
                 .strength(3.5F, 10.0F)
-                .sound(SoundType.METAL));
+                .sound(SoundType.METAL)
+                .lightLevel(state -> Math.min(15, 3 + compressionTier)));
+        this.compressionTier = compressionTier;
+    }
+
+    public int getCompressionTier() {
+        return compressionTier;
     }
 
     @Override
@@ -48,7 +61,7 @@ public class FairyAttractorBlock extends BaseEntityBlock {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new FairyAttractorBlockEntity(pos, state);
+        return new FairyAttractorBlockEntity(pos, state, compressionTier);
     }
 
     @Nullable
@@ -123,14 +136,21 @@ public class FairyAttractorBlock extends BaseEntityBlock {
     @Override
     public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
         if (!state.is(newState.getBlock())) {
-            // Preserved in ItemStack NBT
             super.onRemove(state, level, pos, newState, isMoving);
         }
     }
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable BlockGetter level, List<Component> tooltip, TooltipFlag flag) {
-        tooltip.add(Component.translatable("tooltip.exponential_mana.fairy_attractor.desc"));
+        if (compressionTier == 0) {
+            tooltip.add(Component.translatable("tooltip.exponential_mana.fairy_attractor.desc"));
+        } else {
+            long multiplier = 1;
+            for (int i = 0; i < compressionTier; i++) multiplier *= 9L;
+            String countText = String.format("%,d", multiplier);
+            tooltip.add(Component.translatable("tooltip.exponential_mana.compressed_fairy_attractor.desc", countText));
+        }
+
         if (stack.hasTag() && stack.getTag().contains("BlockEntityTag")) {
             CompoundTag beTag = stack.getTagElement("BlockEntityTag");
             if (beTag != null && beTag.contains("inventory")) {

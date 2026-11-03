@@ -8,6 +8,58 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.15.0-beta] - 2026-11-04
+
+### Added / 追加
+- **EN**:
+  - **Compressed Fairy Attractors (Tier 1 - 10)**:
+    - Added 10 tiers of Compressed Fairy Attractors craftable via 3x3 crafting of the previous tier (9 attractors).
+    - Production scales exponentially up to $9^{10}$ fairies per cycle (every 5 minutes / 6000 ticks).
+    - Features an expanded 8x8 inventory (64 slots) with `Integer.MAX_VALUE` capacity per slot and automatic ejection.
+    - Added dedicated evolving block models and textures for all 10 compression tiers.
+  - **13x13 Mana Knowledge Recipe**:
+    - Replaced individual recipes with a unified 13x13 crafting recipe on Tier 10 table requiring all tiers (0 to 10) of Mana, Ore, and Catalysts (Tier 0 uses Fairy Block).
+- **JA**:
+  - **圧縮妖精誘引機 (Tier 1〜10)**:
+    - 前Tierの誘引機9個による3×3クラフトで作成可能な、圧縮妖精誘引機（Tier 1〜10）を追加。
+    - クールダウン5分（6000 ticks）据え置きのまま、生産量が最大 $9^{10}$ 倍まで指数関数的に増加。
+    - 8×8スロット（全64スロット）、1スロットあたり `Integer.MAX_VALUE` 個の巨大インベントリおよび自動搬出（Auto Eject）機能を実装。
+    - 圧縮段階に応じた専用の外観モデル・テクスチャ（Tier 1〜10）を追加。
+  - **マナの知識の13×13レシピ化**:
+    - 旧来の個別クラフトレシピを削除し、Tier10拡張作業台（13×13）にて全Tier（0〜10）のマナ・鉱石・触媒（Tier0枠は妖精ブロック）を一堂に要求する新レシピへ刷新。
+
+### Fixed / 修正
+- **EN**:
+  - **Extended Crafting Table Auto-Crafting Logic**:
+    - Fixed an issue where recipes would stall due to tag mismatch (`null` vs empty `{}`) in `ItemStackKey`.
+    - Extended auto-crafting material consumption: items placed in the crafting grid above count 1 can now also be used as crafting ingredients while preserving template items.
+  - **Compressed Fairy Attractor Tooltip Format**:
+    - Fixed unparsed `%d` in tooltip by passing properly formatted count string to translation key.
+- **JA**:
+  - **拡張作業台の自動クラフト機能の修正**:
+    - `ItemStackKey` のタグ一致判定において空タグ `{}` と `null` の差異によりクラフトが停止していた不具合を解消。
+    - 素材バッファ（18スロット）に加えて、クラフトグリッド上にスタックされた余剰アイテム（2個目以降）もクラフト素材として自動消費できるよう改善（型紙としての1個は保護）。
+  - **圧縮妖精誘引機の説明文フォーマット修正**:
+    - ツールチップ内の `%d` がそのまま表示されていた不具合を修正し、桁区切りされた正確な誘引数を表示するように修正。
+
+### Changed / 変更
+- **EN**:
+  - **Fairy Residue Yield**:
+    - Crafting a Fairy Block now yields 64 Fairy Residues per craft while retaining the Fairy Block.
+  - **Comprehensive Texture Harmonization**:
+    - Overhauled mana textures (Tier 0, 1, 7, 8, 10) and distinct sacred medallion Mana Symbols (Tier 0 to 10).
+    - Harmonized Cores (Tier 1 to 10), Fairy Catalysts (Tier 1 to 10), and Shards to match the new Mana motifs and colors.
+    - Confirmed and applied textures for Activated Conduit and Compressed Tier 0-10 Mana.
+- **JA**:
+  - **妖精の残滓のクラフト獲得量増加**:
+    - 妖精ブロックの単体クラフト時に獲得できる妖精の残滓の数量を 1個 から 64個 に変更（妖精ブロックは消費されず保持）。
+  - **マナモチーフテクスチャの包括的調和**:
+    - マナ球体（T0淡シアン, T1熾火赤, T7ダイヤ十字, T8黒曜石紫, T10ネザライト金）および神聖メダリオン象徴の視認性改善。
+    - コア（Tier 1〜10）、妖精活発化触媒（Tier 1〜10）、鉱石・触媒欠片のデザイン・色彩を新しいマナモチーフへ完全同期。
+    - 活性化コンジットおよび圧縮Tier0〜10マナの正式テクスチャをアセットへ適用。
+
+---
+
 ## [0.14.0-beta] - 2026-11-04
 
 ### Changed / 変更

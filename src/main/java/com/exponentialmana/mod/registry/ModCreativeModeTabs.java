@@ -200,6 +200,7 @@ public class ModCreativeModeTabs {
                         output.accept(ModBlocks.COMPRESSED_FAIRY_BLOCK_9.get());
                         output.accept(ModBlocks.COMPRESSED_FAIRY_BLOCK_10.get());
                         output.accept(ModBlocks.FAIRY_ATTRACTOR.get());
+                        ModBlocks.COMPRESSED_FAIRY_ATTRACTORS.forEach(reg -> output.accept(reg.get()));
 
                         // Blocks - Batch Processing & Thawing
                         output.accept(ModBlocks.BATCH_ORE_BREAKER.get());

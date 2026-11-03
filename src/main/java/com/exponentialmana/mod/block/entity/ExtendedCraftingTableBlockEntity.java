@@ -126,7 +126,8 @@ public class ExtendedCraftingTableBlockEntity extends BlockEntity implements Men
     }
 
     /**
-     * Crafts as many items as possible in 1 tick based on materials in the material buffer.
+     * Crafts as many items as possible in 1 tick based on materials in the material buffer
+     * and surplus materials in the crafting grid (count > 1).
      * Outputs to the 9 auto-craft output buffer slots.
      */
     private void tickAutoCraft() {
@@ -148,6 +149,7 @@ public class ExtendedCraftingTableBlockEntity extends BlockEntity implements Men
         if (recipe == null) return;
 
         ItemStack output = recipe.getOutput();
+        if (output.isEmpty()) return;
 
         // Count required items for this recipe (per single craft)
         Map<ItemStackKey, Integer> required = new HashMap<>();
@@ -161,13 +163,22 @@ public class ExtendedCraftingTableBlockEntity extends BlockEntity implements Men
 
         if (required.isEmpty()) return;
 
-        // Count available items in material buffer
+        // Count available items from BOTH:
+        // 1. Material Buffer (bufferSlotStart .. autoOutputSlotStart - 1): full amount
+        // 2. Crafting Grid (0 .. totalInputSlots - 1): surplus amount (count - 1), preserving the pattern template!
         Map<ItemStackKey, Long> available = new HashMap<>();
         for (int b = bufferSlotStart; b < autoOutputSlotStart; b++) {
             ItemStack stack = itemHandler.getStackInSlot(b);
             if (!stack.isEmpty()) {
                 ItemStackKey key = new ItemStackKey(stack);
                 available.put(key, available.getOrDefault(key, 0L) + stack.getCount());
+            }
+        }
+        for (int g = 0; g < totalInputSlots; g++) {
+            ItemStack inGrid = itemHandler.getStackInSlot(g);
+            if (!inGrid.isEmpty() && inGrid.getCount() > 1) {
+                ItemStackKey key = new ItemStackKey(inGrid);
+                available.put(key, available.getOrDefault(key, 0L) + (inGrid.getCount() - 1));
             }
         }
 
@@ -200,14 +211,28 @@ public class ExtendedCraftingTableBlockEntity extends BlockEntity implements Men
 
         if (maxCrafts <= 0) return;
 
-        // Consume required materials from material buffer
+        // Consume required materials:
+        // Prioritize consuming from Material Buffer, then consume surplus from Grid!
         for (Map.Entry<ItemStackKey, Integer> req : required.entrySet()) {
             long toConsume = (long) req.getValue() * maxCrafts;
+
+            // 1. From Material Buffer
             for (int b = bufferSlotStart; b < autoOutputSlotStart && toConsume > 0; b++) {
                 ItemStack inSlot = itemHandler.getStackInSlot(b);
-                if (!inSlot.isEmpty() && new ItemStackKey(inSlot).equals(req.getKey())) {
+                if (!inSlot.isEmpty() && req.getKey().matches(inSlot)) {
                     int taken = (int) Math.min((long) inSlot.getCount(), toConsume);
                     inSlot.shrink(taken);
+                    toConsume -= taken;
+                }
+            }
+
+            // 2. From Grid surplus (leaving 1 item to maintain template)
+            for (int g = 0; g < totalInputSlots && toConsume > 0; g++) {
+                ItemStack inGrid = itemHandler.getStackInSlot(g);
+                if (!inGrid.isEmpty() && inGrid.getCount() > 1 && req.getKey().matches(inGrid)) {
+                    int surplus = inGrid.getCount() - 1;
+                    int taken = (int) Math.min((long) surplus, toConsume);
+                    inGrid.shrink(taken);
                     toConsume -= taken;
                 }
             }
@@ -354,10 +379,22 @@ public class ExtendedCraftingTableBlockEntity extends BlockEntity implements Men
     }
 
     private static class ItemStackKey {
-        private final ItemStack stack;
+        private final net.minecraft.world.item.Item item;
+        private final CompoundTag tag;
 
         public ItemStackKey(ItemStack stack) {
-            this.stack = stack;
+            this.item = stack.getItem();
+            // Normalize empty tags to null so empty CompoundTag equals null
+            this.tag = (stack.hasTag() && !stack.getTag().isEmpty()) ? stack.getTag() : null;
+        }
+
+        public boolean matches(ItemStack other) {
+            if (other.isEmpty() || !other.is(this.item)) return false;
+            CompoundTag otherTag = (other.hasTag() && !other.getTag().isEmpty()) ? other.getTag() : null;
+            if (this.tag != null || otherTag != null) {
+                return Objects.equals(this.tag, otherTag);
+            }
+            return true;
         }
 
         @Override
@@ -365,16 +402,13 @@ public class ExtendedCraftingTableBlockEntity extends BlockEntity implements Men
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             ItemStackKey that = (ItemStackKey) o;
-            if (!this.stack.is(that.stack.getItem())) return false;
-            if (this.stack.hasTag() || that.stack.hasTag()) {
-                return Objects.equals(this.stack.getTag(), that.stack.getTag());
-            }
-            return true;
+            if (this.item != that.item) return false;
+            return Objects.equals(this.tag, that.tag);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(stack.getItem(), stack.hasTag() ? stack.getTag() : null);
+            return Objects.hash(item, tag);
         }
     }
 }
