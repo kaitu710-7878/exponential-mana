@@ -3,6 +3,7 @@ package com.exponentialmana.mod.event;
 import com.exponentialmana.mod.ExponentialMana;
 import com.exponentialmana.mod.block.InactiveManaOreBlock;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -27,5 +28,48 @@ public class CommonEventHandler {
                 event.setCanceled(true);
             }
         }
+    }
+
+    /**
+     * Complete invulnerability for players wearing Origin Armor (blocks all damage including /kill and Void).
+     */
+    @SubscribeEvent
+    public static void onLivingAttack(net.minecraftforge.event.entity.living.LivingAttackEvent event) {
+        if (event.getEntity() instanceof Player player && hasOriginArmor(player)) {
+            event.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onLivingHurt(net.minecraftforge.event.entity.living.LivingHurtEvent event) {
+        if (event.getEntity() instanceof Player player && hasOriginArmor(player)) {
+            event.setAmount(0.0F);
+            event.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onLivingDamage(net.minecraftforge.event.entity.living.LivingDamageEvent event) {
+        if (event.getEntity() instanceof Player player && hasOriginArmor(player)) {
+            event.setAmount(0.0F);
+            event.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onLivingDeath(net.minecraftforge.event.entity.living.LivingDeathEvent event) {
+        if (event.getEntity() instanceof Player player && hasOriginArmor(player)) {
+            event.setCanceled(true);
+            player.setHealth(player.getMaxHealth());
+        }
+    }
+
+    private static boolean hasOriginArmor(Player player) {
+        for (ItemStack armor : player.getArmorSlots()) {
+            if (!armor.isEmpty() && armor.getItem() instanceof com.exponentialmana.mod.item.OriginArmorItem) {
+                return true;
+            }
+        }
+        return false;
     }
 }

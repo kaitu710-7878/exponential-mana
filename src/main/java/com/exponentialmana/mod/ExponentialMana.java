@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 @Mod(ExponentialMana.MOD_ID)
 public class ExponentialMana {
     public static final String MOD_ID = "exponential_mana";
-    public static final String VERSION = "0.5.0-alpha";
+    public static final String VERSION = "0.6.0-alpha";
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public ExponentialMana() {
@@ -37,6 +37,7 @@ public class ExponentialMana {
         ModBlocks.register(modEventBus);
         ModBlockEntities.register(modEventBus);
         ModCreativeModeTabs.register(modEventBus);
+        com.exponentialmana.mod.registry.ModRecipeSerializers.register(modEventBus);
 
         // Register lifecycle events
         modEventBus.addListener(this::commonSetup);

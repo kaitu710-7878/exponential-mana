@@ -173,6 +173,99 @@ public class ModItems {
     public static final RegistryObject<Item> BATCH_COMPRESSED_MANA = ITEMS.register("batch_compressed_mana",
             com.exponentialmana.mod.item.BatchCompressedManaItem::new);
 
+    // ==========================================
+    // Origin Equipment (Invulnerability & /kill logic)
+    // ==========================================
+    public static final RegistryObject<Item> ORIGIN_HELMET = ITEMS.register("origin_helmet",
+            () -> new com.exponentialmana.mod.item.OriginArmorItem(net.minecraft.world.item.ArmorItem.Type.HELMET));
+    public static final RegistryObject<Item> ORIGIN_CHESTPLATE = ITEMS.register("origin_chestplate",
+            () -> new com.exponentialmana.mod.item.OriginArmorItem(net.minecraft.world.item.ArmorItem.Type.CHESTPLATE));
+    public static final RegistryObject<Item> ORIGIN_LEGGINGS = ITEMS.register("origin_leggings",
+            () -> new com.exponentialmana.mod.item.OriginArmorItem(net.minecraft.world.item.ArmorItem.Type.LEGGINGS));
+    public static final RegistryObject<Item> ORIGIN_BOOTS = ITEMS.register("origin_boots",
+            () -> new com.exponentialmana.mod.item.OriginArmorItem(net.minecraft.world.item.ArmorItem.Type.BOOTS));
+    public static final RegistryObject<Item> ORIGIN_SWORD = ITEMS.register("origin_sword",
+            com.exponentialmana.mod.item.OriginSwordItem::new);
+
+    // ==========================================
+    // Mana Materials & Compressed Materials
+    // ==========================================
+    public static final RegistryObject<Item> TIER1_MANA_MATERIAL = ITEMS.register("tier1_mana_material",
+            () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> TIER2_MANA_MATERIAL = ITEMS.register("tier2_mana_material",
+            () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> TIER3_MANA_MATERIAL = ITEMS.register("tier3_mana_material",
+            () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> TIER4_MANA_MATERIAL = ITEMS.register("tier4_mana_material",
+            () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> TIER5_MANA_MATERIAL = ITEMS.register("tier5_mana_material",
+            () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> TIER6_MANA_MATERIAL = ITEMS.register("tier6_mana_material",
+            () -> new Item(new Item.Properties().rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> TIER7_MANA_MATERIAL = ITEMS.register("tier7_mana_material",
+            () -> new Item(new Item.Properties().rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> TIER8_MANA_MATERIAL = ITEMS.register("tier8_mana_material",
+            () -> new Item(new Item.Properties().rarity(Rarity.RARE)));
+    public static final RegistryObject<Item> TIER9_MANA_MATERIAL = ITEMS.register("tier9_mana_material",
+            () -> new Item(new Item.Properties().rarity(Rarity.RARE)));
+    public static final RegistryObject<Item> TIER10_MANA_MATERIAL = ITEMS.register("tier10_mana_material",
+            () -> new Item(new Item.Properties().rarity(Rarity.EPIC)));
+
+    public static final RegistryObject<Item> COMPRESSED_TIER1_MANA_MATERIAL = ITEMS.register("compressed_tier1_mana_material",
+            () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> COMPRESSED_TIER2_MANA_MATERIAL = ITEMS.register("compressed_tier2_mana_material",
+            () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> COMPRESSED_TIER3_MANA_MATERIAL = ITEMS.register("compressed_tier3_mana_material",
+            () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> COMPRESSED_TIER4_MANA_MATERIAL = ITEMS.register("compressed_tier4_mana_material",
+            () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> COMPRESSED_TIER5_MANA_MATERIAL = ITEMS.register("compressed_tier5_mana_material",
+            () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> COMPRESSED_TIER6_MANA_MATERIAL = ITEMS.register("compressed_tier6_mana_material",
+            () -> new Item(new Item.Properties().rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> COMPRESSED_TIER7_MANA_MATERIAL = ITEMS.register("compressed_tier7_mana_material",
+            () -> new Item(new Item.Properties().rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> COMPRESSED_TIER8_MANA_MATERIAL = ITEMS.register("compressed_tier8_mana_material",
+            () -> new Item(new Item.Properties().rarity(Rarity.RARE)));
+    public static final RegistryObject<Item> COMPRESSED_TIER9_MANA_MATERIAL = ITEMS.register("compressed_tier9_mana_material",
+            () -> new Item(new Item.Properties().rarity(Rarity.RARE)));
+    public static final RegistryObject<Item> COMPRESSED_TIER10_MANA_MATERIAL = ITEMS.register("compressed_tier10_mana_material",
+            () -> new Item(new Item.Properties().rarity(Rarity.EPIC)));
+
+    // Compressed Additional Minerals
+    public static final RegistryObject<Item> COMPRESSED_LAPIS = ITEMS.register("compressed_lapis",
+            () -> new Item(new Item.Properties().rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> COMPRESSED_AMETHYST = ITEMS.register("compressed_amethyst",
+            () -> new Item(new Item.Properties().rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> COMPRESSED_QUARTZ = ITEMS.register("compressed_quartz",
+            () -> new Item(new Item.Properties().rarity(Rarity.UNCOMMON)));
+
+    // ==========================================
+    // Mana Symbols (Tier 0 to 10)
+    // ==========================================
+    public static final RegistryObject<Item> MANA_SYMBOL_TIER0 = ITEMS.register("mana_symbol_tier0",
+            () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> MANA_SYMBOL_TIER1 = ITEMS.register("mana_symbol_tier1",
+            () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> MANA_SYMBOL_TIER2 = ITEMS.register("mana_symbol_tier2",
+            () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> MANA_SYMBOL_TIER3 = ITEMS.register("mana_symbol_tier3",
+            () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> MANA_SYMBOL_TIER4 = ITEMS.register("mana_symbol_tier4",
+            () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> MANA_SYMBOL_TIER5 = ITEMS.register("mana_symbol_tier5",
+            () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> MANA_SYMBOL_TIER6 = ITEMS.register("mana_symbol_tier6",
+            () -> new Item(new Item.Properties().rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> MANA_SYMBOL_TIER7 = ITEMS.register("mana_symbol_tier7",
+            () -> new Item(new Item.Properties().rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> MANA_SYMBOL_TIER8 = ITEMS.register("mana_symbol_tier8",
+            () -> new Item(new Item.Properties().rarity(Rarity.RARE)));
+    public static final RegistryObject<Item> MANA_SYMBOL_TIER9 = ITEMS.register("mana_symbol_tier9",
+            () -> new Item(new Item.Properties().rarity(Rarity.RARE)));
+    public static final RegistryObject<Item> MANA_SYMBOL_TIER10 = ITEMS.register("mana_symbol_tier10",
+            () -> new Item(new Item.Properties().rarity(Rarity.EPIC)));
+
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);
     }

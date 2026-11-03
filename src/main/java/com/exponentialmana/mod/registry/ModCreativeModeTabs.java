@@ -96,6 +96,53 @@ public class ModCreativeModeTabs {
                         output.accept(ModItems.INFINITE_MANA.get());
                         output.accept(ModItems.BATCH_COMPRESSED_MANA.get());
 
+                        // Origin Equipment
+                        output.accept(ModItems.ORIGIN_HELMET.get());
+                        output.accept(ModItems.ORIGIN_CHESTPLATE.get());
+                        output.accept(ModItems.ORIGIN_LEGGINGS.get());
+                        output.accept(ModItems.ORIGIN_BOOTS.get());
+                        output.accept(ModItems.ORIGIN_SWORD.get());
+
+                        // Mana Materials & Compressed Materials
+                        output.accept(ModItems.TIER1_MANA_MATERIAL.get());
+                        output.accept(ModItems.TIER2_MANA_MATERIAL.get());
+                        output.accept(ModItems.TIER3_MANA_MATERIAL.get());
+                        output.accept(ModItems.TIER4_MANA_MATERIAL.get());
+                        output.accept(ModItems.TIER5_MANA_MATERIAL.get());
+                        output.accept(ModItems.TIER6_MANA_MATERIAL.get());
+                        output.accept(ModItems.TIER7_MANA_MATERIAL.get());
+                        output.accept(ModItems.TIER8_MANA_MATERIAL.get());
+                        output.accept(ModItems.TIER9_MANA_MATERIAL.get());
+                        output.accept(ModItems.TIER10_MANA_MATERIAL.get());
+
+                        output.accept(ModItems.COMPRESSED_TIER1_MANA_MATERIAL.get());
+                        output.accept(ModItems.COMPRESSED_TIER2_MANA_MATERIAL.get());
+                        output.accept(ModItems.COMPRESSED_TIER3_MANA_MATERIAL.get());
+                        output.accept(ModItems.COMPRESSED_TIER4_MANA_MATERIAL.get());
+                        output.accept(ModItems.COMPRESSED_TIER5_MANA_MATERIAL.get());
+                        output.accept(ModItems.COMPRESSED_TIER6_MANA_MATERIAL.get());
+                        output.accept(ModItems.COMPRESSED_TIER7_MANA_MATERIAL.get());
+                        output.accept(ModItems.COMPRESSED_TIER8_MANA_MATERIAL.get());
+                        output.accept(ModItems.COMPRESSED_TIER9_MANA_MATERIAL.get());
+                        output.accept(ModItems.COMPRESSED_TIER10_MANA_MATERIAL.get());
+
+                        output.accept(ModItems.COMPRESSED_LAPIS.get());
+                        output.accept(ModItems.COMPRESSED_AMETHYST.get());
+                        output.accept(ModItems.COMPRESSED_QUARTZ.get());
+
+                        // Mana Symbols
+                        output.accept(ModItems.MANA_SYMBOL_TIER0.get());
+                        output.accept(ModItems.MANA_SYMBOL_TIER1.get());
+                        output.accept(ModItems.MANA_SYMBOL_TIER2.get());
+                        output.accept(ModItems.MANA_SYMBOL_TIER3.get());
+                        output.accept(ModItems.MANA_SYMBOL_TIER4.get());
+                        output.accept(ModItems.MANA_SYMBOL_TIER5.get());
+                        output.accept(ModItems.MANA_SYMBOL_TIER6.get());
+                        output.accept(ModItems.MANA_SYMBOL_TIER7.get());
+                        output.accept(ModItems.MANA_SYMBOL_TIER8.get());
+                        output.accept(ModItems.MANA_SYMBOL_TIER9.get());
+                        output.accept(ModItems.MANA_SYMBOL_TIER10.get());
+
                         // Blocks - Active Ores
                         output.accept(ModBlocks.TIER0_MANA_ORE.get());
                         output.accept(ModBlocks.TIER1_MANA_ORE.get());

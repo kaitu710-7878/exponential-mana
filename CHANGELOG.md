@@ -8,6 +8,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.6.0-alpha] - 2026-11-03
+
+### Added / 追加
+- **EN**:
+  - Implemented Origin Armor set (`origin_helmet`, `origin_chestplate`, `origin_leggings`, `origin_boots`) with creative flight and absolute invulnerability (nullifying all damage including `/kill` and Void).
+  - Implemented Origin Sword (`origin_sword`) with `/kill` instant-death logic against hit entities.
+  - Implemented Infinite Mana duplication crafting recipe (`InfiniteManaDuplicationRecipe`) multiplying non-NBT items into full 64-item stacks, with strict NBT anti-exploit blocking.
+  - Added Mana Materials (10 tiers), Compressed Mana Materials (10 tiers), Compressed Lapis, Amethyst, and Quartz.
+  - Added Mana Symbols (Tier 0 to 10).
+  - Synchronized bilingual translations in `en_us.json` and `ja_jp.json`.
+- **JA**:
+  - クリエイティブ飛行および完全無敵化（`/kill` コマンドやVoidダメージすら完全無効化）を備えた根源防具一式（`origin_helmet`, `origin_chestplate`, `origin_leggings`, `origin_boots`）を実装。
+  - 攻撃対象を無敵貫通で即座に消滅させる `/kill` ロジック搭載の根源の剣（`origin_sword`）を実装。
+  - NBTなしの任意アイテムを64個に増殖し、NBT保持アイテムを厳格に拒否する無限のマナ増殖レシピ（`InfiniteManaDuplicationRecipe`）を実装。
+  - 10種のマナ素材、10種の圧縮マナ素材、圧縮ラピスラズリ・アメジスト・ネザークォーツを追加。
+  - 各種マナの象徴（Tier 0〜10）を追加。
+  - 日英言語ファイル（`en_us.json`, `ja_jp.json`）を完全同期更新。
+
 ## [0.5.0-alpha] - 2026-11-03
 
 ### Added / 追加
