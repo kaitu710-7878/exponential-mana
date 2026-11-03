@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "exponential_mana:fairy_block"
+    }
+  ],
+  "result": {
+    "item": "exponential_mana:fairy_residue",
+    "count": 1
+  }
+}

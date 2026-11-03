@@ -2,6 +2,17 @@
   "itemGroup.exponential_mana": "Exponential Mana",
   "mod.exponential_mana.name": "Exponential Mana",
   "tooltip.exponential_mana.inactive_ore.desc": "非活性状態: 非常に硬い。ワールド設置後5分経過で活性化します。",
+  "tooltip.exponential_mana.fairy_block.desc": "妖精活発化触媒をセットすることで、1分ごとにマナを自動生産します。",
+  "tooltip.exponential_mana.compressed_fairy.desc": "圧縮妖精: 触媒を消費せず、1分ごとに %s倍 のマナを自動生産します。",
+  "tooltip.exponential_mana.fairy_attractor.desc": "5分ごとに妖精ブロックを1匹誘引・捕獲します。",
+  "tooltip.exponential_mana.large_stack_info": "数量: %s (%s)",
+
+  "message.exponential_mana.fairy.collected_mana": "妖精から生産されたマナを回収しました。",
+  "message.exponential_mana.fairy.retrieved_catalyst": "妖精から触媒を回収しました。",
+  "message.exponential_mana.fairy.inserted_catalyst": "妖精に触媒をセットしました。",
+  "message.exponential_mana.fairy.status": "触媒: %s | 生産物: %s | クールダウン: %s秒",
+  "message.exponential_mana.attractor.collected": "誘引された妖精ブロックを回収しました。",
+  "message.exponential_mana.attractor.status": "妖精を誘引中: 残り %s秒",
 
   "item.exponential_mana.tier0_mana": "Tier0 マナ",
   "item.exponential_mana.tier1_mana": "Tier1 マナ",
@@ -86,6 +97,7 @@
   "block.exponential_mana.tier10_mana_ore": "Tier10 マナ鉱石",
   "block.exponential_mana.pure_mana_ore": "無垢のマナ鉱石",
 
+  "block.exponential_mana.inactive_tier0_mana_ore": "非活性Tier0 マナ鉱石",
   "block.exponential_mana.inactive_tier1_mana_ore": "非活性Tier1 マナ鉱石",
   "block.exponential_mana.inactive_tier2_mana_ore": "非活性Tier2 マナ鉱石",
   "block.exponential_mana.inactive_tier3_mana_ore": "非活性Tier3 マナ鉱石",
@@ -95,5 +107,18 @@
   "block.exponential_mana.inactive_tier7_mana_ore": "非活性Tier7 マナ鉱石",
   "block.exponential_mana.inactive_tier8_mana_ore": "非活性Tier8 マナ鉱石",
   "block.exponential_mana.inactive_tier9_mana_ore": "非活性Tier9 マナ鉱石",
-  "block.exponential_mana.inactive_tier10_mana_ore": "非活性Tier10 マナ鉱石"
+  "block.exponential_mana.inactive_tier10_mana_ore": "非活性Tier10 マナ鉱石",
+
+  "block.exponential_mana.fairy_block": "妖精ブロック",
+  "block.exponential_mana.compressed_fairy_block_1": "圧縮妖精ブロック (1段階)",
+  "block.exponential_mana.compressed_fairy_block_2": "圧縮妖精ブロック (2段階)",
+  "block.exponential_mana.compressed_fairy_block_3": "圧縮妖精ブロック (3段階)",
+  "block.exponential_mana.compressed_fairy_block_4": "圧縮妖精ブロック (4段階)",
+  "block.exponential_mana.compressed_fairy_block_5": "圧縮妖精ブロック (5段階)",
+  "block.exponential_mana.compressed_fairy_block_6": "圧縮妖精ブロック (6段階)",
+  "block.exponential_mana.compressed_fairy_block_7": "圧縮妖精ブロック (7段階)",
+  "block.exponential_mana.compressed_fairy_block_8": "圧縮妖精ブロック (8段階)",
+  "block.exponential_mana.compressed_fairy_block_9": "圧縮妖精ブロック (9段階)",
+  "block.exponential_mana.compressed_fairy_block_10": "圧縮妖精ブロック (10段階)",
+  "block.exponential_mana.fairy_attractor": "妖精誘引機"
 }

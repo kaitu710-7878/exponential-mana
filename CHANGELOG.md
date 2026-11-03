@@ -8,6 +8,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.3.0-alpha] - 2026-11-03
+
+### Added / 追加
+- **EN**:
+  - Added Inactive Tier 0 Mana Ore (`inactive_tier0_mana_ore`).
+  - Updated Tier 0 Mana Ore to drop both Tier 0 Mana and Inactive Tier 0 Mana Ore upon mining.
+  - Implemented Fairy Block, Compressed Fairy Blocks (Tier 1 to 10: $9^1$ to $9^{10}$), and Fairy Attractor.
+  - Implemented `FairyBlockEntity` with 1-minute production timer, non-consumed catalyst slot with `Int_MAX` capacity.
+  - Allowed external tick acceleration on Fairy Blocks.
+  - Implemented Fairy Residue crafting logic (returns Fairy Block unconsumed).
+  - Implemented Fairy 9x compression crafting recipes.
+  - Added GUI compact stack formatter (`1.5K`, `20M`, `2.1B`) with exact count tooltips.
+  - Synchronized bilingual translations in `en_us.json` and `ja_jp.json`.
+- **JA**:
+  - 非活性Tier0 マナ鉱石（`inactive_tier0_mana_ore`）を追加。
+  - Tier0 マナ鉱石の採掘時に「Tier0 マナ」と「非活性Tier0 マナ鉱石」の双方がドロップするよう更新。
+  - 妖精ブロック、圧縮妖精ブロック（Tier 1〜10: $9^1$〜$9^{10}$）、および妖精誘引機を実装。
+  - 1分間の自動生産タイマー、消費なしの触媒スロット（`Int_MAX` 容量対応）を備えた `FairyBlockEntity` を実装。
+  - 妖精ブロックに対する外部MODのTick加速を意図的に許容する設計を適用。
+  - 妖精ブロックを消費せず「妖精の残滓」を抽出する単体クラフトロジックを実装。
+  - 妖精ブロックの9圧縮クラフトレシピを実装。
+  - GUIスロットの大容量スタック表示フォーマッタ（`1.5K`, `20M`, `2.1B`）および正確な数値ツールチップを実装。
+  - 日英言語ファイル（`en_us.json`, `ja_jp.json`）を完全同期更新。
+
 ## [0.2.0-alpha] - 2026-11-03
 
 ### Added / 追加

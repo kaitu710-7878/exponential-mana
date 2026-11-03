@@ -19,9 +19,10 @@ public class ModBlocks {
             DeferredRegister.create(ForgeRegistries.BLOCKS, ExponentialMana.MOD_ID);
 
     // --- Active Mana Ores ---
-    // Tier 0: Normal stone hardness (3.0F), drops Tier 0 Mana directly
+    // Tier 0: Normal stone hardness (3.0F), drops Tier 0 Mana + Inactive Tier 0 Mana Ore
     public static final RegistryObject<Block> TIER0_MANA_ORE = registerBlock("tier0_mana_ore",
-            () -> new ManaOreBlock(0, 3.0F, 3.0F, () -> new ItemStack(ModItems.TIER0_MANA.get()), null));
+            () -> new ManaOreBlock(0, 3.0F, 3.0F, () -> new ItemStack(ModItems.TIER0_MANA.get()),
+                    () -> new ItemStack(ModBlocks.INACTIVE_TIER0_MANA_ORE.get())));
 
     // Tier 1 to 10 Mana Ores: Drops Inactive Mana Ore + Mana
     public static final RegistryObject<Block> TIER1_MANA_ORE = registerBlock("tier1_mana_ore",
@@ -69,6 +70,9 @@ public class ModBlocks {
             () -> new ManaOreBlock(11, 40.0F, 100.0F, () -> new ItemStack(ModBlocks.PURE_MANA_ORE.get()), null));
 
     // --- Inactive Mana Ores (Obsidian-level hardness: 50.0F, takes 5 minutes to activate) ---
+    public static final RegistryObject<Block> INACTIVE_TIER0_MANA_ORE = registerBlock("inactive_tier0_mana_ore",
+            () -> new InactiveManaOreBlock(0, TIER0_MANA_ORE::get));
+
     public static final RegistryObject<Block> INACTIVE_TIER1_MANA_ORE = registerBlock("inactive_tier1_mana_ore",
             () -> new InactiveManaOreBlock(1, TIER1_MANA_ORE::get));
 
@@ -99,9 +103,45 @@ public class ModBlocks {
     public static final RegistryObject<Block> INACTIVE_TIER10_MANA_ORE = registerBlock("inactive_tier10_mana_ore",
             () -> new InactiveManaOreBlock(10, TIER10_MANA_ORE::get));
 
+    // --- Fairy Blocks & Compressed Fairies (9^1 to 9^10) ---
+    public static final RegistryObject<Block> FAIRY_BLOCK = registerCustomBlock("fairy_block",
+            () -> new com.exponentialmana.mod.block.FairyBlock(0),
+            block -> new com.exponentialmana.mod.item.FairyBlockItem(block, new Item.Properties()));
+
+    public static final RegistryObject<Block> COMPRESSED_FAIRY_BLOCK_1 = registerBlock("compressed_fairy_block_1",
+            () -> new com.exponentialmana.mod.block.FairyBlock(1));
+    public static final RegistryObject<Block> COMPRESSED_FAIRY_BLOCK_2 = registerBlock("compressed_fairy_block_2",
+            () -> new com.exponentialmana.mod.block.FairyBlock(2));
+    public static final RegistryObject<Block> COMPRESSED_FAIRY_BLOCK_3 = registerBlock("compressed_fairy_block_3",
+            () -> new com.exponentialmana.mod.block.FairyBlock(3));
+    public static final RegistryObject<Block> COMPRESSED_FAIRY_BLOCK_4 = registerBlock("compressed_fairy_block_4",
+            () -> new com.exponentialmana.mod.block.FairyBlock(4));
+    public static final RegistryObject<Block> COMPRESSED_FAIRY_BLOCK_5 = registerBlock("compressed_fairy_block_5",
+            () -> new com.exponentialmana.mod.block.FairyBlock(5));
+    public static final RegistryObject<Block> COMPRESSED_FAIRY_BLOCK_6 = registerBlock("compressed_fairy_block_6",
+            () -> new com.exponentialmana.mod.block.FairyBlock(6));
+    public static final RegistryObject<Block> COMPRESSED_FAIRY_BLOCK_7 = registerBlock("compressed_fairy_block_7",
+            () -> new com.exponentialmana.mod.block.FairyBlock(7));
+    public static final RegistryObject<Block> COMPRESSED_FAIRY_BLOCK_8 = registerBlock("compressed_fairy_block_8",
+            () -> new com.exponentialmana.mod.block.FairyBlock(8));
+    public static final RegistryObject<Block> COMPRESSED_FAIRY_BLOCK_9 = registerBlock("compressed_fairy_block_9",
+            () -> new com.exponentialmana.mod.block.FairyBlock(9));
+    public static final RegistryObject<Block> COMPRESSED_FAIRY_BLOCK_10 = registerBlock("compressed_fairy_block_10",
+            () -> new com.exponentialmana.mod.block.FairyBlock(10));
+
+    // Fairy Attractor (Lures/generates a fairy every 5 minutes)
+    public static final RegistryObject<Block> FAIRY_ATTRACTOR = registerBlock("fairy_attractor",
+            com.exponentialmana.mod.block.FairyAttractorBlock::new);
+
     private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block) {
         RegistryObject<T> registeredBlock = BLOCKS.register(name, block);
         registerBlockItem(name, registeredBlock);
+        return registeredBlock;
+    }
+
+    private static <T extends Block> RegistryObject<T> registerCustomBlock(String name, Supplier<T> block, java.util.function.Function<T, BlockItem> itemFactory) {
+        RegistryObject<T> registeredBlock = BLOCKS.register(name, block);
+        ModItems.ITEMS.register(name, () -> itemFactory.apply(registeredBlock.get()));
         return registeredBlock;
     }
 

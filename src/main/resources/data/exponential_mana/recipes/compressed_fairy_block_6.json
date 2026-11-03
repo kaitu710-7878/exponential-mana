@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "FFF",
+    "FFF",
+    "FFF"
+  ],
+  "key": {
+    "F": {
+      "item": "exponential_mana:compressed_fairy_block_5"
+    }
+  },
+  "result": {
+    "item": "exponential_mana:compressed_fairy_block_6",
+    "count": 1
+  }
+}

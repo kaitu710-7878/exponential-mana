@@ -2,6 +2,17 @@
   "itemGroup.exponential_mana": "Exponential Mana",
   "mod.exponential_mana.name": "Exponential Mana",
   "tooltip.exponential_mana.inactive_ore.desc": "Inactive state: Highly durable. Activates after 5 minutes in world.",
+  "tooltip.exponential_mana.fairy_block.desc": "Insert a Fairy Activation Catalyst to passively produce mana every 60s.",
+  "tooltip.exponential_mana.compressed_fairy.desc": "Compressed Fairy: Produces %sx mana every 60s without consuming catalyst.",
+  "tooltip.exponential_mana.fairy_attractor.desc": "Attracts and captures 1 Fairy Block every 5 minutes.",
+  "tooltip.exponential_mana.large_stack_info": "Quantity: %s (%s)",
+
+  "message.exponential_mana.fairy.collected_mana": "Collected generated mana from Fairy.",
+  "message.exponential_mana.fairy.retrieved_catalyst": "Retrieved catalyst from Fairy.",
+  "message.exponential_mana.fairy.inserted_catalyst": "Inserted catalyst into Fairy.",
+  "message.exponential_mana.fairy.status": "Catalyst: %s | Output: %s | Cooldown: %ss",
+  "message.exponential_mana.attractor.collected": "Collected lured Fairy Block.",
+  "message.exponential_mana.attractor.status": "Luring in progress: %ss remaining",
 
   "item.exponential_mana.tier0_mana": "Tier 0 Mana",
   "item.exponential_mana.tier1_mana": "Tier 1 Mana",
@@ -86,6 +97,7 @@
   "block.exponential_mana.tier10_mana_ore": "Tier 10 Mana Ore",
   "block.exponential_mana.pure_mana_ore": "Pure Mana Ore",
 
+  "block.exponential_mana.inactive_tier0_mana_ore": "Inactive Tier 0 Mana Ore",
   "block.exponential_mana.inactive_tier1_mana_ore": "Inactive Tier 1 Mana Ore",
   "block.exponential_mana.inactive_tier2_mana_ore": "Inactive Tier 2 Mana Ore",
   "block.exponential_mana.inactive_tier3_mana_ore": "Inactive Tier 3 Mana Ore",
@@ -95,5 +107,18 @@
   "block.exponential_mana.inactive_tier7_mana_ore": "Inactive Tier 7 Mana Ore",
   "block.exponential_mana.inactive_tier8_mana_ore": "Inactive Tier 8 Mana Ore",
   "block.exponential_mana.inactive_tier9_mana_ore": "Inactive Tier 9 Mana Ore",
-  "block.exponential_mana.inactive_tier10_mana_ore": "Inactive Tier 10 Mana Ore"
+  "block.exponential_mana.inactive_tier10_mana_ore": "Inactive Tier 10 Mana Ore",
+
+  "block.exponential_mana.fairy_block": "Fairy Block",
+  "block.exponential_mana.compressed_fairy_block_1": "Compressed Fairy Block (1x)",
+  "block.exponential_mana.compressed_fairy_block_2": "Compressed Fairy Block (2x)",
+  "block.exponential_mana.compressed_fairy_block_3": "Compressed Fairy Block (3x)",
+  "block.exponential_mana.compressed_fairy_block_4": "Compressed Fairy Block (4x)",
+  "block.exponential_mana.compressed_fairy_block_5": "Compressed Fairy Block (5x)",
+  "block.exponential_mana.compressed_fairy_block_6": "Compressed Fairy Block (6x)",
+  "block.exponential_mana.compressed_fairy_block_7": "Compressed Fairy Block (7x)",
+  "block.exponential_mana.compressed_fairy_block_8": "Compressed Fairy Block (8x)",
+  "block.exponential_mana.compressed_fairy_block_9": "Compressed Fairy Block (9x)",
+  "block.exponential_mana.compressed_fairy_block_10": "Compressed Fairy Block (10x)",
+  "block.exponential_mana.fairy_attractor": "Fairy Attractor"
 }

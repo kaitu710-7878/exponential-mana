@@ -38,6 +38,7 @@ public class InactiveManaOreBlockEntity extends BlockEntity {
             }
             if (targetBlock == null && state.getBlock() instanceof com.exponentialmana.mod.block.InactiveManaOreBlock inactiveBlock) {
                 targetBlock = switch (inactiveBlock.getTier()) {
+                    case 0 -> com.exponentialmana.mod.registry.ModBlocks.TIER0_MANA_ORE.get();
                     case 1 -> com.exponentialmana.mod.registry.ModBlocks.TIER1_MANA_ORE.get();
                     case 2 -> com.exponentialmana.mod.registry.ModBlocks.TIER2_MANA_ORE.get();
                     case 3 -> com.exponentialmana.mod.registry.ModBlocks.TIER3_MANA_ORE.get();

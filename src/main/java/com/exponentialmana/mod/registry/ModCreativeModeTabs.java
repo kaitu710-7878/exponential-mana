@@ -110,6 +110,7 @@ public class ModCreativeModeTabs {
                         output.accept(ModBlocks.PURE_MANA_ORE.get());
 
                         // Blocks - Inactive Ores
+                        output.accept(ModBlocks.INACTIVE_TIER0_MANA_ORE.get());
                         output.accept(ModBlocks.INACTIVE_TIER1_MANA_ORE.get());
                         output.accept(ModBlocks.INACTIVE_TIER2_MANA_ORE.get());
                         output.accept(ModBlocks.INACTIVE_TIER3_MANA_ORE.get());
@@ -120,6 +121,20 @@ public class ModCreativeModeTabs {
                         output.accept(ModBlocks.INACTIVE_TIER8_MANA_ORE.get());
                         output.accept(ModBlocks.INACTIVE_TIER9_MANA_ORE.get());
                         output.accept(ModBlocks.INACTIVE_TIER10_MANA_ORE.get());
+
+                        // Blocks - Fairy & Automation
+                        output.accept(ModBlocks.FAIRY_BLOCK.get());
+                        output.accept(ModBlocks.COMPRESSED_FAIRY_BLOCK_1.get());
+                        output.accept(ModBlocks.COMPRESSED_FAIRY_BLOCK_2.get());
+                        output.accept(ModBlocks.COMPRESSED_FAIRY_BLOCK_3.get());
+                        output.accept(ModBlocks.COMPRESSED_FAIRY_BLOCK_4.get());
+                        output.accept(ModBlocks.COMPRESSED_FAIRY_BLOCK_5.get());
+                        output.accept(ModBlocks.COMPRESSED_FAIRY_BLOCK_6.get());
+                        output.accept(ModBlocks.COMPRESSED_FAIRY_BLOCK_7.get());
+                        output.accept(ModBlocks.COMPRESSED_FAIRY_BLOCK_8.get());
+                        output.accept(ModBlocks.COMPRESSED_FAIRY_BLOCK_9.get());
+                        output.accept(ModBlocks.COMPRESSED_FAIRY_BLOCK_10.get());
+                        output.accept(ModBlocks.FAIRY_ATTRACTOR.get());
                     })
                     .build());
 

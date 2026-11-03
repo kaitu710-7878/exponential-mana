@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "exponential_mana:tier0_mana_ore"
+    },
+    {
+      "item": "exponential_mana:tier0_mana"
+    }
+  ],
+  "result": {
+    "item": "exponential_mana:tier0_mana_ore",
+    "count": 2
+  }
+}
