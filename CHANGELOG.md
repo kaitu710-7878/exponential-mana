@@ -8,6 +8,76 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.14.0-beta] - 2026-11-04
+
+### Changed / 変更
+- **EN**:
+  - **Full Alignment with Design Specification (Part 2: Detailed Recipes & Tier Progression)**:
+    - **Vanilla Material Sequence Synchronized**:
+      Updated progression to `Coal (T1) -> Copper (T2) -> Redstone (T3) -> Glowstone (T4) -> Iron (T5) -> Gold (T6) -> Diamond (T7) -> Obsidian (T8) -> Emerald (T9) -> Netherite (T10)`.
+    - **Extended Crafting Table Recipe Tier Assignment**:
+      - Tier 1 Table (4x4) now crafts Tier 2 items (Copper).
+      - Tier 2 Table (5x5) crafts Tier 3 items (Redstone).
+      - Tier 3 Table (6x6) crafts Tier 4 items (Glowstone).
+      - Tier 4 Table (7x7) crafts Tier 5 items (Iron).
+      - Tier 5 Table (8x8) crafts Tier 6 items (Gold).
+      - Tier 6 Table (9x9) crafts Tier 7 items (Diamond).
+      - Tier 7 Table (10x10) crafts Tier 8 items (Obsidian).
+      - Tier 8 Table (11x11) crafts Tier 9 items (Emerald).
+      - Tier 9 Table (12x12) crafts Tier 10 items (Netherite).
+      - Tier 10 Table (13x13) exclusively crafts all End-Game recipes.
+    - **Tier 0 Mana Ore Mining Drop**:
+      Directly drops Tier 0 Mana only without dropping inactive ore blocks, matching the design document.
+    - **Complete End-Game Recipe Implementation**:
+      - Added recipes for 11 Mana Symbols (`mana_symbol_tier0` to `tier10`).
+      - Added Compressed Tier 0-10 Mana (`compressed_tier0_mana` to `tier10_mana`).
+      - Added Pure Mana (165 compressed mana), Pure Mana Ore, and Pure Fairy Catalyst.
+      - Added 10 Tier Mana Materials, 10 Compressed Mana Materials, and Compressed Minerals (Lapis, Amethyst, Quartz).
+      - Added Origin Alloy and Compressed Origin Alloy.
+      - Added Mana Knowledge (from any tier mana+ore+catalyst) and Mana Wisdom.
+      - Added Activated Conduit (Conduit + 8 Sea Lanterns) and 4 Root Manas (Star, Quantum, Abyssal, Marine).
+      - Added Mana Root and Origin Equipment suite.
+      - Added Infinite Mana 13x13 recipe and duplicator function.
+- **JA**:
+  - **企画書（第2部：詳細レシピ・階層進行まとめ）への完全準拠**:
+    - **要求バニラ素材順序の完全同期**:
+      素材進行を `石炭(T1) → 銅(T2) → 赤石(T3) → グロウストーン(T4) → 鉄(T5) → 金(T6) → ダイヤ(T7) → 黒曜石(T8) → エメラルド(T9) → ネザライト(T10)` に完全改訂。
+    - **各作業台サイズとレシピのTier対応の正規化**:
+      - Tier1拡張作業台(4×4): Tier2アイテム群（銅）をクラフト。
+      - Tier2拡張作業台(5×5): Tier3アイテム群（赤石）をクラフト。
+      - Tier3拡張作業台(6×6): Tier4アイテム群（グロウストーン）をクラフト。
+      - Tier4拡張作業台(7×7): Tier5アイテム群（鉄）をクラフト。
+      - Tier5拡張作業台(8×8): Tier6アイテム群（金）をクラフト。
+      - Tier6拡張作業台(9×9): Tier7アイテム群（ダイヤ）をクラフト。
+      - Tier7拡張作業台(10×10): Tier8アイテム群（黒曜石）をクラフト。
+      - Tier8拡張作業台(11×11): Tier9アイテム群（エメラルド）をクラフト。
+      - Tier9拡張作業台(12×12): Tier10アイテム群（ネザライト）をクラフト。
+      - Tier10拡張作業台(13×13): エンドゲーム（全169スロット）の全レシピをクラフト。
+    - **Tier0マナ鉱石の採掘時ドロップ修正**:
+      企画書通り、採掘時に非活性鉱石をドロップせず「Tier0マナ」のみをドロップするように修正。
+    - **エンドゲーム全レシピの実装**:
+      - 11種のマナの象徴（T0〜T10マナ各169個）。
+      - 11種の圧縮Tier0〜10マナ（各Tierの象徴を指定数要求）。
+      - 無垢のマナ（圧縮Tier0〜10マナ各15個計165個）、無垢のマナ鉱石、無垢の妖精活発化触媒。
+      - 10種のマナ素材、10種の圧縮マナ素材、3種の圧縮鉱石（ラピス、アメジスト、クォーツ）。
+      - オリジン合金（圧縮素材計169個）および圧縮オリジン合金。
+      - マナの知識（各Tierマナ＋鉱石＋触媒）およびマナの叡智。
+      - 活性化コンジット（コンジット＋シーランタン8個）および4つの根源マナ（星、量子、深淵、海洋）。
+      - マナの根源および根源装備一式。
+      - 無限のマナ（13×13レシピおよびバニラ作業台でのアイテム64倍増殖）。
+
+### Added / 追加
+- **EN**:
+  - Registered `compressed_tier0_mana` through `compressed_tier10_mana` items.
+  - Registered `activated_conduit` item and recipe.
+  - Added Shapeless recipes for `mana_knowledge` across all tiers (0 to 10).
+- **JA**:
+  - `compressed_tier0_mana` 〜 `compressed_tier10_mana`（圧縮Tier0〜10マナ）アイテムを追加登録。
+  - `activated_conduit`（活性化コンジット）アイテムおよびレシピを追加登録。
+  - 全Tier（0〜10）からの `mana_knowledge`（マナの知識）不定形クラフトレシピを追加。
+
+---
+
 ## [0.13.3-beta] - 2026-11-04
 
 ### Added / 追加

@@ -1,0 +1,17 @@
+﻿{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SSS",
+    "SSS",
+    "SSS"
+  ],
+  "key": {
+    "S": {
+      "item": "exponential_mana:mana_symbol_tier10"
+    }
+  },
+  "result": {
+    "item": "exponential_mana:compressed_tier10_mana",
+    "count": 1
+  }
+}

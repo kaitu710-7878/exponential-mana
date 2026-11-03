@@ -19,10 +19,9 @@ public class ModBlocks {
             DeferredRegister.create(ForgeRegistries.BLOCKS, ExponentialMana.MOD_ID);
 
     // --- Active Mana Ores ---
-    // Tier 0: Normal stone hardness (3.0F), drops Tier 0 Mana + Inactive Tier 0 Mana Ore
+    // Tier 0: Normal stone hardness (3.0F), directly drops Tier 0 Mana (no inactive ore drop)
     public static final RegistryObject<Block> TIER0_MANA_ORE = registerBlock("tier0_mana_ore",
-            () -> new ManaOreBlock(0, 3.0F, 3.0F, () -> new ItemStack(ModItems.TIER0_MANA.get()),
-                    () -> new ItemStack(ModBlocks.INACTIVE_TIER0_MANA_ORE.get())));
+            () -> new ManaOreBlock(0, 3.0F, 3.0F, () -> new ItemStack(ModItems.TIER0_MANA.get()), null));
 
     // Tier 1 to 10 Mana Ores: Drops Inactive Mana Ore + Mana
     public static final RegistryObject<Block> TIER1_MANA_ORE = registerBlock("tier1_mana_ore",

@@ -149,6 +149,20 @@
   "item.exponential_mana.mana_symbol_tier9": "Mana Symbol (Tier 9)",
   "item.exponential_mana.mana_symbol_tier10": "Mana Symbol (Tier 10)",
 
+  "item.exponential_mana.compressed_tier0_mana": "Compressed Tier 0 Mana",
+  "item.exponential_mana.compressed_tier1_mana": "Compressed Tier 1 Mana",
+  "item.exponential_mana.compressed_tier2_mana": "Compressed Tier 2 Mana",
+  "item.exponential_mana.compressed_tier3_mana": "Compressed Tier 3 Mana",
+  "item.exponential_mana.compressed_tier4_mana": "Compressed Tier 4 Mana",
+  "item.exponential_mana.compressed_tier5_mana": "Compressed Tier 5 Mana",
+  "item.exponential_mana.compressed_tier6_mana": "Compressed Tier 6 Mana",
+  "item.exponential_mana.compressed_tier7_mana": "Compressed Tier 7 Mana",
+  "item.exponential_mana.compressed_tier8_mana": "Compressed Tier 8 Mana",
+  "item.exponential_mana.compressed_tier9_mana": "Compressed Tier 9 Mana",
+  "item.exponential_mana.compressed_tier10_mana": "Compressed Tier 10 Mana",
+
+  "item.exponential_mana.activated_conduit": "Activated Conduit",
+
   "block.exponential_mana.tier0_mana_ore": "Tier 0 Mana Ore",
   "block.exponential_mana.tier1_mana_ore": "Tier 1 Mana Ore",
   "block.exponential_mana.tier2_mana_ore": "Tier 2 Mana Ore",

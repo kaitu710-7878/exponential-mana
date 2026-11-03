@@ -1,0 +1,12 @@
+﻿{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    { "item": "exponential_mana:tier1_mana" },
+    { "item": "exponential_mana:tier1_mana_ore" },
+    { "item": "exponential_mana:tier1_fairy_catalyst" }
+  ],
+  "result": {
+    "item": "exponential_mana:mana_knowledge",
+    "count": 1
+  }
+}

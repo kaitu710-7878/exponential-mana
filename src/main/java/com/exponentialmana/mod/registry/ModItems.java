@@ -266,6 +266,38 @@ public class ModItems {
     public static final RegistryObject<Item> MANA_SYMBOL_TIER10 = ITEMS.register("mana_symbol_tier10",
             () -> new Item(new Item.Properties().rarity(Rarity.EPIC)));
 
+    // ==========================================
+    // Compressed Tier (0 to 10) Mana
+    // ==========================================
+    public static final RegistryObject<Item> COMPRESSED_TIER0_MANA = ITEMS.register("compressed_tier0_mana",
+            () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> COMPRESSED_TIER1_MANA = ITEMS.register("compressed_tier1_mana",
+            () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> COMPRESSED_TIER2_MANA = ITEMS.register("compressed_tier2_mana",
+            () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> COMPRESSED_TIER3_MANA = ITEMS.register("compressed_tier3_mana",
+            () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> COMPRESSED_TIER4_MANA = ITEMS.register("compressed_tier4_mana",
+            () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> COMPRESSED_TIER5_MANA = ITEMS.register("compressed_tier5_mana",
+            () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> COMPRESSED_TIER6_MANA = ITEMS.register("compressed_tier6_mana",
+            () -> new Item(new Item.Properties().rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> COMPRESSED_TIER7_MANA = ITEMS.register("compressed_tier7_mana",
+            () -> new Item(new Item.Properties().rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> COMPRESSED_TIER8_MANA = ITEMS.register("compressed_tier8_mana",
+            () -> new Item(new Item.Properties().rarity(Rarity.RARE)));
+    public static final RegistryObject<Item> COMPRESSED_TIER9_MANA = ITEMS.register("compressed_tier9_mana",
+            () -> new Item(new Item.Properties().rarity(Rarity.RARE)));
+    public static final RegistryObject<Item> COMPRESSED_TIER10_MANA = ITEMS.register("compressed_tier10_mana",
+            () -> new Item(new Item.Properties().rarity(Rarity.EPIC)));
+
+    // ==========================================
+    // Activated Artifacts
+    // ==========================================
+    public static final RegistryObject<Item> ACTIVATED_CONDUIT = ITEMS.register("activated_conduit",
+            () -> new Item(new Item.Properties().rarity(Rarity.RARE)));
+
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);
     }

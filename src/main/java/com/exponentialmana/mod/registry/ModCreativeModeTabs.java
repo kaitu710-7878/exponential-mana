@@ -143,6 +143,22 @@ public class ModCreativeModeTabs {
                         output.accept(ModItems.MANA_SYMBOL_TIER9.get());
                         output.accept(ModItems.MANA_SYMBOL_TIER10.get());
 
+                        // Compressed Tier Mana
+                        output.accept(ModItems.COMPRESSED_TIER0_MANA.get());
+                        output.accept(ModItems.COMPRESSED_TIER1_MANA.get());
+                        output.accept(ModItems.COMPRESSED_TIER2_MANA.get());
+                        output.accept(ModItems.COMPRESSED_TIER3_MANA.get());
+                        output.accept(ModItems.COMPRESSED_TIER4_MANA.get());
+                        output.accept(ModItems.COMPRESSED_TIER5_MANA.get());
+                        output.accept(ModItems.COMPRESSED_TIER6_MANA.get());
+                        output.accept(ModItems.COMPRESSED_TIER7_MANA.get());
+                        output.accept(ModItems.COMPRESSED_TIER8_MANA.get());
+                        output.accept(ModItems.COMPRESSED_TIER9_MANA.get());
+                        output.accept(ModItems.COMPRESSED_TIER10_MANA.get());
+
+                        // Artifacts
+                        output.accept(ModItems.ACTIVATED_CONDUIT.get());
+
                         // Blocks - Active Ores
                         output.accept(ModBlocks.TIER0_MANA_ORE.get());
                         output.accept(ModBlocks.TIER1_MANA_ORE.get());

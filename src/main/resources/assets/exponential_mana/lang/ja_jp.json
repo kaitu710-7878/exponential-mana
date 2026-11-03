@@ -149,6 +149,20 @@
   "item.exponential_mana.mana_symbol_tier9": "マナの象徴 (Tier9)",
   "item.exponential_mana.mana_symbol_tier10": "マナの象徴 (Tier10)",
 
+  "item.exponential_mana.compressed_tier0_mana": "圧縮Tier0マナ",
+  "item.exponential_mana.compressed_tier1_mana": "圧縮Tier1マナ",
+  "item.exponential_mana.compressed_tier2_mana": "圧縮Tier2マナ",
+  "item.exponential_mana.compressed_tier3_mana": "圧縮Tier3マナ",
+  "item.exponential_mana.compressed_tier4_mana": "圧縮Tier4マナ",
+  "item.exponential_mana.compressed_tier5_mana": "圧縮Tier5マナ",
+  "item.exponential_mana.compressed_tier6_mana": "圧縮Tier6マナ",
+  "item.exponential_mana.compressed_tier7_mana": "圧縮Tier7マナ",
+  "item.exponential_mana.compressed_tier8_mana": "圧縮Tier8マナ",
+  "item.exponential_mana.compressed_tier9_mana": "圧縮Tier9マナ",
+  "item.exponential_mana.compressed_tier10_mana": "圧縮Tier10マナ",
+
+  "item.exponential_mana.activated_conduit": "活性化コンジット",
+
   "block.exponential_mana.tier0_mana_ore": "Tier0 マナ鉱石",
   "block.exponential_mana.tier1_mana_ore": "Tier1 マナ鉱石",
   "block.exponential_mana.tier2_mana_ore": "Tier2 マナ鉱石",
