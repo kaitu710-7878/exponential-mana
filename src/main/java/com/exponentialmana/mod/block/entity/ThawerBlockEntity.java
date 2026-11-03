@@ -3,11 +3,17 @@ package com.exponentialmana.mod.block.entity;
 import com.exponentialmana.mod.menu.ThawerMenu;
 import com.exponentialmana.mod.registry.ModBlockEntities;
 import com.exponentialmana.mod.registry.ModItems;
-import com.exponentialmana.mod.registry.ModMenuTypes;
+import com.exponentialmana.mod.util.side.AutoEjectHelper;
+import com.exponentialmana.mod.util.side.ISidedMachine;
+import com.exponentialmana.mod.util.side.SideConfig;
+import com.exponentialmana.mod.util.side.SidedItemHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -25,17 +31,30 @@ import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.*;
+
 /**
- * BlockEntity for the Thawer.
+ * BlockEntity for the Thawer (解凍機).
  * Features 2x2 (4 slots) input for Batch Compressed Mana, and 10x10 (100 slots) output,
  * each output slot supporting up to Integer.MAX_VALUE stacks.
  * Safely extracts real item-form mana from Batch Compressed Mana into 100 output slots.
- * Supports GUI and preserves contents on block pickup.
+ * Full Mekanism-style Side Configuration and Auto-Eject.
  */
-public class ThawerBlockEntity extends BlockEntity implements MenuProvider {
+public class ThawerBlockEntity extends BlockEntity implements MenuProvider, ISidedMachine {
     public static final int INPUT_SLOTS = 4;   // 2x2 grid
     public static final int OUTPUT_SLOTS = 100; // 10x10 grid
     public static final int TOTAL_SLOTS = INPUT_SLOTS + OUTPUT_SLOTS; // 104
+
+    private static final List<Integer> OUTPUT_SLOT_INDICES;
+    static {
+        List<Integer> list = new ArrayList<>(OUTPUT_SLOTS);
+        for (int i = INPUT_SLOTS; i < TOTAL_SLOTS; i++) {
+            list.add(i);
+        }
+        OUTPUT_SLOT_INDICES = Collections.unmodifiableList(list);
+    }
+
+    private final SideConfig sideConfig = new SideConfig();
 
     private final ItemStackHandler itemHandler = new ItemStackHandler(TOTAL_SLOTS) {
         @Override
@@ -62,10 +81,21 @@ public class ThawerBlockEntity extends BlockEntity implements MenuProvider {
         }
     };
 
-    private final LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.of(() -> itemHandler);
+    private final Map<Direction, LazyOptional<IItemHandler>> sidedHandlers = new EnumMap<>(Direction.class);
+    private final LazyOptional<IItemHandler> allAccessHandler = LazyOptional.of(() -> itemHandler);
 
     public ThawerBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.THAWER_BE.get(), pos, state);
+
+        for (Direction dir : Direction.values()) {
+            this.sidedHandlers.put(dir, LazyOptional.of(() -> new SidedItemHandler(
+                    itemHandler,
+                    dir,
+                    sideConfig,
+                    slot -> slot < INPUT_SLOTS,              // Input -> compressed mana
+                    slot -> slot >= INPUT_SLOTS && slot < TOTAL_SLOTS // Output -> extracted mana
+            )));
+        }
     }
 
     public static void tick(Level level, BlockPos pos, BlockState state, ThawerBlockEntity entity) {
@@ -100,19 +130,19 @@ public class ThawerBlockEntity extends BlockEntity implements MenuProvider {
                                 }
                                 changed = true;
                             }
-
                             if (count > 0) {
                                 anyRemaining = true;
                             }
                         }
                     }
 
-                    // If all mana counts are depleted, shrink input stack by 1
                     if (!anyRemaining) {
                         input.shrink(1);
-                        entity.itemHandler.setStackInSlot(inSlot, input);
                         changed = true;
                     }
+                } else {
+                    input.shrink(1);
+                    changed = true;
                 }
             }
         }
@@ -120,45 +150,40 @@ public class ThawerBlockEntity extends BlockEntity implements MenuProvider {
         if (changed) {
             entity.setChanged();
         }
+
+        // Auto-eject extracted mana to adjacent inventories
+        AutoEjectHelper.eject(level, pos, entity.sideConfig, entity.itemHandler, OUTPUT_SLOT_INDICES);
     }
 
-    /**
-     * Inserts unpacked mana items into the 10x10 output slots (Int_MAX stack size).
-     * Returns the actual amount inserted.
-     */
     private int insertOutputMana(Item manaItem, int amount) {
         int remaining = amount;
 
-        // Pass 1: Try adding to existing matching stacks
-        for (int i = INPUT_SLOTS; i < TOTAL_SLOTS; i++) {
-            ItemStack existing = itemHandler.getStackInSlot(i);
-            if (!existing.isEmpty() && existing.is(manaItem)) {
-                long space = (long) Integer.MAX_VALUE - existing.getCount();
+        // Try existing stacks first
+        for (int i = INPUT_SLOTS; i < TOTAL_SLOTS && remaining > 0; i++) {
+            ItemStack inSlot = itemHandler.getStackInSlot(i);
+            if (!inSlot.isEmpty() && inSlot.is(manaItem)) {
+                int space = Integer.MAX_VALUE - inSlot.getCount();
                 if (space > 0) {
-                    int toAdd = (int) Math.min((long) remaining, space);
-                    existing.grow(toAdd);
-                    itemHandler.setStackInSlot(i, existing);
-                    remaining -= toAdd;
-                    if (remaining <= 0) return amount;
+                    int add = Math.min(space, remaining);
+                    inSlot.grow(add);
+                    remaining -= add;
                 }
             }
         }
 
-        // Pass 2: Place in empty output slots
-        if (remaining > 0) {
-            for (int i = INPUT_SLOTS; i < TOTAL_SLOTS; i++) {
-                ItemStack existing = itemHandler.getStackInSlot(i);
-                if (existing.isEmpty()) {
-                    itemHandler.setStackInSlot(i, new ItemStack(manaItem, remaining));
-                    return amount;
-                }
+        // Put in empty slots
+        for (int i = INPUT_SLOTS; i < TOTAL_SLOTS && remaining > 0; i++) {
+            ItemStack inSlot = itemHandler.getStackInSlot(i);
+            if (inSlot.isEmpty()) {
+                itemHandler.setStackInSlot(i, new ItemStack(manaItem, remaining));
+                remaining = 0;
             }
         }
 
         return amount - remaining;
     }
 
-    public static Item getManaItem(int tier) {
+    private static Item getManaItem(int tier) {
         return switch (tier) {
             case 0 -> ModItems.TIER0_MANA.get();
             case 1 -> ModItems.TIER1_MANA.get();
@@ -180,9 +205,24 @@ public class ThawerBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     @Override
+    public SideConfig getSideConfig() {
+        return sideConfig;
+    }
+
+    @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
         if (cap == ForgeCapabilities.ITEM_HANDLER) {
-            return lazyItemHandler.cast();
+            if (side == null) {
+                return allAccessHandler.cast();
+            }
+            if (sideConfig.getMode(side) == com.exponentialmana.mod.util.side.SideMode.DISABLED) {
+                return LazyOptional.empty();
+            }
+            LazyOptional<IItemHandler> sided = sidedHandlers.get(side);
+            if (sided != null) {
+                return sided.cast();
+            }
+            return allAccessHandler.cast();
         }
         return super.getCapability(cap, side);
     }
@@ -190,7 +230,10 @@ public class ThawerBlockEntity extends BlockEntity implements MenuProvider {
     @Override
     public void invalidateCaps() {
         super.invalidateCaps();
-        lazyItemHandler.invalidate();
+        allAccessHandler.invalidate();
+        for (LazyOptional<IItemHandler> sided : sidedHandlers.values()) {
+            sided.invalidate();
+        }
     }
 
     public void saveToItem(ItemStack stack) {
@@ -212,6 +255,7 @@ public class ThawerBlockEntity extends BlockEntity implements MenuProvider {
     @Override
     protected void saveAdditional(CompoundTag tag) {
         tag.put("inventory", itemHandler.serializeNBT());
+        tag.put("side_config", sideConfig.serializeNBT());
         super.saveAdditional(tag);
     }
 
@@ -222,5 +266,21 @@ public class ThawerBlockEntity extends BlockEntity implements MenuProvider {
         if (itemHandler.getSlots() < TOTAL_SLOTS) {
             itemHandler.setSize(TOTAL_SLOTS);
         }
+        if (tag.contains("side_config")) {
+            sideConfig.deserializeNBT(tag.getCompound("side_config"));
+        }
+    }
+
+    @Override
+    public CompoundTag getUpdateTag() {
+        CompoundTag tag = super.getUpdateTag();
+        saveAdditional(tag);
+        return tag;
+    }
+
+    @Nullable
+    @Override
+    public Packet<ClientGamePacketListener> getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
     }
 }

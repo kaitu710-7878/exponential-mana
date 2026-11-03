@@ -3,10 +3,17 @@ package com.exponentialmana.mod.block.entity;
 import com.exponentialmana.mod.menu.FairyMenu;
 import com.exponentialmana.mod.registry.ModBlockEntities;
 import com.exponentialmana.mod.registry.ModItems;
+import com.exponentialmana.mod.util.side.AutoEjectHelper;
+import com.exponentialmana.mod.util.side.ISidedMachine;
+import com.exponentialmana.mod.util.side.SideConfig;
+import com.exponentialmana.mod.util.side.SidedItemHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -25,22 +32,36 @@ import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.*;
+
 /**
- * BlockEntity for Fairy Blocks and Compressed Fairy Blocks.
+ * BlockEntity for Fairy Block and Compressed Fairies (9^1 to 9^10).
  * Features 8x8 (64 slots) Catalyst inputs and 8x8 (64 slots) Mana outputs,
  * each slot supporting up to Integer.MAX_VALUE stacks.
  * Generates tiered mana based on catalyst count, and fills any remaining quota with Tier 0 mana.
  * Total production quota per 60s cycle = 9^compressionTier.
  * Synchronizes cooldown with client via ContainerData for live GUI countdown.
+ * Full Mekanism-style Side Configuration and Auto-Eject.
  */
-public class FairyBlockEntity extends BlockEntity implements MenuProvider {
+public class FairyBlockEntity extends BlockEntity implements MenuProvider, ISidedMachine {
     public static final int BASE_COOLDOWN = 1200; // 60 seconds at 20 TPS
     public static final int CATALYST_SLOTS = 64; // 8x8
     public static final int OUTPUT_SLOTS = 64;   // 8x8
     public static final int TOTAL_SLOTS = CATALYST_SLOTS + OUTPUT_SLOTS; // 128
 
+    private static final List<Integer> OUTPUT_SLOT_INDICES;
+    static {
+        List<Integer> list = new ArrayList<>(OUTPUT_SLOTS);
+        for (int i = CATALYST_SLOTS; i < TOTAL_SLOTS; i++) {
+            list.add(i);
+        }
+        OUTPUT_SLOT_INDICES = Collections.unmodifiableList(list);
+    }
+
     private int cooldown = BASE_COOLDOWN;
     private final int compressionTier; // 0 for base, 1 to 10 for compressed
+
+    private final SideConfig sideConfig = new SideConfig();
 
     // ContainerData for real-time cooldown sync with GUI
     private final ContainerData dataAccess = new ContainerData() {
@@ -89,11 +110,22 @@ public class FairyBlockEntity extends BlockEntity implements MenuProvider {
         }
     };
 
-    private final LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.of(() -> itemHandler);
+    private final Map<Direction, LazyOptional<IItemHandler>> sidedHandlers = new EnumMap<>(Direction.class);
+    private final LazyOptional<IItemHandler> allAccessHandler = LazyOptional.of(() -> itemHandler);
 
     public FairyBlockEntity(BlockPos pos, BlockState state, int compressionTier) {
         super(ModBlockEntities.FAIRY_BLOCK_BE.get(), pos, state);
         this.compressionTier = compressionTier;
+
+        for (Direction dir : Direction.values()) {
+            this.sidedHandlers.put(dir, LazyOptional.of(() -> new SidedItemHandler(
+                    itemHandler,
+                    dir,
+                    sideConfig,
+                    slot -> slot < CATALYST_SLOTS,              // Input -> catalysts
+                    slot -> slot >= CATALYST_SLOTS && slot < TOTAL_SLOTS // Output -> mana
+            )));
+        }
     }
 
     public static void tick(Level level, BlockPos pos, BlockState state, FairyBlockEntity entity) {
@@ -106,6 +138,9 @@ public class FairyBlockEntity extends BlockEntity implements MenuProvider {
             entity.cooldown = BASE_COOLDOWN;
             entity.processProduction();
         }
+
+        // Auto-eject mana to adjacent inventories
+        AutoEjectHelper.eject(level, pos, entity.sideConfig, entity.itemHandler, OUTPUT_SLOT_INDICES);
     }
 
     /**
@@ -138,49 +173,55 @@ public class FairyBlockEntity extends BlockEntity implements MenuProvider {
             }
         }
 
-        // Remainder of quota is produced as Tier 0 mana!
+        // Any leftover quota produces Tier 0 Mana
         if (remainingQuota > 0) {
             insertOutputMana(ModItems.TIER0_MANA.get(), remainingQuota);
         }
+
+        setChanged();
     }
 
     private void insertOutputMana(Item manaItem, long amount) {
         long remaining = amount;
 
-        // Pass 1: Try adding to existing matching stacks in output slots
-        for (int i = CATALYST_SLOTS; i < TOTAL_SLOTS; i++) {
-            ItemStack existing = itemHandler.getStackInSlot(i);
-            if (!existing.isEmpty() && existing.is(manaItem)) {
-                long space = (long) Integer.MAX_VALUE - existing.getCount();
+        // Try existing matching stacks first
+        for (int i = CATALYST_SLOTS; i < TOTAL_SLOTS && remaining > 0; i++) {
+            ItemStack stack = itemHandler.getStackInSlot(i);
+            if (!stack.isEmpty() && stack.is(manaItem)) {
+                long space = (long) Integer.MAX_VALUE - stack.getCount();
                 if (space > 0) {
-                    long toAdd = Math.min(remaining, space);
-                    existing.grow((int) toAdd);
-                    itemHandler.setStackInSlot(i, existing);
-                    remaining -= toAdd;
-                    if (remaining <= 0) break;
+                    int add = (int) Math.min(space, remaining);
+                    stack.grow(add);
+                    remaining -= add;
                 }
             }
         }
 
-        // Pass 2: Place in empty output slots
-        if (remaining > 0) {
-            for (int i = CATALYST_SLOTS; i < TOTAL_SLOTS; i++) {
-                ItemStack existing = itemHandler.getStackInSlot(i);
-                if (existing.isEmpty()) {
-                    long toAdd = Math.min(remaining, (long) Integer.MAX_VALUE);
-                    itemHandler.setStackInSlot(i, new ItemStack(manaItem, (int) toAdd));
-                    remaining -= toAdd;
-                    if (remaining <= 0) break;
-                }
+        // Place in empty output slots
+        for (int i = CATALYST_SLOTS; i < TOTAL_SLOTS && remaining > 0; i++) {
+            ItemStack stack = itemHandler.getStackInSlot(i);
+            if (stack.isEmpty()) {
+                int add = (int) Math.min((long) Integer.MAX_VALUE, remaining);
+                itemHandler.setStackInSlot(i, new ItemStack(manaItem, add));
+                remaining -= add;
             }
         }
     }
 
     public static boolean isCatalyst(Item item) {
-        return getManaForCatalyst(item) != null;
+        return item == ModItems.TIER1_FAIRY_CATALYST.get() ||
+                item == ModItems.TIER2_FAIRY_CATALYST.get() ||
+                item == ModItems.TIER3_FAIRY_CATALYST.get() ||
+                item == ModItems.TIER4_FAIRY_CATALYST.get() ||
+                item == ModItems.TIER5_FAIRY_CATALYST.get() ||
+                item == ModItems.TIER6_FAIRY_CATALYST.get() ||
+                item == ModItems.TIER7_FAIRY_CATALYST.get() ||
+                item == ModItems.TIER8_FAIRY_CATALYST.get() ||
+                item == ModItems.TIER9_FAIRY_CATALYST.get() ||
+                item == ModItems.TIER10_FAIRY_CATALYST.get() ||
+                item == ModItems.PURE_FAIRY_CATALYST.get();
     }
 
-    @Nullable
     public static Item getManaForCatalyst(Item item) {
         if (item == ModItems.TIER1_FAIRY_CATALYST.get()) return ModItems.TIER1_MANA.get();
         if (item == ModItems.TIER2_FAIRY_CATALYST.get()) return ModItems.TIER2_MANA.get();
@@ -213,9 +254,24 @@ public class FairyBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     @Override
+    public SideConfig getSideConfig() {
+        return sideConfig;
+    }
+
+    @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
         if (cap == ForgeCapabilities.ITEM_HANDLER) {
-            return lazyItemHandler.cast();
+            if (side == null) {
+                return allAccessHandler.cast();
+            }
+            if (sideConfig.getMode(side) == com.exponentialmana.mod.util.side.SideMode.DISABLED) {
+                return LazyOptional.empty();
+            }
+            LazyOptional<IItemHandler> sided = sidedHandlers.get(side);
+            if (sided != null) {
+                return sided.cast();
+            }
+            return allAccessHandler.cast();
         }
         return super.getCapability(cap, side);
     }
@@ -223,7 +279,10 @@ public class FairyBlockEntity extends BlockEntity implements MenuProvider {
     @Override
     public void invalidateCaps() {
         super.invalidateCaps();
-        lazyItemHandler.invalidate();
+        allAccessHandler.invalidate();
+        for (LazyOptional<IItemHandler> sided : sidedHandlers.values()) {
+            sided.invalidate();
+        }
     }
 
     public void saveToItem(ItemStack stack) {
@@ -248,6 +307,7 @@ public class FairyBlockEntity extends BlockEntity implements MenuProvider {
     @Override
     protected void saveAdditional(CompoundTag tag) {
         tag.put("inventory", itemHandler.serializeNBT());
+        tag.put("side_config", sideConfig.serializeNBT());
         tag.putInt("cooldown", cooldown);
         super.saveAdditional(tag);
     }
@@ -259,8 +319,24 @@ public class FairyBlockEntity extends BlockEntity implements MenuProvider {
         if (itemHandler.getSlots() < TOTAL_SLOTS) {
             itemHandler.setSize(TOTAL_SLOTS);
         }
+        if (tag.contains("side_config")) {
+            sideConfig.deserializeNBT(tag.getCompound("side_config"));
+        }
         if (tag.contains("cooldown")) {
             cooldown = tag.getInt("cooldown");
         }
+    }
+
+    @Override
+    public CompoundTag getUpdateTag() {
+        CompoundTag tag = super.getUpdateTag();
+        saveAdditional(tag);
+        return tag;
+    }
+
+    @Nullable
+    @Override
+    public Packet<ClientGamePacketListener> getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
     }
 }

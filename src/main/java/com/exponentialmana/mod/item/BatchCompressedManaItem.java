@@ -22,6 +22,15 @@ public class BatchCompressedManaItem extends Item {
         super(new Properties().stacksTo(1).rarity(Rarity.EPIC));
     }
 
+    public static void addMana(ItemStack stack, int tier, long amount) {
+        if (amount <= 0) return;
+        CompoundTag tag = stack.getOrCreateTag();
+        CompoundTag manaTag = tag.getCompound("ManaCounts");
+        long current = manaTag.getLong("Tier" + tier);
+        manaTag.putLong("Tier" + tier, current + amount);
+        tag.put("ManaCounts", manaTag);
+    }
+
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(Component.translatable("tooltip.exponential_mana.batch_compressed_mana.desc").withStyle(ChatFormatting.GRAY));

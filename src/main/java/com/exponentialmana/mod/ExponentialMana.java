@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 @Mod(ExponentialMana.MOD_ID)
 public class ExponentialMana {
     public static final String MOD_ID = "exponential_mana";
-    public static final String VERSION = "0.12.1-alpha";
+    public static final String VERSION = "0.13.0-beta";
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public ExponentialMana() {
@@ -52,6 +52,7 @@ public class ExponentialMana {
 
     private void commonSetup(final FMLCommonSetupEvent event) {
         LOGGER.info("Exponential Mana: Common setup starting...");
+        event.enqueueWork(com.exponentialmana.mod.network.ModNetwork::register);
     }
 
     private void addCreative(BuildCreativeModeTabContentsEvent event) {

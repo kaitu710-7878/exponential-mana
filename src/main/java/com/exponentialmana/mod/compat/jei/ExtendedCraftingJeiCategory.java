@@ -1,6 +1,7 @@
 package com.exponentialmana.mod.compat.jei;
 
 import com.exponentialmana.mod.ExponentialMana;
+import com.exponentialmana.mod.recipe.ExtendedCraftingRecipe;
 import com.exponentialmana.mod.registry.ModBlocks;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -21,12 +22,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class ExtendedCraftingJeiCategory implements IRecipeCategory<ExtendedCraftingJeiRecipe> {
+public class ExtendedCraftingJeiCategory implements IRecipeCategory<ExtendedCraftingRecipe> {
     private static final ResourceLocation CRAFTING_TEXTURE = new ResourceLocation("minecraft", "textures/gui/container/crafting_table.png");
 
     private final int tier;
     private final int gridSize;
-    private final RecipeType<ExtendedCraftingJeiRecipe> recipeType;
+    private final RecipeType<ExtendedCraftingRecipe> recipeType;
     private final IDrawable background;
     private final IDrawable icon;
     private final IDrawableStatic slotDrawable;
@@ -36,7 +37,7 @@ public class ExtendedCraftingJeiCategory implements IRecipeCategory<ExtendedCraf
     public ExtendedCraftingJeiCategory(int tier, IGuiHelper guiHelper) {
         this.tier = tier;
         this.gridSize = tier + 3; // Tier 1: 4, ..., Tier 10: 13
-        this.recipeType = RecipeType.create(ExponentialMana.MOD_ID, "extended_crafting_tier_" + tier, ExtendedCraftingJeiRecipe.class);
+        this.recipeType = RecipeType.create(ExponentialMana.MOD_ID, "extended_crafting_tier_" + tier, ExtendedCraftingRecipe.class);
 
         int gridPixels = gridSize * 18;
         this.width = Math.max(176, gridPixels + 76);
@@ -56,7 +57,7 @@ public class ExtendedCraftingJeiCategory implements IRecipeCategory<ExtendedCraf
     }
 
     @Override
-    public @NotNull RecipeType<ExtendedCraftingJeiRecipe> getRecipeType() {
+    public @NotNull RecipeType<ExtendedCraftingRecipe> getRecipeType() {
         return recipeType;
     }
 
@@ -76,7 +77,7 @@ public class ExtendedCraftingJeiCategory implements IRecipeCategory<ExtendedCraf
     }
 
     @Override
-    public void setRecipe(@NotNull IRecipeLayoutBuilder builder, @NotNull ExtendedCraftingJeiRecipe recipe, @NotNull IFocusGroup focuses) {
+    public void setRecipe(@NotNull IRecipeLayoutBuilder builder, @NotNull ExtendedCraftingRecipe recipe, @NotNull IFocusGroup focuses) {
         List<List<ItemStack>> inputs = recipe.getInputs();
 
         int startX = 6;
@@ -104,10 +105,13 @@ public class ExtendedCraftingJeiCategory implements IRecipeCategory<ExtendedCraf
         builder.addSlot(RecipeIngredientRole.OUTPUT, outX, outY)
                 .addItemStack(recipe.getOutput())
                 .setBackground(slotDrawable, -1, -1);
+
+        // Move Recipe Transfer ("+") button cleanly beneath the output slot to prevent overlapping the grid
+        builder.moveRecipeTransferButton(outX, outY + 24);
     }
 
     @Override
-    public void draw(@NotNull ExtendedCraftingJeiRecipe recipe, @NotNull IRecipeSlotsView recipeSlotsView,
+    public void draw(@NotNull ExtendedCraftingRecipe recipe, @NotNull IRecipeSlotsView recipeSlotsView,
                      @NotNull GuiGraphics guiGraphics, double mouseX, double mouseY) {
         Font font = Minecraft.getInstance().font;
 

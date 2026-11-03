@@ -8,6 +8,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.13.0-beta] - 2026-11-03
+
+### Added / 追加
+- **EN**:
+  - **Mekanism-style Side Configuration**:
+    - Added 6-face side configuration (Disabled: Grey, Input: Blue, Output: Yellow, Both: Purple) to Fairy Blocks, Batch Ore Breaker, Thawer, and Extended Crafting Tables.
+    - Added Auto-Eject mechanism: Automatically pushes output items into adjacent inventories on Output/Both faces every tick.
+    - Added interactive GUI widget with 6-side buttons and Auto-Eject toggle, fully synced via Forge network packets.
+  - **Mekanism Formulaic Assemblicator-style Automation for Extended Crafting Tables**:
+    - Added 18-slot Material Buffer (holding up to Int_MAX items per slot) for automated material piping and insertion.
+    - Implemented high-speed 1 craft / 1t automated crafting: Automatically consumes matching materials from the Material Buffer every tick and outputs crafted results.
+  - **Extended Crafting Recipe Matching Engine**:
+    - Implemented real-time in-game recipe checking for all Tier 1 (4x4) through Tier 10 (13x13) crafting tables.
+    - Seamlessly supports manual crafting and JEI "+" recipe transfers, instantly displaying crafted results in the output slot.
+- **JA**:
+  - **Mekanism風の面設定（Side Configuration）機能**:
+    - 妖精ブロック、鉱石一括破壊機、解凍機、拡張作業台の全機械に6方向（上・下・北・南・西・東）の面設定（遮断:灰 / 搬入:青 / 搬出:黄 / 搬入出:紫）を追加。
+    - 自動搬出（Auto-Eject）機構を追加：搬出面・搬入出面に隣接するチェストやパイプへ、毎tick完成品・マナを自動でプッシュ排出。
+    - 各GUIの右側に6面切り替えボタンと自動搬出ON/OFFトグルを備えた直感的なサイド設定ウィジェットを追加。ネットワークパケットで即座に同期。
+  - **拡張作業台の自動化（Mekanism 分子組立機仕様・1クラフト/1t）**:
+    - 外部からのパイプ搬入を受け入れる18スロットの「素材インベントリ（Material Buffer、各スロットInt_MAXスタック対応）」を新設。
+    - グリッドのレシピに従い、素材インベントリ内のアイテムを消費して毎tick（1クラフト/1t）自動でクラフトし出力スロットへ送る超高速自動クラフト機構を実装。
+  - **拡張作業台のレシピ照合エンジンの実装**:
+    - Tier 1（4×4）〜 Tier 10（13×13）の全拡張作業台において、グリッド配置のリアルタイムレシピ照合・成果物生成ロジックを実装。
+    - 手動クラフトおよびJEIの「＋」ボタンによるレシピ配置時に、成果物欄に即座にアイテムが表示され正常にクラフト可能に。
+
+### Fixed / 修正
+- **EN**:
+  - Fixed JEI Recipe Transfer ("+") button overlapping the recipe grid by moving it cleanly below the output slot.
+  - Fixed Extended Crafting GUI layout clipping and slot displacement by properly initializing screen boundaries and anchoring all rendering to leftPos/topPos.
+  - Fixed player inventory and hotbar offset issues across Tier 1 through Tier 10 table screens.
+- **JA**:
+  - JEIのレシピ転送（「＋」）ボタンがグリッド枠内に重なって表示されていた問題を、出力スロット直下の安全な位置へ移動して完全解消。
+  - 拡張作業台GUIでウィンドウ背景の高さが途中で切れたり、スロットやホットバーが外側にはみ出ていた描画バグを修正。`init()` で正しく寸法を再計算し、`leftPos`/`topPos` に完全追従。
+
+---
+
 ## [0.12.1-alpha] - 2026-11-03
 
 ### Fixed / 修正

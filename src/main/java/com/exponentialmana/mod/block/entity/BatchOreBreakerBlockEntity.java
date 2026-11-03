@@ -1,21 +1,27 @@
 package com.exponentialmana.mod.block.entity;
 
-import com.exponentialmana.mod.block.InactiveManaOreBlock;
-import com.exponentialmana.mod.block.ManaOreBlock;
+import com.exponentialmana.mod.item.BatchCompressedManaItem;
 import com.exponentialmana.mod.menu.BatchOreBreakerMenu;
 import com.exponentialmana.mod.registry.ModBlockEntities;
 import com.exponentialmana.mod.registry.ModBlocks;
 import com.exponentialmana.mod.registry.ModItems;
+import com.exponentialmana.mod.util.side.AutoEjectHelper;
+import com.exponentialmana.mod.util.side.ISidedMachine;
+import com.exponentialmana.mod.util.side.SideConfig;
+import com.exponentialmana.mod.util.side.SidedItemHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
-import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -29,27 +35,29 @@ import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.Map;
+
 /**
  * BlockEntity for the Batch Ore Breaker.
  * Features:
  * - 10x10 (100 slots) Inventory for Inactive Mana Ores (Int_MAX capacity per slot).
- * - Ores are NOT consumed! The machine manages the 5-minute (6000 ticks) inactive-to-active cooldown virtually.
- * - Active ores placed in the machine are immediately converted to Inactive Ores ("Batch Inactivation") and produce mana.
- * - Every 5 minutes (300 seconds), all stored inactive ores are virtually mined/broken, generating their corresponding
- *   tiered mana without consuming the ores, then resetting to the inactive cooldown.
+ * - Ores are NOT consumed! Virtual 5-minute cooldown.
+ * - Active ores placed in the machine are immediately converted to Inactive Ores ("Batch Inactivation") and produce initial mana.
  * - Output slot (Slot 100) automatically packs all extracted mana into Batch Compressed Mana.
  * - Safely preserves all ores and accumulated mana inside dropped item NBT upon removal.
+ * - Full Mekanism-style Side Configuration and Auto-Eject.
  */
-public class BatchOreBreakerBlockEntity extends BlockEntity implements MenuProvider {
+public class BatchOreBreakerBlockEntity extends BlockEntity implements MenuProvider, ISidedMachine {
     public static final int INPUT_SLOTS = 100; // 10x10 grid (slots 0..99)
     public static final int OUTPUT_SLOT = 100;  // Slot 100: Batch Compressed Mana output
     public static final int TOTAL_SLOTS = 101;
     public static final int CYCLE_TICKS = 6000; // 5 minutes (300 sec * 20 ticks)
 
     private int timer = CYCLE_TICKS;
-
-    // Stored mana per tier (0 to 10) waiting to be packed into output slot
     private final long[] manaPool = new long[11];
+    private final SideConfig sideConfig = new SideConfig();
 
     private final ContainerData dataAccess = new ContainerData() {
         @Override
@@ -99,138 +107,155 @@ public class BatchOreBreakerBlockEntity extends BlockEntity implements MenuProvi
         }
     };
 
-    private final LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.of(() -> itemHandler);
+    private final Map<Direction, LazyOptional<IItemHandler>> sidedHandlers = new EnumMap<>(Direction.class);
+    private final LazyOptional<IItemHandler> allAccessHandler = LazyOptional.of(() -> itemHandler);
 
     public BatchOreBreakerBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.BATCH_ORE_BREAKER_BE.get(), pos, state);
-    }
 
-    public static boolean isOreValid(ItemStack stack) {
-        if (!stack.isEmpty() && stack.getItem() instanceof BlockItem bi) {
-            Block block = bi.getBlock();
-            return block instanceof InactiveManaOreBlock ||
-                   block instanceof ManaOreBlock ||
-                   block == ModBlocks.INACTIVE_TIER0_MANA_ORE.get();
+        for (Direction dir : Direction.values()) {
+            this.sidedHandlers.put(dir, LazyOptional.of(() -> new SidedItemHandler(
+                    itemHandler,
+                    dir,
+                    sideConfig,
+                    slot -> slot < INPUT_SLOTS,     // Input -> ores
+                    slot -> slot == OUTPUT_SLOT     // Output -> compressed mana
+            )));
         }
-        return false;
     }
 
-    public static void tick(Level level, BlockPos pos, BlockState state, BatchOreBreakerBlockEntity entity) {
-        if (level.isClientSide) return;
+    public static void serverTick(Level level, BlockPos pos, BlockState state, BatchOreBreakerBlockEntity entity) {
+        // 1. Process instant batch inactivation of active ores inserted into machine
+        entity.processBatchInactivation();
 
-        // 1. Instant Batch Inactivation for active ores inserted into the machine
-        entity.processActiveOresInactivation();
-
-        // 2. Countdown virtual 5-minute cycle
+        // 2. Decrement 5-minute virtual mining timer
         entity.timer--;
         if (entity.timer <= 0) {
             entity.timer = CYCLE_TICKS;
             entity.processVirtualMiningCycle();
         }
 
-        // 3. Keep output slot packed with Batch Compressed Mana
-        entity.updateOutputSlot();
+        // 3. Auto-pack accumulated manaPool into output slot
+        entity.packManaToOutputSlot();
+
+        // 4. Auto-eject compressed mana to adjacent inventories
+        AutoEjectHelper.eject(level, pos, entity.sideConfig, entity.itemHandler, Collections.singletonList(OUTPUT_SLOT));
     }
 
     /**
-     * If player inserts active ManaOreBlocks into the machine, immediately inactivate them
-     * into InactiveManaOreBlocks and grant the initial mining mana yield (Batch Inactivation).
+     * Instantly converts any Active Mana Ores in slots into their Inactive counterparts
+     * and grants their initial yield into the mana pool.
      */
-    private void processActiveOresInactivation() {
+    private void processBatchInactivation() {
         boolean changed = false;
-        for (int slot = 0; slot < INPUT_SLOTS; slot++) {
-            ItemStack stack = itemHandler.getStackInSlot(slot);
-            if (!stack.isEmpty() && stack.getItem() instanceof BlockItem bi) {
-                Block block = bi.getBlock();
-                if (block instanceof ManaOreBlock manaBlock) {
-                    int tier = manaBlock.getTier();
-                    Block inactiveBlock = getInactiveBlockForTier(tier);
+        for (int i = 0; i < INPUT_SLOTS; i++) {
+            ItemStack stack = itemHandler.getStackInSlot(i);
+            if (!stack.isEmpty()) {
+                int activeTier = getActiveOreTier(stack);
+                if (activeTier >= 0) {
+                    int count = stack.getCount();
+                    manaPool[activeTier] += count;
+                    Block inactiveBlock = getInactiveBlockForTier(activeTier);
                     if (inactiveBlock != null) {
-                        int count = stack.getCount();
-                        // Grant mining yield
-                        manaPool[tier] = Math.min((long) Integer.MAX_VALUE * 1000L, manaPool[tier] + count);
-                        // Convert stack in-place to Inactive Ore
-                        itemHandler.setStackInSlot(slot, new ItemStack(inactiveBlock.asItem(), count));
-                        changed = true;
+                        itemHandler.setStackInSlot(i, new ItemStack(inactiveBlock, count));
                     }
-                }
-            }
-        }
-        if (changed) setChanged();
-    }
-
-    /**
-     * Executes the virtual 5-minute mining cycle:
-     * All inactive ores in the 10x10 inventory produce their corresponding mana WITHOUT being consumed!
-     */
-    private void processVirtualMiningCycle() {
-        boolean changed = false;
-
-        for (int slot = 0; slot < INPUT_SLOTS; slot++) {
-            ItemStack stack = itemHandler.getStackInSlot(slot);
-            if (!stack.isEmpty() && stack.getItem() instanceof BlockItem bi) {
-                Block block = bi.getBlock();
-                int tier = -1;
-                if (block == ModBlocks.INACTIVE_TIER0_MANA_ORE.get()) {
-                    tier = 0;
-                } else if (block instanceof InactiveManaOreBlock inactiveBlock) {
-                    tier = inactiveBlock.getTier();
-                }
-
-                if (tier >= 0 && tier <= 10) {
-                    // Extract mana without shrinking the ore!
-                    long amount = stack.getCount();
-                    manaPool[tier] = Math.min((long) Integer.MAX_VALUE * 1000L, manaPool[tier] + amount);
                     changed = true;
                 }
             }
         }
-
         if (changed) {
             setChanged();
         }
     }
 
     /**
-     * Packs accumulated mana from manaPool into the Output Slot (Slot 100) as Batch Compressed Mana.
+     * Non-destructive virtual mining: All inactive ores in the 10x10 inventory generate
+     * their corresponding tiered mana. Ores remain in the inventory.
      */
-    private void updateOutputSlot() {
-        long totalStored = 0;
-        for (long c : manaPool) totalStored += c;
-
-        if (totalStored > 0) {
-            ItemStack out = itemHandler.getStackInSlot(OUTPUT_SLOT);
-            if (out.isEmpty()) {
-                ItemStack drop = new ItemStack(ModItems.BATCH_COMPRESSED_MANA.get());
-                CompoundTag tag = drop.getOrCreateTag();
-                CompoundTag manaTag = new CompoundTag();
-                for (int i = 0; i <= 10; i++) {
-                    if (manaPool[i] > 0) {
-                        manaTag.putLong("Tier" + i, manaPool[i]);
-                        manaPool[i] = 0;
-                    }
+    private void processVirtualMiningCycle() {
+        boolean any = false;
+        for (int i = 0; i < INPUT_SLOTS; i++) {
+            ItemStack stack = itemHandler.getStackInSlot(i);
+            if (!stack.isEmpty()) {
+                int inactiveTier = getInactiveOreTier(stack);
+                if (inactiveTier >= 0) {
+                    manaPool[inactiveTier] += stack.getCount();
+                    any = true;
                 }
-                tag.put("ManaCounts", manaTag);
-                itemHandler.setStackInSlot(OUTPUT_SLOT, drop);
-                setChanged();
-            } else if (out.is(ModItems.BATCH_COMPRESSED_MANA.get())) {
-                CompoundTag tag = out.getOrCreateTag();
-                CompoundTag manaTag = tag.getCompound("ManaCounts");
-                for (int i = 0; i <= 10; i++) {
-                    if (manaPool[i] > 0) {
-                        long current = manaTag.getLong("Tier" + i);
-                        manaTag.putLong("Tier" + i, current + manaPool[i]);
-                        manaPool[i] = 0;
-                    }
-                }
-                tag.put("ManaCounts", manaTag);
-                setChanged();
             }
+        }
+        if (any) {
+            setChanged();
         }
     }
 
-    @Nullable
-    private static Block getInactiveBlockForTier(int tier) {
+    /**
+     * Packs accumulated mana from manaPool into slot 100 as BATCH_COMPRESSED_MANA.
+     */
+    private void packManaToOutputSlot() {
+        long totalPending = 0;
+        for (long c : manaPool) totalPending += c;
+        if (totalPending <= 0) return;
+
+        ItemStack existing = itemHandler.getStackInSlot(OUTPUT_SLOT);
+        if (existing.isEmpty()) {
+            ItemStack newStack = new ItemStack(ModItems.BATCH_COMPRESSED_MANA.get(), 1);
+            for (int t = 0; t <= 10; t++) {
+                if (manaPool[t] > 0) {
+                    BatchCompressedManaItem.addMana(newStack, t, manaPool[t]);
+                    manaPool[t] = 0;
+                }
+            }
+            itemHandler.setStackInSlot(OUTPUT_SLOT, newStack);
+            setChanged();
+        } else if (existing.is(ModItems.BATCH_COMPRESSED_MANA.get())) {
+            for (int t = 0; t <= 10; t++) {
+                if (manaPool[t] > 0) {
+                    BatchCompressedManaItem.addMana(existing, t, manaPool[t]);
+                    manaPool[t] = 0;
+                }
+            }
+            setChanged();
+        }
+    }
+
+    public static boolean isOreValid(ItemStack stack) {
+        return getActiveOreTier(stack) >= 0 || getInactiveOreTier(stack) >= 0;
+    }
+
+    public static int getActiveOreTier(ItemStack stack) {
+        Item item = stack.getItem();
+        if (item == ModBlocks.TIER0_MANA_ORE.get().asItem()) return 0;
+        if (item == ModBlocks.TIER1_MANA_ORE.get().asItem()) return 1;
+        if (item == ModBlocks.TIER2_MANA_ORE.get().asItem()) return 2;
+        if (item == ModBlocks.TIER3_MANA_ORE.get().asItem()) return 3;
+        if (item == ModBlocks.TIER4_MANA_ORE.get().asItem()) return 4;
+        if (item == ModBlocks.TIER5_MANA_ORE.get().asItem()) return 5;
+        if (item == ModBlocks.TIER6_MANA_ORE.get().asItem()) return 6;
+        if (item == ModBlocks.TIER7_MANA_ORE.get().asItem()) return 7;
+        if (item == ModBlocks.TIER8_MANA_ORE.get().asItem()) return 8;
+        if (item == ModBlocks.TIER9_MANA_ORE.get().asItem()) return 9;
+        if (item == ModBlocks.TIER10_MANA_ORE.get().asItem()) return 10;
+        return -1;
+    }
+
+    public static int getInactiveOreTier(ItemStack stack) {
+        Item item = stack.getItem();
+        if (item == ModBlocks.INACTIVE_TIER0_MANA_ORE.get().asItem()) return 0;
+        if (item == ModBlocks.INACTIVE_TIER1_MANA_ORE.get().asItem()) return 1;
+        if (item == ModBlocks.INACTIVE_TIER2_MANA_ORE.get().asItem()) return 2;
+        if (item == ModBlocks.INACTIVE_TIER3_MANA_ORE.get().asItem()) return 3;
+        if (item == ModBlocks.INACTIVE_TIER4_MANA_ORE.get().asItem()) return 4;
+        if (item == ModBlocks.INACTIVE_TIER5_MANA_ORE.get().asItem()) return 5;
+        if (item == ModBlocks.INACTIVE_TIER6_MANA_ORE.get().asItem()) return 6;
+        if (item == ModBlocks.INACTIVE_TIER7_MANA_ORE.get().asItem()) return 7;
+        if (item == ModBlocks.INACTIVE_TIER8_MANA_ORE.get().asItem()) return 8;
+        if (item == ModBlocks.INACTIVE_TIER9_MANA_ORE.get().asItem()) return 9;
+        if (item == ModBlocks.INACTIVE_TIER10_MANA_ORE.get().asItem()) return 10;
+        return -1;
+    }
+
+    private Block getInactiveBlockForTier(int tier) {
         return switch (tier) {
             case 0 -> ModBlocks.INACTIVE_TIER0_MANA_ORE.get();
             case 1 -> ModBlocks.INACTIVE_TIER1_MANA_ORE.get();
@@ -247,40 +272,6 @@ public class BatchOreBreakerBlockEntity extends BlockEntity implements MenuProvi
         };
     }
 
-    /**
-     * Creates the NBT-packed Batch Compressed Mana item when dismantled.
-     */
-    public ItemStack createDropStack() {
-        ItemStack drop = new ItemStack(ModItems.BATCH_COMPRESSED_MANA.get());
-        CompoundTag tag = drop.getOrCreateTag();
-        CompoundTag manaTag = new CompoundTag();
-
-        for (int tier = 0; tier <= 10; tier++) {
-            if (manaPool[tier] > 0) {
-                manaTag.putLong("Tier" + tier, manaPool[tier]);
-            }
-        }
-
-        ItemStack out = itemHandler.getStackInSlot(OUTPUT_SLOT);
-        if (!out.isEmpty() && out.hasTag() && out.getTag().contains("ManaCounts")) {
-            CompoundTag outMana = out.getTag().getCompound("ManaCounts");
-            for (int tier = 0; tier <= 10; tier++) {
-                long c = outMana.getLong("Tier" + tier);
-                if (c > 0) {
-                    long prev = manaTag.getLong("Tier" + tier);
-                    manaTag.putLong("Tier" + tier, prev + c);
-                }
-            }
-        }
-
-        tag.put("ManaCounts", manaTag);
-        return drop;
-    }
-
-    public long[] getManaPool() {
-        return manaPool;
-    }
-
     public int getTimer() {
         return timer;
     }
@@ -294,9 +285,24 @@ public class BatchOreBreakerBlockEntity extends BlockEntity implements MenuProvi
     }
 
     @Override
+    public SideConfig getSideConfig() {
+        return sideConfig;
+    }
+
+    @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
         if (cap == ForgeCapabilities.ITEM_HANDLER) {
-            return lazyItemHandler.cast();
+            if (side == null) {
+                return allAccessHandler.cast();
+            }
+            if (sideConfig.getMode(side) == com.exponentialmana.mod.util.side.SideMode.DISABLED) {
+                return LazyOptional.empty();
+            }
+            LazyOptional<IItemHandler> sided = sidedHandlers.get(side);
+            if (sided != null) {
+                return sided.cast();
+            }
+            return allAccessHandler.cast();
         }
         return super.getCapability(cap, side);
     }
@@ -304,7 +310,10 @@ public class BatchOreBreakerBlockEntity extends BlockEntity implements MenuProvi
     @Override
     public void invalidateCaps() {
         super.invalidateCaps();
-        lazyItemHandler.invalidate();
+        allAccessHandler.invalidate();
+        for (LazyOptional<IItemHandler> sided : sidedHandlers.values()) {
+            sided.invalidate();
+        }
     }
 
     public void saveToItem(ItemStack stack) {
@@ -326,6 +335,7 @@ public class BatchOreBreakerBlockEntity extends BlockEntity implements MenuProvi
     @Override
     protected void saveAdditional(CompoundTag tag) {
         tag.put("inventory", itemHandler.serializeNBT());
+        tag.put("side_config", sideConfig.serializeNBT());
         CompoundTag manaTag = new CompoundTag();
         for (int i = 0; i <= 10; i++) {
             manaTag.putLong("Tier" + i, manaPool[i]);
@@ -342,6 +352,9 @@ public class BatchOreBreakerBlockEntity extends BlockEntity implements MenuProvi
         if (itemHandler.getSlots() < TOTAL_SLOTS) {
             itemHandler.setSize(TOTAL_SLOTS);
         }
+        if (tag.contains("side_config")) {
+            sideConfig.deserializeNBT(tag.getCompound("side_config"));
+        }
         if (tag.contains("ManaPool")) {
             CompoundTag manaTag = tag.getCompound("ManaPool");
             for (int i = 0; i <= 10; i++) {
@@ -349,5 +362,18 @@ public class BatchOreBreakerBlockEntity extends BlockEntity implements MenuProvi
             }
         }
         timer = tag.getInt("timer");
+    }
+
+    @Override
+    public CompoundTag getUpdateTag() {
+        CompoundTag tag = super.getUpdateTag();
+        saveAdditional(tag);
+        return tag;
+    }
+
+    @Nullable
+    @Override
+    public Packet<ClientGamePacketListener> getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
     }
 }

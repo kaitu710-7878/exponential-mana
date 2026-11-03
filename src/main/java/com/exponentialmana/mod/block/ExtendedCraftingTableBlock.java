@@ -105,6 +105,14 @@ public class ExtendedCraftingTableBlock extends BaseEntityBlock {
         super.playerWillDestroy(level, pos, state, player);
     }
 
+    @Nullable
+    @Override
+    public <T extends BlockEntity> net.minecraft.world.level.block.entity.BlockEntityTicker<T> getTicker(Level level, BlockState state, net.minecraft.world.level.block.entity.BlockEntityType<T> type) {
+        if (level.isClientSide) return null;
+        return createTickerHelper(type, com.exponentialmana.mod.registry.ModBlockEntities.EXTENDED_CRAFTING_TABLE_BE.get(),
+                ExtendedCraftingTableBlockEntity::serverTick);
+    }
+
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
         super.setPlacedBy(level, pos, state, placer, stack);

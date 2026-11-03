@@ -1,8 +1,7 @@
 package com.exponentialmana.mod.client.gui;
 
-import com.exponentialmana.mod.block.entity.BatchOreBreakerBlockEntity;
+import com.exponentialmana.mod.client.gui.widget.SideConfigWidget;
 import com.exponentialmana.mod.menu.BatchOreBreakerMenu;
-import com.exponentialmana.mod.util.CompactStackFormatter;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -16,6 +15,8 @@ public class BatchOreBreakerScreen extends AbstractContainerScreen<BatchOreBreak
     private static final ResourceLocation SLOT_TEXTURE = new ResourceLocation("minecraft", "textures/gui/container/generic_54.png");
     private static final ResourceLocation CRAFTING_TEXTURE = new ResourceLocation("minecraft", "textures/gui/container/crafting_table.png");
 
+    private SideConfigWidget sideConfigWidget;
+
     public BatchOreBreakerScreen(BatchOreBreakerMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title);
         this.imageWidth = 230;
@@ -23,11 +24,24 @@ public class BatchOreBreakerScreen extends AbstractContainerScreen<BatchOreBreak
     }
 
     @Override
+    protected void init() {
+        super.init();
+        this.leftPos = (this.width - this.imageWidth) / 2;
+        this.topPos = (this.height - this.imageHeight) / 2;
+
+        int widgetX = this.leftPos + this.imageWidth + 4;
+        int widgetY = this.topPos + 4;
+        this.sideConfigWidget = new SideConfigWidget(widgetX, widgetY,
+                menu.getBlockEntity().getBlockPos(), menu.getBlockEntity());
+        this.addRenderableWidget(sideConfigWidget);
+    }
+
+    @Override
     protected void renderBg(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        int x = (width - imageWidth) / 2;
-        int y = (height - imageHeight) / 2;
+        int x = this.leftPos;
+        int y = this.topPos;
 
         // Background panel with border
         guiGraphics.fill(x, y, x + imageWidth, y + imageHeight, 0xFFC6C6C6);
@@ -65,5 +79,8 @@ public class BatchOreBreakerScreen extends AbstractContainerScreen<BatchOreBreak
         renderBackground(guiGraphics);
         super.render(guiGraphics, mouseX, mouseY, partialTick);
         renderTooltip(guiGraphics, mouseX, mouseY);
+        if (sideConfigWidget != null) {
+            sideConfigWidget.renderTooltips(guiGraphics, mouseX, mouseY);
+        }
     }
 }

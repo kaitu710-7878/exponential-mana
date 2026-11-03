@@ -58,7 +58,7 @@ public class BatchOreBreakerBlock extends BaseEntityBlock {
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
         return level.isClientSide ? null : (lvl, pos, st, be) -> {
             if (be instanceof BatchOreBreakerBlockEntity breakerBe) {
-                BatchOreBreakerBlockEntity.tick(lvl, pos, st, breakerBe);
+                BatchOreBreakerBlockEntity.serverTick(lvl, pos, st, breakerBe);
             }
         };
     }

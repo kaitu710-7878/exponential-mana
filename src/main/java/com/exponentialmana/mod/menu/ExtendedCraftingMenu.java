@@ -19,6 +19,14 @@ public class ExtendedCraftingMenu extends AbstractContainerMenu {
     private final int gridSize;
     private final int totalInputSlots;
     private final int outputSlotIndex;
+    private final int bufferSlotStart;
+    private final int bufferSlotsCount = ExtendedCraftingTableBlockEntity.BUFFER_SLOTS;
+    private final int totalMachineSlots;
+
+    private final int bufferStartX;
+    private final int bufferStartY;
+    private final int playerInvX;
+    private final int playerInvY;
     private final int imageWidth;
     private final int imageHeight;
 
@@ -33,17 +41,17 @@ public class ExtendedCraftingMenu extends AbstractContainerMenu {
         this.gridSize = blockEntity.getGridSize();
         this.totalInputSlots = blockEntity.getTotalInputSlots();
         this.outputSlotIndex = blockEntity.getOutputSlotIndex();
+        this.bufferSlotStart = blockEntity.getBufferSlotStart();
+        this.totalMachineSlots = blockEntity.getTotalSlots();
 
         int gridStartX = 10;
         int gridStartY = 18;
         int gridWidth = gridSize * 18;
         int gridHeight = gridSize * 18;
 
-        this.imageWidth = Math.max(184, gridWidth + 80);
-        int playerInvY = gridStartY + gridHeight + 12;
-        this.imageHeight = playerInvY + 86;
+        this.imageWidth = Math.max(184, gridWidth + 86);
 
-        // 1. Input matrix slots (18x18 pitch always, matching Extended Crafting)
+        // 1. Input matrix slots (18x18 pitch always, matching Extended Crafting Reforked)
         for (int row = 0; row < gridSize; row++) {
             for (int col = 0; col < gridSize; col++) {
                 int slotIndex = col + row * gridSize;
@@ -53,7 +61,6 @@ public class ExtendedCraftingMenu extends AbstractContainerMenu {
         }
 
         // 2. Output Slot (to the right of the grid, centered vertically)
-        // 26x26 big frame has item at +5, +5
         int outputFrameX = gridStartX + gridWidth + 34;
         int outputFrameY = gridStartY + gridHeight / 2 - 13;
         int outputItemX = outputFrameX + 5;
@@ -67,29 +74,39 @@ public class ExtendedCraftingMenu extends AbstractContainerMenu {
 
             @Override
             public void onTake(@NotNull Player player, @NotNull ItemStack stack) {
-                for (int i = 0; i < totalInputSlots; i++) {
-                    ItemStack in = blockEntity.getItemHandler().getStackInSlot(i);
-                    if (!in.isEmpty()) {
-                        blockEntity.getItemHandler().extractItem(i, 1, false);
-                    }
-                }
-                blockEntity.setChanged();
+                blockEntity.onManualTake();
                 super.onTake(player, stack);
             }
         });
 
-        // 3. Player Inventory (centered horizontally)
-        int playerInvX = (imageWidth - 162) / 2;
+        // 3. Material Buffer (18 slots: 2 rows of 9) - Mekanism Formulaic Assemblicator stock
+        this.bufferStartX = (imageWidth - 162) / 2;
+        this.bufferStartY = gridStartY + gridHeight + 12;
+
+        for (int row = 0; row < 2; row++) {
+            for (int col = 0; col < 9; col++) {
+                int bIndex = bufferSlotStart + col + row * 9;
+                this.addSlot(new SlotItemHandler(blockEntity.getItemHandler(), bIndex,
+                        bufferStartX + col * 18, bufferStartY + row * 18));
+            }
+        }
+
+        // 4. Player Inventory (centered horizontally)
+        this.playerInvX = (imageWidth - 162) / 2;
+        this.playerInvY = bufferStartY + 2 * 18 + 12;
+
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 9; col++) {
                 this.addSlot(new Slot(inv, col + row * 9 + 9, playerInvX + col * 18, playerInvY + row * 18));
             }
         }
 
-        // 4. Player Hotbar
+        // 5. Player Hotbar
         for (int col = 0; col < 9; col++) {
             this.addSlot(new Slot(inv, col, playerInvX + col * 18, playerInvY + 58));
         }
+
+        this.imageHeight = playerInvY + 86;
     }
 
     public ExtendedCraftingTableBlockEntity getBlockEntity() {
@@ -100,6 +117,26 @@ public class ExtendedCraftingMenu extends AbstractContainerMenu {
         return gridSize;
     }
 
+    public int getTotalInputSlots() {
+        return totalInputSlots;
+    }
+
+    public int getOutputSlotIndex() {
+        return outputSlotIndex;
+    }
+
+    public int getBufferSlotStart() {
+        return bufferSlotStart;
+    }
+
+    public int getBufferStartX() {
+        return bufferStartX;
+    }
+
+    public int getBufferStartY() {
+        return bufferStartY;
+    }
+
     public int getImageWidth() {
         return imageWidth;
     }
@@ -108,8 +145,9 @@ public class ExtendedCraftingMenu extends AbstractContainerMenu {
         return imageHeight;
     }
 
-    public int getOutputSlotIndex() {
-        return outputSlotIndex;
+    @Override
+    public boolean stillValid(@NotNull Player player) {
+        return stillValid(levelAccess, player, blockEntity.getBlockState().getBlock());
     }
 
     @Override
@@ -117,46 +155,50 @@ public class ExtendedCraftingMenu extends AbstractContainerMenu {
         ItemStack itemstack = ItemStack.EMPTY;
         Slot slot = this.slots.get(index);
         if (slot != null && slot.hasItem()) {
-            ItemStack stackInSlot = slot.getItem();
-            itemstack = stackInSlot.copy();
+            ItemStack slotStack = slot.getItem();
+            itemstack = slotStack.copy();
 
-            int totalTableSlots = totalInputSlots + 1; // inputs + output
+            int totalMachine = totalMachineSlots; // grid + output + buffer
+            int playerInvStart = totalMachine;
+            int playerInvEnd = playerInvStart + 36;
 
             if (index == outputSlotIndex) {
-                // Taking from output to player inventory
-                if (!this.moveItemStackTo(stackInSlot, totalTableSlots, this.slots.size(), true)) {
+                // Taking from output slot
+                if (!this.moveItemStackTo(slotStack, playerInvStart, playerInvEnd, true)) {
                     return ItemStack.EMPTY;
                 }
-                slot.onQuickCraft(stackInSlot, itemstack);
-            } else if (index < totalInputSlots) {
-                // Taking from input matrix to player inventory
-                if (!this.moveItemStackTo(stackInSlot, totalTableSlots, this.slots.size(), true)) {
+                slot.onQuickCraft(slotStack, itemstack);
+                blockEntity.onManualTake();
+            } else if (index < totalMachine) {
+                // Machine slots -> Player Inventory
+                if (!this.moveItemStackTo(slotStack, playerInvStart, playerInvEnd, true)) {
                     return ItemStack.EMPTY;
                 }
             } else {
-                // Moving from player inventory to input matrix
-                if (!this.moveItemStackTo(stackInSlot, 0, totalInputSlots, false)) {
-                    return ItemStack.EMPTY;
+                // Player inventory -> Material buffer first, else grid
+                int bufferStartInMenu = totalInputSlots + 1; // Slot index in menu for buffer
+                int bufferEndInMenu = bufferStartInMenu + bufferSlotsCount;
+                if (!this.moveItemStackTo(slotStack, bufferStartInMenu, bufferEndInMenu, false)) {
+                    // Try grid slots
+                    if (!this.moveItemStackTo(slotStack, 0, totalInputSlots, false)) {
+                        return ItemStack.EMPTY;
+                    }
                 }
             }
 
-            if (stackInSlot.isEmpty()) {
+            if (slotStack.isEmpty()) {
                 slot.setByPlayer(ItemStack.EMPTY);
             } else {
                 slot.setChanged();
             }
 
-            if (stackInSlot.getCount() == itemstack.getCount()) {
+            if (slotStack.getCount() == itemstack.getCount()) {
                 return ItemStack.EMPTY;
             }
 
-            slot.onTake(player, stackInSlot);
+            slot.onTake(player, slotStack);
         }
-        return itemstack;
-    }
 
-    @Override
-    public boolean stillValid(@NotNull Player player) {
-        return stillValid(levelAccess, player, blockEntity.getBlockState().getBlock());
+        return itemstack;
     }
 }
