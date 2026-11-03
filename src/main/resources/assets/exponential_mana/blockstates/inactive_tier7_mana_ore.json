@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "exponential_mana:block/inactive_tier7_mana_ore"
+    }
+  }
+}

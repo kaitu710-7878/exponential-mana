@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "exponential_mana:item/mana_symbol_tier3_mana"
+  }
+}

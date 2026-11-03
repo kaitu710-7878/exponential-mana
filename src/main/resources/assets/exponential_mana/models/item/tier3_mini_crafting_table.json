@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "exponential_mana:item/tier3_mini_crafting_table"
+  }
+}

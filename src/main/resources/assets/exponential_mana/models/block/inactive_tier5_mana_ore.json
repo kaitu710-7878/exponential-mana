@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "exponential_mana:block/inactive_tier5_mana_ore"
+  }
+}

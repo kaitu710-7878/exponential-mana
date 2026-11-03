@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "exponential_mana:block/tier10_extended_crafting_table"
+    }
+  }
+}

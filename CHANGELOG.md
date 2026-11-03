@@ -8,6 +8,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.7.0-alpha] - 2026-11-03
+
+### Added / 追加
+- **EN**:
+  - Implemented 16×16 pixel art textures for all items and blocks following tier theme colors.
+  - Mana items designed as glowing theme spheres.
+  - Core items designed with mechanical armor casing with large theme spheres peeking through cross slits.
+  - Generated all model JSONs (`models/item`, `models/block`) and `blockstates` JSONs.
+- **JA**:
+  - Tierごとのテーマカラー（石炭、銅、赤石、グロウストーン、鉄、金、ダイヤ、黒曜石、エメラルド、ネザライト等）に基づく全アイテム・ブロックの16×16ピクセルテクスチャを制作・配置。
+  - マナアイテムをテーマ色の発光球体として制作。
+  - コアアイテムを四隅リベット留めの金属装甲の隙間・スリットから大きなテーマ色の球体が覗き見えるデザインとして制作。
+  - すべてのアイテムモデル・ブロックモデル・ブロックステートのJSON定義を生成・配備。
+
 ## [0.6.0-alpha] - 2026-11-03
 
 ### Added / 追加
