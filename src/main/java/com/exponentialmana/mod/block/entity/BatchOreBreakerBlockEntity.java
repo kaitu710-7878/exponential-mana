@@ -45,6 +45,11 @@ public class BatchOreBreakerBlockEntity extends BlockEntity implements MenuProvi
     // 10x10 item slots with Int_MAX limit
     private final ItemStackHandler itemHandler = new ItemStackHandler(SLOTS) {
         @Override
+        public void setSize(int size) {
+            super.setSize(Math.max(SLOTS, size));
+        }
+
+        @Override
         public int getSlotLimit(int slot) {
             return Integer.MAX_VALUE;
         }
@@ -208,6 +213,9 @@ public class BatchOreBreakerBlockEntity extends BlockEntity implements MenuProvi
     public void load(CompoundTag tag) {
         super.load(tag);
         itemHandler.deserializeNBT(tag.getCompound("inventory"));
+        if (itemHandler.getSlots() < SLOTS) {
+            itemHandler.setSize(SLOTS);
+        }
         if (tag.contains("ManaPool")) {
             CompoundTag manaTag = tag.getCompound("ManaPool");
             for (int i = 0; i <= 10; i++) {

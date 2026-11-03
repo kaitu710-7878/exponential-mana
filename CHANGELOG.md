@@ -8,6 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.11.1-alpha] - 2026-11-03
+
+### Fixed / 修正
+- **EN**:
+  - Fixed `Slot not in valid range` crash/kick when opening BlockEntities (Thawer, Fairy Block, etc.) placed in older versions or loaded with legacy NBT size tags.
+  - Enforced minimum slot sizes in `ItemStackHandler.setSize()` and `load()` to prevent legacy NBT from downsizing inventories below current slot specifications.
+- **JA**:
+  - 旧バージョンで設置・保存されたブロックエンティティ（解凍機、妖精ブロックなど）のUIを開いた際に、保存された旧NBTのSizeタグによってスロットが縮小され `Slot not in valid range` でキックされる不具合を修正。
+  - `ItemStackHandler` の `setSize` および `load` において現在の必要スロット数未満に縮小されないよう下限ガードを適用し、旧データからの安全なスロット自動拡張に対応。
+
+---
+
 ## [0.11.0-alpha] - 2026-11-03
 
 ### Fixed / 修正

@@ -44,6 +44,11 @@ public class ExtendedCraftingTableBlockEntity extends BlockEntity implements Men
 
         this.itemHandler = new ItemStackHandler(totalInputSlots + 1) {
             @Override
+            public void setSize(int size) {
+                super.setSize(Math.max(totalInputSlots + 1, size));
+            }
+
+            @Override
             public int getSlotLimit(int slot) {
                 return 64;
             }
@@ -124,5 +129,8 @@ public class ExtendedCraftingTableBlockEntity extends BlockEntity implements Men
     public void load(CompoundTag tag) {
         super.load(tag);
         itemHandler.deserializeNBT(tag.getCompound("inventory"));
+        if (itemHandler.getSlots() < (totalInputSlots + 1)) {
+            itemHandler.setSize(totalInputSlots + 1);
+        }
     }
 }

@@ -45,6 +45,11 @@ public class FairyBlockEntity extends BlockEntity implements MenuProvider {
     // Slots 64..127: Output Mana (Int_MAX limit)
     private final ItemStackHandler itemHandler = new ItemStackHandler(TOTAL_SLOTS) {
         @Override
+        public void setSize(int size) {
+            super.setSize(Math.max(TOTAL_SLOTS, size));
+        }
+
+        @Override
         public int getSlotLimit(int slot) {
             return Integer.MAX_VALUE;
         }
@@ -218,6 +223,9 @@ public class FairyBlockEntity extends BlockEntity implements MenuProvider {
     public void load(CompoundTag tag) {
         super.load(tag);
         itemHandler.deserializeNBT(tag.getCompound("inventory"));
+        if (itemHandler.getSlots() < TOTAL_SLOTS) {
+            itemHandler.setSize(TOTAL_SLOTS);
+        }
         if (tag.contains("cooldown")) {
             cooldown = tag.getInt("cooldown");
         }
