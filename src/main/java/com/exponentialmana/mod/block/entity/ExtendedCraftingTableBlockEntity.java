@@ -78,15 +78,16 @@ public class ExtendedCraftingTableBlockEntity extends BlockEntity implements Men
                 if (slot == outputSlotIndex || (slot >= bufferSlotStart && slot < totalSlots)) {
                     return Integer.MAX_VALUE;
                 }
-                return 64; // Grid slots hold normal 64 for pattern
+                return 64; // Grid slots hold normal 64 for recipe pattern
             }
 
             @Override
             public boolean isItemValid(int slot, @NotNull ItemStack stack) {
-                // External input only goes to buffer slots
-                if (slot < bufferSlotStart) {
+                // Output slot cannot be placed into directly by player or JEI
+                if (slot == outputSlotIndex) {
                     return false;
                 }
+                // Grid slots (0..totalInputSlots-1) and Buffer slots (bufferSlotStart..totalSlots-1) can accept items
                 return true;
             }
 
@@ -94,7 +95,7 @@ public class ExtendedCraftingTableBlockEntity extends BlockEntity implements Men
             protected void onContentsChanged(int slot) {
                 setChanged();
                 if (slot < totalInputSlots) {
-                    // Grid changed: recalculate output if manually crafting
+                    // Grid changed: recalculate output for manual player crafting
                     checkAndSetRecipeOutput();
                 }
             }
@@ -107,8 +108,8 @@ public class ExtendedCraftingTableBlockEntity extends BlockEntity implements Men
                     itemHandler,
                     dir,
                     sideConfig,
-                    slot -> slot >= bufferSlotStart && slot < totalSlots, // Input -> buffer
-                    slot -> slot == outputSlotIndex                       // Output -> output slot
+                    slot -> slot >= bufferSlotStart && slot < totalSlots, // External pipe import goes ONLY to buffer
+                    slot -> slot == outputSlotIndex                       // External export extracts from output slot
             )));
         }
     }
@@ -189,7 +190,7 @@ public class ExtendedCraftingTableBlockEntity extends BlockEntity implements Men
 
         if (maxCrafts <= 0) return;
 
-        // Consume required materials (each key needs req.getValue() * maxCrafts)
+        // Consume required materials from buffer (each key needs req.getValue() * maxCrafts)
         for (Map.Entry<ItemStackKey, Integer> req : required.entrySet()) {
             long toConsume = (long) req.getValue() * maxCrafts;
             for (int b = bufferSlotStart; b < totalSlots && toConsume > 0; b++) {
@@ -238,6 +239,13 @@ public class ExtendedCraftingTableBlockEntity extends BlockEntity implements Men
             ItemStack current = itemHandler.getStackInSlot(outputSlotIndex);
             if (current.isEmpty()) {
                 itemHandler.setStackInSlot(outputSlotIndex, out.copy());
+            }
+        } else {
+            // If grid has no valid recipe and output slot has 1 item matching a previous craft preview, clear it
+            ItemStack current = itemHandler.getStackInSlot(outputSlotIndex);
+            if (!current.isEmpty() && current.getCount() == 1) {
+                // Clear output preview if manual recipe is broken
+                itemHandler.setStackInSlot(outputSlotIndex, ItemStack.EMPTY);
             }
         }
     }
@@ -374,12 +382,16 @@ public class ExtendedCraftingTableBlockEntity extends BlockEntity implements Men
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             ItemStackKey that = (ItemStackKey) o;
-            return ItemStack.isSameItemSameTags(stack, that.stack);
+            if (!this.stack.is(that.stack.getItem())) return false;
+            if (this.stack.hasTag() || that.stack.hasTag()) {
+                return Objects.equals(this.stack.getTag(), that.stack.getTag());
+            }
+            return true;
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(stack.getItem(), stack.getTag());
+            return Objects.hash(stack.getItem(), stack.hasTag() ? stack.getTag() : null);
         }
     }
 }

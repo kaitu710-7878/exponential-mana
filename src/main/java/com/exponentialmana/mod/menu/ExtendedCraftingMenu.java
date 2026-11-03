@@ -128,6 +128,9 @@ public class ExtendedCraftingMenu extends AbstractContainerMenu {
         }
 
         this.imageHeight = playerInvY + 86;
+
+        // Check recipe output on container opening
+        this.blockEntity.checkAndSetRecipeOutput();
     }
 
     public ExtendedCraftingTableBlockEntity getBlockEntity() {

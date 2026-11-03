@@ -69,9 +69,16 @@ public class ExtendedCraftingRecipe {
                             matchSlot = true;
                             break;
                         }
-                    } else if (ItemStack.isSameItemSameTags(inGrid, candidate)) {
-                        matchSlot = true;
-                        break;
+                    } else if (!inGrid.isEmpty() && inGrid.is(candidate.getItem())) {
+                        if (candidate.hasTag()) {
+                            if (ItemStack.isSameItemSameTags(inGrid, candidate)) {
+                                matchSlot = true;
+                                break;
+                            }
+                        } else {
+                            matchSlot = true;
+                            break;
+                        }
                     }
                 }
                 if (!matchSlot) {

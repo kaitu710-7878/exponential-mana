@@ -8,6 +8,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.13.2-beta] - 2026-11-04
+
+### Fixed / 修正
+- **EN**:
+  - **Fixed Crafting Grid Slot Placement**:
+    - Resolved critical bug where `isItemValid` blocked players and JEI Recipe Transfer from placing items into Extended Crafting Table grid slots (`slot < bufferSlotStart`).
+    - Now players and JEI "+" button can smoothly place recipes into all grid slots (4x4 up to 13x13).
+  - **Enhanced Recipe Matching**:
+    - Made recipe matching lenient against NBT variations for standard materials (ores, ingots, tiered mana).
+    - Automatically checks and refreshes recipe preview output when opening the Extended Crafting Table screen.
+- **JA**:
+  - **拡張作業台スロットへのアイテム配置不可バグの修正**:
+    - `isItemValid` がグリッドスロット（`slot < bufferSlotStart`）への配置を拒否していた不具合を修正。手動およびJEIの「＋」ボタンによるレシピ自動配置が正常に機能するようになりました。
+  - **レシピ照合の安定化**:
+    - 通常の素材アイテム（鉱石、インゴット、各Tierマナ）において不要なNBT差分でレシピが弾かれないようマッチング処理を強化。
+    - 作業台GUIを開いた際にも即座にレシピ照合を行って成果物欄を更新するよう改善。
+
+---
+
 ## [0.13.1-beta] - 2026-11-04
 
 ### Changed / 変更
