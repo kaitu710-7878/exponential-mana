@@ -221,6 +221,8 @@
   "gui.exponential_mana.input": "Input",
 
   "jei.exponential_mana.extended_crafting.title": "Extended Crafting",
+  "jei.exponential_mana.extended_crafting.tier_grid": "Tier %s Extended Crafting Table (%s×%s)",
+  "tooltip.exponential_mana.extended_crafting_table.tier": "Tier %s Extended Crafting Table (%s×%s)",
   "jei.exponential_mana.recipe.tier1_table": "Tier 1 Extended Crafting Table (4x4)",
   "jei.exponential_mana.recipe.tier1_core": "Tier 1 Core",
   "jei.exponential_mana.recipe.tier1_catalyst": "Tier 1 Fairy Catalyst",

@@ -221,6 +221,8 @@
   "gui.exponential_mana.input": "入力スロット",
 
   "jei.exponential_mana.extended_crafting.title": "拡張クラフト",
+  "jei.exponential_mana.extended_crafting.tier_grid": "Tier %s 拡張作業台 (%s×%s)",
+  "tooltip.exponential_mana.extended_crafting_table.tier": "Tier %s 拡張作業台 (%s×%s)",
   "jei.exponential_mana.recipe.tier1_table": "Tier1 拡張作業台 (4×4)",
   "jei.exponential_mana.recipe.tier1_core": "Tier1 コア合成",
   "jei.exponential_mana.recipe.tier1_catalyst": "Tier1 妖精触媒",

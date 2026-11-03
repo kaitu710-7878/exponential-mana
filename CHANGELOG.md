@@ -8,6 +8,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.11.2-alpha] - 2026-11-03
+
+### Fixed / 修正
+- **EN**:
+  - Resolved raw internal localization keys appearing in JEI header and tooltips.
+  - Aligned JEI Extended Crafting category aesthetics with Extended Crafting Reforked (clean slot backgrounds, clear headers, full bilingual localization).
+- **JA**:
+  - JEIのヘッダーおよびツールチップに生キー（内部名称）が表示されていた不具合を修正。
+  - Extended Crafting Reforkedに準拠したJEI表示の刷新（スロット枠の美麗な描画、タイトル・レシピ名の明確な表示、完全な日英多言語対応）。
+
+### Added / 追加
+- **EN**:
+  - Comprehensive registration of all Extended Crafting recipes in JEI strictly matching the Mod Specification Document:
+    - Tier 1 (4x4): Mana, Cores, Ores, Catalysts, Tables.
+    - Tier 2 to 10: Even-tier shard deconstruction & 12/32/60/96/140 core recipes, odd-tier direct upgrades.
+    - End-Game (13x13): Pure Mana & Catalysts, Mana Wisdom, 4 Root Manas (Star, Quantum, Abyssal, Marine), Mana Root, Origin Equipment, and Infinite Mana.
+- **JA**:
+  - 企画書（第1部・第2部）に記載されたすべての拡張クラフトレシピをJEIに完全網羅して登録：
+    - Tier 1（4×4）: マナ、コア、鉱石、触媒、作業台の各クラフト。
+    - Tier 2〜10: 偶数Tierの設備破片（×4）とコアによる進化レシピ、奇数Tierの直接アップグレードレシピ。
+    - エンドゲーム（13×13）: 無垢のマナ/鉱石/触媒、マナの叡智、4大根源マナ（星、量子、深淵、海洋）、マナの根源、根源装備一式、無限のマナ。
+
+---
+
 ## [0.11.1-alpha] - 2026-11-03
 
 ### Fixed / 修正

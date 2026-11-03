@@ -2,15 +2,17 @@ package com.exponentialmana.mod.compat.jei;
 
 import com.exponentialmana.mod.ExponentialMana;
 import com.exponentialmana.mod.registry.ModBlocks;
-import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -24,13 +26,16 @@ public class ExtendedCraftingJeiCategory implements IRecipeCategory<ExtendedCraf
             RecipeType.create(ExponentialMana.MOD_ID, "extended_crafting", ExtendedCraftingJeiRecipe.class);
 
     private static final ResourceLocation CRAFTING_TEXTURE = new ResourceLocation("minecraft", "textures/gui/container/crafting_table.png");
+    private static final ResourceLocation SLOT_TEXTURE = new ResourceLocation("minecraft", "textures/gui/container/generic_54.png");
 
     private final IDrawable background;
     private final IDrawable icon;
+    private final IDrawableStatic slotDrawable;
 
     public ExtendedCraftingJeiCategory(IGuiHelper guiHelper) {
-        this.background = guiHelper.createBlankDrawable(176, 140);
+        this.background = guiHelper.createBlankDrawable(176, 150);
         this.icon = guiHelper.createDrawableItemStack(new ItemStack(ModBlocks.TIER1_EXTENDED_CRAFTING_TABLE.get()));
+        this.slotDrawable = guiHelper.getSlotDrawable();
     }
 
     @Override
@@ -58,11 +63,10 @@ public class ExtendedCraftingJeiCategory implements IRecipeCategory<ExtendedCraf
         int gridSize = recipe.getGridSize();
         List<List<ItemStack>> inputs = recipe.getInputs();
 
-        // Fit matrix in 108x108 space (from x=6, y=20)
-        int maxGridWidth = 108;
-        int slotPitch = Math.max(8, maxGridWidth / gridSize);
-        int startX = 6 + (maxGridWidth - gridSize * slotPitch) / 2;
-        int startY = 20 + (maxGridWidth - gridSize * slotPitch) / 2;
+        int maxArea = 112;
+        int slotPitch = Math.max(8, maxArea / gridSize);
+        int startX = 6 + (maxArea - gridSize * slotPitch) / 2;
+        int startY = 24 + (maxArea - gridSize * slotPitch) / 2;
 
         for (int row = 0; row < gridSize; row++) {
             for (int col = 0; col < gridSize; col++) {
@@ -70,14 +74,17 @@ public class ExtendedCraftingJeiCategory implements IRecipeCategory<ExtendedCraf
                 if (index < inputs.size()) {
                     List<ItemStack> slotInputs = inputs.get(index);
                     if (slotInputs != null && !slotInputs.isEmpty()) {
-                        builder.addSlot(RecipeIngredientRole.INPUT, startX + col * slotPitch, startY + row * slotPitch)
+                        var slotBuilder = builder.addSlot(RecipeIngredientRole.INPUT, startX + col * slotPitch, startY + row * slotPitch)
                                 .addItemStacks(slotInputs);
+                        if (slotPitch >= 14) {
+                            slotBuilder.setBackground(slotDrawable, -1, -1);
+                        }
                     }
                 }
             }
         }
 
-        // Output Slot at x=142, y=66
+        // Output Slot at x=142, y=66 (Big output slot)
         builder.addSlot(RecipeIngredientRole.OUTPUT, 142, 66)
                 .addItemStack(recipe.getOutput());
     }
@@ -85,22 +92,33 @@ public class ExtendedCraftingJeiCategory implements IRecipeCategory<ExtendedCraf
     @Override
     public void draw(@NotNull ExtendedCraftingJeiRecipe recipe, @NotNull IRecipeSlotsView recipeSlotsView,
                      @NotNull GuiGraphics guiGraphics, double mouseX, double mouseY) {
-        // Draw container-style outline for the recipe area
-        guiGraphics.fill(2, 2, 174, 138, 0xFFE0E0E0);
-        guiGraphics.renderOutline(2, 2, 172, 136, 0xFF373737);
+        Font font = Minecraft.getInstance().font;
+
+        // Container panel background
+        guiGraphics.fill(2, 2, 174, 148, 0xFFE0E0E0);
+        guiGraphics.renderOutline(2, 2, 172, 146, 0xFF373737);
 
         // Header: Tier & Grid size title
-        Component header = Component.translatable("tooltip.exponential_mana.extended_crafting_table.tier",
+        Component tierHeader = Component.translatable("jei.exponential_mana.extended_crafting.tier_grid",
                 recipe.getTier(), recipe.getGridSize(), recipe.getGridSize());
-        guiGraphics.drawString(net.minecraft.client.Minecraft.getInstance().font, header, 6, 6, 0x333333, false);
+        guiGraphics.drawString(font, tierHeader, 6, 5, 0x1A237E, false);
 
-        // Draw crafting arrow between grid and output slot
-        guiGraphics.blit(CRAFTING_TEXTURE, 118, 67, 90, 35, 20, 15);
+        // Recipe Item Name below header
+        Component name = recipe.getRecipeName();
+        guiGraphics.drawString(font, name, 6, 15, 0x333333, false);
 
-        // Draw description if present
-        if (recipe.getDescriptionKey() != null) {
-            Component desc = Component.translatable(recipe.getDescriptionKey());
-            guiGraphics.drawString(net.minecraft.client.Minecraft.getInstance().font, desc, 6, 128, 0x666666, false);
-        }
+        // Grid Area Outline
+        int maxArea = 112;
+        int slotPitch = Math.max(8, maxArea / recipe.getGridSize());
+        int startX = 6 + (maxArea - recipe.getGridSize() * slotPitch) / 2;
+        int startY = 24 + (maxArea - recipe.getGridSize() * slotPitch) / 2;
+        int gridPixelSize = recipe.getGridSize() * slotPitch;
+        guiGraphics.renderOutline(startX - 1, startY - 1, gridPixelSize + 2, gridPixelSize + 2, 0xFF888888);
+
+        // Crafting Arrow
+        guiGraphics.blit(CRAFTING_TEXTURE, 120, 68, 90, 35, 18, 15);
+
+        // Output Slot 26x26 frame
+        guiGraphics.blit(CRAFTING_TEXTURE, 137, 61, 119, 30, 26, 26);
     }
 }

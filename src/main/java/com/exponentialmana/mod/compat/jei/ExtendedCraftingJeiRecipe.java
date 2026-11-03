@@ -1,8 +1,8 @@
 package com.exponentialmana.mod.compat.jei;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -13,14 +13,14 @@ public class ExtendedCraftingJeiRecipe {
     private final int gridSize;
     private final List<List<ItemStack>> inputs; // gridSize * gridSize list of possible inputs
     private final ItemStack output;
-    private final String descriptionKey;
+    private final Component recipeName;
 
-    public ExtendedCraftingJeiRecipe(int tier, int gridSize, List<List<ItemStack>> inputs, ItemStack output, String descriptionKey) {
+    public ExtendedCraftingJeiRecipe(int tier, int gridSize, List<List<ItemStack>> inputs, ItemStack output, Component recipeName) {
         this.tier = tier;
         this.gridSize = gridSize;
         this.inputs = inputs;
         this.output = output;
-        this.descriptionKey = descriptionKey;
+        this.recipeName = recipeName;
     }
 
     public int getTier() {
@@ -39,7 +39,7 @@ public class ExtendedCraftingJeiRecipe {
         return output;
     }
 
-    public String getDescriptionKey() {
-        return descriptionKey;
+    public Component getRecipeName() {
+        return recipeName != null ? recipeName : output.getHoverName();
     }
 }
