@@ -77,9 +77,9 @@ public class ExponentialManaJeiPlugin implements IModPlugin {
                 int gridSize = cat.getGridSize();
                 int inputCount = gridSize * gridSize;
                 // recipeSlotStart = 0, recipeSlotCount = inputCount
-                // inventorySlotStart = inputCount + 1 (output) + 18 (buffer slots)
+                // inventorySlotStart = inputCount (grid) + 1 (manual result) + 18 (buffer) + 9 (auto output)
                 // inventorySlotCount = 36 (player inventory 27 + hotbar 9)
-                int invStart = inputCount + 1 + ExtendedCraftingTableBlockEntity.BUFFER_SLOTS;
+                int invStart = inputCount + 1 + ExtendedCraftingTableBlockEntity.BUFFER_SLOTS + ExtendedCraftingTableBlockEntity.AUTO_OUTPUT_SLOTS;
                 registration.addRecipeTransferHandler(
                         ExtendedCraftingMenu.class,
                         ModMenuTypes.EXTENDED_CRAFTING_MENU.get(),

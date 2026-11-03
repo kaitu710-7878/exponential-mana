@@ -1,32 +1,54 @@
 package com.exponentialmana.mod.menu;
 
 import com.exponentialmana.mod.block.entity.ExtendedCraftingTableBlockEntity;
+import com.exponentialmana.mod.recipe.ExtendedCraftingRecipe;
+import com.exponentialmana.mod.recipe.ExtendedCraftingRecipeManager;
 import com.exponentialmana.mod.registry.ModMenuTypes;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ContainerLevelAccess;
-import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 import org.jetbrains.annotations.NotNull;
 
 public class ExtendedCraftingMenu extends AbstractContainerMenu {
     private final ExtendedCraftingTableBlockEntity blockEntity;
     private final ContainerLevelAccess levelAccess;
+    private final Player player;
+
+    private final int tier;
     private final int gridSize;
     private final int totalInputSlots;
-    private final int outputSlotIndex;
     private final int bufferSlotStart;
-    private final int bufferSlotsCount = ExtendedCraftingTableBlockEntity.BUFFER_SLOTS;
-    private final int totalMachineSlots;
+    private final int autoOutputSlotStart;
 
-    private final int bufferStartX;
+    // Slot Indices in Menu:
+    // 0 .. totalInputSlots - 1: Grid
+    // totalInputSlots: Manual Result Slot
+    // manualResultMenuIndex = totalInputSlots
+    // bufferMenuStart = totalInputSlots + 1
+    // autoOutputMenuStart = totalInputSlots + 19
+    // playerInvMenuStart = totalInputSlots + 28
+    private final int manualResultMenuIndex;
+    private final int bufferMenuStart;
+    private final int autoOutputMenuStart;
+    private final int playerInvMenuStart;
+
+    private final ResultContainer resultContainer = new ResultContainer();
+
+    private final int gridStartX = 10;
+    private final int gridStartY = 20;
+    private final int bufferStartX = 10;
     private final int bufferStartY;
-    private final int playerInvX;
+    private final int autoOutputStartX = 10;
+    private final int autoOutputStartY;
+    private final int playerInvX = 10;
     private final int playerInvY;
+
     private final int imageWidth;
     private final int imageHeight;
 
@@ -38,62 +60,63 @@ public class ExtendedCraftingMenu extends AbstractContainerMenu {
         super(ModMenuTypes.EXTENDED_CRAFTING_MENU.get(), containerId);
         this.blockEntity = (ExtendedCraftingTableBlockEntity) entity;
         this.levelAccess = ContainerLevelAccess.create(blockEntity.getLevel(), blockEntity.getBlockPos());
+        this.player = inv.player;
+
+        this.tier = blockEntity.getTier();
         this.gridSize = blockEntity.getGridSize();
         this.totalInputSlots = blockEntity.getTotalInputSlots();
-        this.outputSlotIndex = blockEntity.getOutputSlotIndex();
         this.bufferSlotStart = blockEntity.getBufferSlotStart();
-        this.totalMachineSlots = blockEntity.getTotalSlots();
+        this.autoOutputSlotStart = blockEntity.getAutoOutputSlotStart();
 
-        int gridStartX = 10;
-        int gridStartY = 18;
         int gridWidth = gridSize * 18;
         int gridHeight = gridSize * 18;
 
-        // Ensure width is at least 254px so that the 70x48 SideConfigWidget fits cleanly in the bottom-right
-        this.imageWidth = Math.max(254, gridWidth + 86);
+        this.manualResultMenuIndex = totalInputSlots;
+        this.bufferMenuStart = totalInputSlots + 1;
+        this.autoOutputMenuStart = bufferMenuStart + ExtendedCraftingTableBlockEntity.BUFFER_SLOTS; // + 18
+        this.playerInvMenuStart = autoOutputMenuStart + ExtendedCraftingTableBlockEntity.AUTO_OUTPUT_SLOTS; // + 9
 
-        // 1. Input matrix slots (18x18 pitch always, matching Extended Crafting Reforked)
+        // Coordinates
+        this.bufferStartY = gridStartY + gridHeight + 20;
+        this.autoOutputStartY = bufferStartY + 2 * 18 + 14;
+        this.playerInvY = autoOutputStartY + 18 + 14;
+
+        this.imageWidth = Math.max(260, gridStartX + gridWidth + 76);
+        this.imageHeight = playerInvY + 4 * 18 + 14;
+
+        // 1. Grid Slots (0 .. totalInputSlots - 1)
         for (int row = 0; row < gridSize; row++) {
             for (int col = 0; col < gridSize; col++) {
                 int slotIndex = col + row * gridSize;
                 this.addSlot(new SlotItemHandler(blockEntity.getItemHandler(), slotIndex,
-                        gridStartX + col * 18, gridStartY + row * 18));
+                        gridStartX + col * 18, gridStartY + row * 18) {
+                    @Override
+                    public void setChanged() {
+                        super.setChanged();
+                        refreshRecipeResult();
+                    }
+                });
             }
         }
 
-        // 2. Output Slot (to the right of the grid, centered vertically)
-        int outputFrameX = gridStartX + gridWidth + 34;
-        int outputFrameY = gridStartY + gridHeight / 2 - 13;
-        int outputItemX = outputFrameX + 5;
-        int outputItemY = outputFrameY + 5;
-
-        this.addSlot(new SlotItemHandler(blockEntity.getItemHandler(), outputSlotIndex, outputItemX, outputItemY) {
+        // 2. Manual Result Slot (index: manualResultMenuIndex)
+        int outX = gridStartX + gridWidth + 38;
+        int outY = gridStartY + gridHeight / 2 - 8;
+        this.addSlot(new Slot(resultContainer, 0, outX, outY) {
             @Override
             public boolean mayPlace(@NotNull ItemStack stack) {
                 return false;
             }
 
             @Override
-            public int getMaxStackSize() {
-                return Integer.MAX_VALUE;
-            }
-
-            @Override
-            public int getMaxStackSize(@NotNull ItemStack stack) {
-                return Integer.MAX_VALUE;
-            }
-
-            @Override
-            public void onTake(@NotNull Player player, @NotNull ItemStack stack) {
-                blockEntity.onManualTake();
-                super.onTake(player, stack);
+            public void onTake(@NotNull Player pPlayer, @NotNull ItemStack pStack) {
+                consumeGridItems();
+                super.onTake(pPlayer, pStack);
+                refreshRecipeResult();
             }
         });
 
-        // 3. Material Buffer (18 slots: 2 rows of 9) - Mekanism Formulaic Assemblicator stock (Int_MAX stack limit)
-        this.bufferStartX = 12;
-        this.bufferStartY = gridStartY + gridHeight + 12;
-
+        // 3. Material Buffer (18 slots: 2 rows of 9)
         for (int row = 0; row < 2; row++) {
             for (int col = 0; col < 9; col++) {
                 int bIndex = bufferSlotStart + col + row * 9;
@@ -112,61 +135,87 @@ public class ExtendedCraftingMenu extends AbstractContainerMenu {
             }
         }
 
-        // 4. Player Inventory (left-aligned at X=12, leaves right side open for SideConfigWidget)
-        this.playerInvX = 12;
-        this.playerInvY = bufferStartY + 2 * 18 + 12;
+        // 4. Auto-Craft Output Buffer (9 slots: 1 row of 9)
+        for (int col = 0; col < 9; col++) {
+            int oIndex = autoOutputSlotStart + col;
+            this.addSlot(new SlotItemHandler(blockEntity.getItemHandler(), oIndex,
+                    autoOutputStartX + col * 18, autoOutputStartY) {
+                @Override
+                public boolean mayPlace(@NotNull ItemStack stack) {
+                    return false; // Output buffer is for automated yields, cannot insert manually
+                }
 
+                @Override
+                public int getMaxStackSize() {
+                    return Integer.MAX_VALUE;
+                }
+
+                @Override
+                public int getMaxStackSize(@NotNull ItemStack stack) {
+                    return Integer.MAX_VALUE;
+                }
+            });
+        }
+
+        // 5. Player Inventory (3 rows of 9)
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 9; col++) {
                 this.addSlot(new Slot(inv, col + row * 9 + 9, playerInvX + col * 18, playerInvY + row * 18));
             }
         }
 
-        // 5. Player Hotbar
+        // 6. Player Hotbar (1 row of 9)
+        int hotbarY = playerInvY + 3 * 18 + 4;
         for (int col = 0; col < 9; col++) {
-            this.addSlot(new Slot(inv, col, playerInvX + col * 18, playerInvY + 58));
+            this.addSlot(new Slot(inv, col, playerInvX + col * 18, hotbarY));
         }
 
-        this.imageHeight = playerInvY + 86;
-
-        // Check recipe output on container opening
-        this.blockEntity.checkAndSetRecipeOutput();
+        // Initial recipe check
+        refreshRecipeResult();
     }
 
-    public ExtendedCraftingTableBlockEntity getBlockEntity() {
-        return blockEntity;
+    public void refreshRecipeResult() {
+        ExtendedCraftingRecipe recipe = ExtendedCraftingRecipeManager.findMatchingRecipe(tier, new IItemHandler() {
+            @Override
+            public int getSlots() { return totalInputSlots; }
+            @Override
+            public @NotNull ItemStack getStackInSlot(int slot) { return blockEntity.getItemHandler().getStackInSlot(slot); }
+            @Override
+            public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) { return stack; }
+            @Override
+            public @NotNull ItemStack extractItem(int slot, int amount, boolean simulate) { return ItemStack.EMPTY; }
+            @Override
+            public int getSlotLimit(int slot) { return 64; }
+            @Override
+            public boolean isItemValid(int slot, @NotNull ItemStack stack) { return true; }
+        });
+
+        if (recipe != null) {
+            resultContainer.setItem(0, recipe.getOutput().copy());
+        } else {
+            resultContainer.setItem(0, ItemStack.EMPTY);
+        }
     }
 
-    public int getGridSize() {
-        return gridSize;
+    private void consumeGridItems() {
+        for (int i = 0; i < totalInputSlots; i++) {
+            ItemStack stack = blockEntity.getItemHandler().getStackInSlot(i);
+            if (!stack.isEmpty()) {
+                blockEntity.getItemHandler().extractItem(i, 1, false);
+            }
+        }
     }
 
-    public int getTotalInputSlots() {
-        return totalInputSlots;
+    @Override
+    public void slotsChanged(Container container) {
+        super.slotsChanged(container);
+        refreshRecipeResult();
     }
 
-    public int getOutputSlotIndex() {
-        return outputSlotIndex;
-    }
-
-    public int getBufferSlotStart() {
-        return bufferSlotStart;
-    }
-
-    public int getBufferStartX() {
-        return bufferStartX;
-    }
-
-    public int getBufferStartY() {
-        return bufferStartY;
-    }
-
-    public int getImageWidth() {
-        return imageWidth;
-    }
-
-    public int getImageHeight() {
-        return imageHeight;
+    @Override
+    public void broadcastChanges() {
+        refreshRecipeResult();
+        super.broadcastChanges();
     }
 
     @Override
@@ -182,57 +231,57 @@ public class ExtendedCraftingMenu extends AbstractContainerMenu {
             ItemStack slotStack = slot.getItem();
             itemstack = slotStack.copy();
 
-            int totalMachine = totalMachineSlots; // grid + output + buffer
-            int playerInvStart = totalMachine;
-            int playerInvEnd = playerInvStart + 36;
+            int playerInvEnd = playerInvMenuStart + 36;
 
-            if (index == outputSlotIndex) {
-                // Taking from output slot
-                if (!this.moveItemStackTo(slotStack, playerInvStart, playerInvEnd, true)) {
+            if (index == manualResultMenuIndex) {
+                // Taking from manual craft result slot (craft as many as possible or 1 full stack)
+                if (!this.moveItemStackTo(slotStack, playerInvMenuStart, playerInvEnd, true)) {
                     return ItemStack.EMPTY;
                 }
                 slot.onQuickCraft(slotStack, itemstack);
-                blockEntity.onManualTake();
-            } else if (index < totalMachine) {
-                // Machine slots -> Player Inventory
-                if (!this.moveItemStackTo(slotStack, playerInvStart, playerInvEnd, true)) {
+                consumeGridItems();
+                refreshRecipeResult();
+                slot.onTake(player, slotStack);
+                return itemstack;
+            } else if (index < playerInvMenuStart) {
+                // From Grid, Buffer, or Auto Output -> To Player Inventory
+                if (!this.moveItemStackTo(slotStack, playerInvMenuStart, playerInvEnd, true)) {
                     return ItemStack.EMPTY;
                 }
+                if (index < totalInputSlots) {
+                    refreshRecipeResult();
+                }
             } else {
-                // Player inventory -> Material buffer first (Int_MAX stack support)
-                int bufferStartInMenu = totalInputSlots + 1; // Slot index in menu for buffer
-                int bufferEndInMenu = bufferStartInMenu + bufferSlotsCount;
-
-                // Merge into existing buffer stacks up to Integer.MAX_VALUE
-                for (int b = bufferStartInMenu; b < bufferEndInMenu && !slotStack.isEmpty(); b++) {
-                    Slot targetSlot = this.slots.get(b);
-                    ItemStack targetStack = targetSlot.getItem();
-                    if (!targetStack.isEmpty() && ItemStack.isSameItemSameTags(targetStack, slotStack)) {
-                        long space = (long) Integer.MAX_VALUE - targetStack.getCount();
+                // From Player Inventory -> Try Material Buffer first (supporting Int_MAX)
+                int bufferEnd = bufferMenuStart + ExtendedCraftingTableBlockEntity.BUFFER_SLOTS;
+                for (int b = bufferMenuStart; b < bufferEnd && !slotStack.isEmpty(); b++) {
+                    Slot target = this.slots.get(b);
+                    ItemStack tStack = target.getItem();
+                    if (!tStack.isEmpty() && ItemStack.isSameItemSameTags(tStack, slotStack)) {
+                        long space = (long) Integer.MAX_VALUE - tStack.getCount();
                         if (space > 0) {
-                            int toMove = (int) Math.min(space, (long) slotStack.getCount());
-                            targetStack.grow(toMove);
-                            slotStack.shrink(toMove);
-                            targetSlot.setChanged();
+                            int move = (int) Math.min(space, (long) slotStack.getCount());
+                            tStack.grow(move);
+                            slotStack.shrink(move);
+                            target.setChanged();
                         }
                     }
                 }
-
-                // Place into empty buffer slots
-                for (int b = bufferStartInMenu; b < bufferEndInMenu && !slotStack.isEmpty(); b++) {
-                    Slot targetSlot = this.slots.get(b);
-                    if (!targetSlot.hasItem() && targetSlot.mayPlace(slotStack)) {
-                        targetSlot.set(slotStack.copy());
+                for (int b = bufferMenuStart; b < bufferEnd && !slotStack.isEmpty(); b++) {
+                    Slot target = this.slots.get(b);
+                    if (!target.hasItem()) {
+                        target.set(slotStack.copy());
                         slotStack.setCount(0);
-                        targetSlot.setChanged();
+                        target.setChanged();
                     }
                 }
 
-                // If any remaining, try grid slots
+                // If still not empty, try Grid slots (0 .. totalInputSlots - 1)
                 if (!slotStack.isEmpty()) {
                     if (!this.moveItemStackTo(slotStack, 0, totalInputSlots, false)) {
                         return ItemStack.EMPTY;
                     }
+                    refreshRecipeResult();
                 }
             }
 
@@ -251,4 +300,23 @@ public class ExtendedCraftingMenu extends AbstractContainerMenu {
 
         return itemstack;
     }
+
+    public ExtendedCraftingTableBlockEntity getBlockEntity() { return blockEntity; }
+    public int getTier() { return tier; }
+    public int getGridSize() { return gridSize; }
+    public int getTotalInputSlots() { return totalInputSlots; }
+    public int getManualResultMenuIndex() { return manualResultMenuIndex; }
+    public int getBufferMenuStart() { return bufferMenuStart; }
+    public int getAutoOutputMenuStart() { return autoOutputMenuStart; }
+    public int getPlayerInvMenuStart() { return playerInvMenuStart; }
+    public int getGridStartX() { return gridStartX; }
+    public int getGridStartY() { return gridStartY; }
+    public int getBufferStartX() { return bufferStartX; }
+    public int getBufferStartY() { return bufferStartY; }
+    public int getAutoOutputStartX() { return autoOutputStartX; }
+    public int getAutoOutputStartY() { return autoOutputStartY; }
+    public int getPlayerInvX() { return playerInvX; }
+    public int getPlayerInvY() { return playerInvY; }
+    public int getImageWidth() { return imageWidth; }
+    public int getImageHeight() { return imageHeight; }
 }

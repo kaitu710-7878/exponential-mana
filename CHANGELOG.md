@@ -8,6 +8,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.13.3-beta] - 2026-11-04
+
+### Added / 追加
+- **EN**:
+  - **9-Slot Auto-Craft Output Buffer**:
+    - Added 9 dedicated output slots (holding up to `Integer.MAX_VALUE` stacks each) to all Extended Crafting Tables for storing automated crafting yields.
+    - Players can now manually take automatically crafted items directly from the GUI without requiring external pipe extraction.
+  - **Side Direction Block Textures (UDNSWE)**:
+    - Designed 16x16 directional pixel art letter badges on the bottom-right corner of all 6 faces (Up, Down, North, South, West, East) for Tier 1 through Tier 10 Extended Crafting Tables.
+- **JA**:
+  - **自動クラフト成果物用9スロット（Int_MAX対応）の追加**:
+    - 全拡張作業台に、自動クラフトされた完成品を一時保持する専用スロット（9スロット、1スロットあたりInt_MAXスタック保持可能）を追加。
+    - パイプ搬出を行わなくても、プレイヤーがGUIから直接自動クラフト成果物を取り出せるようになりました。
+  - **拡張作業台の各面UDNSWE方角テクスチャ**:
+    - Tier1〜Tier10の全拡張作業台の全6面（上面:U, 下面:D, 北面:N, 南面:S, 西面:W, 東面:E）の右下に方角頭文字を記載した16×16バニラ基準テクスチャを作成。
+
+### Fixed / 修正
+- **EN**:
+  - **Resolved Player Ticking Kick Exception**:
+    - Fixed slot indexing mismatch between `ExtendedCraftingTableBlockEntity` and `ExtendedCraftingMenu` that caused Neruina to kick players due to ticking exceptions.
+  - **Manual Crafting Result Container Separation**:
+    - Decoupled manual crafting output into a dedicated vanilla-style `ResultContainer`, completely fixing the bug where matched crafting output vanished or could not be taken.
+  - **GUI Slot Layout & Overflow Fix**:
+    - Fixed player inventory and hotbar overflowing outside the GUI container background panel.
+    - Completely resolved the misplaced 26x26 big frame highlight and slot alignment discrepancies across all table tiers.
+  - **JEI Display & Transfer Optimization**:
+    - Cleaned up JEI recipe view so slot highlights, output slots, and tooltips do not crowd or overlap.
+    - Adjusted recipe transfer handler indices to correctly target the player inventory.
+- **JA**:
+  - **プレイヤーのTick例外によるキック不具合の解消**:
+    - `ExtendedCraftingTableBlockEntity` と `ExtendedCraftingMenu` 間のスロットインデックス不整合を解消し、Neruina によるキック（接続を維持できません）を完全に修正。
+  - **手動クラフト成果物の消失・取得不可バグの根絶**:
+    - 手動クラフトの成果物管理を独立した `ResultContainer` に分離し、レシピが一致しているのに成果物が消えてクラフトできない問題を根本解決。
+  - **GUI枠はみ出し・スロットズレの完全修正**:
+    - Tier1〜10においてプレイヤーインベントリやホットバーが背景パネルからはみ出ていた問題、およびグリッド上に成果物大枠が誤描画されていた現象を解消。
+  - **JEIレイアウトおよびレシピ転送の最適化**:
+    - JEIレシピ画面でのスロット枠・成果物・ツールチップの重なりを解消し、転送「＋」ボタンのインベントリ対象インデックスを修正。
+
+---
+
 ## [0.13.2-beta] - 2026-11-04
 
 ### Fixed / 修正

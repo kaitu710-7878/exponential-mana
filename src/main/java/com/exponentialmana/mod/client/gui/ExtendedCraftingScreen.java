@@ -13,7 +13,6 @@ import net.minecraft.world.inventory.Slot;
 
 public class ExtendedCraftingScreen extends AbstractContainerScreen<ExtendedCraftingMenu> {
     private static final ResourceLocation CRAFTING_TEXTURE = new ResourceLocation("minecraft", "textures/gui/container/crafting_table.png");
-    private static final ResourceLocation SLOT_TEXTURE = new ResourceLocation("minecraft", "textures/gui/container/generic_54.png");
 
     private SideConfigWidget sideConfigWidget;
 
@@ -31,9 +30,9 @@ public class ExtendedCraftingScreen extends AbstractContainerScreen<ExtendedCraf
         this.leftPos = (this.width - this.imageWidth) / 2;
         this.topPos = (this.height - this.imageHeight) / 2;
 
-        // Position Side Config Widget inside the bottom-right corner of the table screen
-        int widgetX = this.leftPos + this.imageWidth - 70 - 6;
-        int widgetY = this.topPos + this.imageHeight - 48 - 6;
+        // Position SideConfigWidget neatly next to the player inventory (to the right, within imageWidth)
+        int widgetX = this.leftPos + 178;
+        int widgetY = this.topPos + menu.getPlayerInvY();
         this.sideConfigWidget = new SideConfigWidget(widgetX, widgetY,
                 menu.getBlockEntity().getBlockPos(), menu.getBlockEntity());
         this.addRenderableWidget(sideConfigWidget);
@@ -47,42 +46,64 @@ public class ExtendedCraftingScreen extends AbstractContainerScreen<ExtendedCraf
         int x = this.leftPos;
         int y = this.topPos;
 
-        // 1. Container background panel
+        // 1. Container background panel (crisp vanilla-style beveled dialog)
         guiGraphics.fill(x, y, x + imageWidth, y + imageHeight, 0xFFC6C6C6);
-        guiGraphics.renderOutline(x, y, imageWidth, imageHeight, 0xFF373737);
+        guiGraphics.fill(x, y, x + imageWidth, y + 1, 0xFFFFFFFF); // Top light highlight
+        guiGraphics.fill(x, y, x + 1, y + imageHeight, 0xFFFFFFFF); // Left light highlight
+        guiGraphics.fill(x + imageWidth - 1, y, x + imageWidth, y + imageHeight, 0xFF555555); // Right dark shadow
+        guiGraphics.fill(x, y + imageHeight - 1, x + imageWidth, y + imageHeight, 0xFF555555); // Bottom dark shadow
+        guiGraphics.renderOutline(x, y, imageWidth, imageHeight, 0xFF373737); // Perimeter border
 
-        // 2. Draw standard slots (Grid, Buffer, Player Inv, Hotbar)
-        int outputSlotIndex = menu.getOutputSlotIndex();
-        RenderSystem.setShaderTexture(0, SLOT_TEXTURE);
+        // 2. Draw standard slots (18x18 beveled inset slot frames)
+        int manualResultIndex = menu.getManualResultMenuIndex();
         for (int i = 0; i < menu.slots.size(); i++) {
+            if (i == manualResultIndex) continue; // Drawn separately with 26x26 big frame
             Slot slot = menu.slots.get(i);
-            if (i != outputSlotIndex) {
-                guiGraphics.blit(SLOT_TEXTURE, x + slot.x - 1, y + slot.y - 1, 7, 17, 18, 18);
-            }
+            drawStandardSlotFrame(guiGraphics, x + slot.x - 1, y + slot.y - 1);
         }
 
-        // 3. Draw 26x26 big output frame
-        RenderSystem.setShaderTexture(0, CRAFTING_TEXTURE);
-        Slot outputSlot = menu.slots.get(outputSlotIndex);
-        int outFrameX = x + outputSlot.x - 5;
-        int outFrameY = y + outputSlot.y - 5;
-        guiGraphics.blit(CRAFTING_TEXTURE, outFrameX, outFrameY, 119, 30, 26, 26);
+        // 3. Draw Crafting Arrow and 26x26 big output frame for manual craft slot
+        Slot resultSlot = menu.slots.get(manualResultIndex);
+        int outFrameX = x + resultSlot.x - 5;
+        int outFrameY = y + resultSlot.y - 5;
 
-        // 4. Draw Crafting Arrow
+        // Crafting Arrow (22x15)
         int arrowX = outFrameX - 26;
         int arrowY = outFrameY + 5;
         guiGraphics.blit(CRAFTING_TEXTURE, arrowX, arrowY, 90, 35, 22, 15);
+
+        // 26x26 big output slot frame
+        guiGraphics.blit(CRAFTING_TEXTURE, outFrameX, outFrameY, 119, 30, 26, 26);
+    }
+
+    private void drawStandardSlotFrame(GuiGraphics guiGraphics, int sx, int sy) {
+        // Standard Minecraft 18x18 recessed slot appearance
+        guiGraphics.fill(sx, sy, sx + 18, sy + 18, 0xFF8B8B8B); // Inset slot background
+        guiGraphics.fill(sx, sy, sx + 18, sy + 1, 0xFF373737); // Top shadow
+        guiGraphics.fill(sx, sy, sx + 1, sy + 18, 0xFF373737); // Left shadow
+        guiGraphics.fill(sx + 17, sy + 1, sx + 18, sy + 18, 0xFFFFFFFF); // Right highlight
+        guiGraphics.fill(sx + 1, sy + 17, sx + 18, sy + 18, 0xFFFFFFFF); // Bottom highlight
     }
 
     @Override
     protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
-        // Table title
-        guiGraphics.drawString(this.font, this.title, 8, 6, 0x404040, false);
+        // 1. Table title
+        guiGraphics.drawString(this.font, this.title, 10, 8, 0x404040, false);
 
-        // Material Buffer label
+        // 2. Material Buffer label
         int bufX = menu.getBufferStartX();
-        int bufY = menu.getBufferStartY() - 9;
+        int bufY = menu.getBufferStartY() - 11;
         guiGraphics.drawString(this.font, Component.translatable("gui.exponential_mana.material_buffer"), bufX, bufY, 0x404040, false);
+
+        // 3. Auto-Craft Output label
+        int autoX = menu.getAutoOutputStartX();
+        int autoY = menu.getAutoOutputStartY() - 11;
+        guiGraphics.drawString(this.font, Component.translatable("gui.exponential_mana.auto_output"), autoX, autoY, 0x404040, false);
+
+        // 4. Player Inventory label
+        int invX = menu.getPlayerInvX();
+        int invY = menu.getPlayerInvY() - 11;
+        guiGraphics.drawString(this.font, Component.translatable("container.inventory"), invX, invY, 0x404040, false);
     }
 
     @Override

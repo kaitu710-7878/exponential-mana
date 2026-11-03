@@ -221,6 +221,7 @@
   "gui.exponential_mana.input": "Input",
   "gui.exponential_mana.compressed_mana_output": "Batch Mana",
   "gui.exponential_mana.material_buffer": "Material Buffer",
+  "gui.exponential_mana.auto_output": "Auto-Craft Output",
   "gui.exponential_mana.side_config.title": "Side Config",
   "gui.exponential_mana.side_mode.disabled": "Disabled",
   "gui.exponential_mana.side_mode.input": "Input",

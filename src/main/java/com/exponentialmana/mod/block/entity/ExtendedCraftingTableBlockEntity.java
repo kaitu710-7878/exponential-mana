@@ -35,22 +35,24 @@ import java.util.*;
 
 /**
  * BlockEntity for Extended Crafting Tables (Tier 1: 4x4 up to Tier 10: 13x13).
- * Features:
- * - Real-time Recipe Matching for Manual Crafting & JEI Transfer.
- * - Mekanism Formulaic Assemblicator (定式組立機) style automation:
- *   18-slot Material Buffer (Int_MAX stack per slot) crafting as many items as possible per tick (1t batch craft).
- * - Side Configuration (DISABLED, INPUT, OUTPUT, BOTH) with Auto-Eject.
- * - Int_MAX stack support for output and material buffer.
+ * Architecture:
+ * - Grid Slots: 0 .. totalInputSlots - 1 (Pattern definition and ingredients)
+ * - Material Buffer: 18 slots (Int_MAX stack) for automated raw materials
+ * - Auto-Craft Output Buffer: 9 slots (Int_MAX stack) for automated crafted products
+ * - Full Mekanism-style Side Configuration (DISABLED, INPUT, OUTPUT, BOTH) with Auto-Eject.
  */
 public class ExtendedCraftingTableBlockEntity extends BlockEntity implements MenuProvider, ISidedMachine {
     public static final int BUFFER_SLOTS = 18;
+    public static final int AUTO_OUTPUT_SLOTS = 9;
 
     private final int tier;
     private final int gridSize;
     private final int totalInputSlots;
-    private final int outputSlotIndex;
     private final int bufferSlotStart;
+    private final int autoOutputSlotStart;
     private final int totalSlots;
+
+    private final List<Integer> autoOutputIndices;
 
     private final SideConfig sideConfig = new SideConfig();
 
@@ -63,9 +65,15 @@ public class ExtendedCraftingTableBlockEntity extends BlockEntity implements Men
         this.tier = tier;
         this.gridSize = tier + 3;
         this.totalInputSlots = gridSize * gridSize;
-        this.outputSlotIndex = totalInputSlots;
-        this.bufferSlotStart = totalInputSlots + 1;
-        this.totalSlots = bufferSlotStart + BUFFER_SLOTS;
+        this.bufferSlotStart = totalInputSlots;
+        this.autoOutputSlotStart = bufferSlotStart + BUFFER_SLOTS;
+        this.totalSlots = autoOutputSlotStart + AUTO_OUTPUT_SLOTS;
+
+        List<Integer> outList = new ArrayList<>(AUTO_OUTPUT_SLOTS);
+        for (int i = autoOutputSlotStart; i < totalSlots; i++) {
+            outList.add(i);
+        }
+        this.autoOutputIndices = Collections.unmodifiableList(outList);
 
         this.itemHandler = new ItemStackHandler(totalSlots) {
             @Override
@@ -75,29 +83,24 @@ public class ExtendedCraftingTableBlockEntity extends BlockEntity implements Men
 
             @Override
             public int getSlotLimit(int slot) {
-                if (slot == outputSlotIndex || (slot >= bufferSlotStart && slot < totalSlots)) {
-                    return Integer.MAX_VALUE;
+                if (slot >= bufferSlotStart) {
+                    return Integer.MAX_VALUE; // Both Material Buffer and Auto-Output buffer hold up to Int_MAX
                 }
                 return 64; // Grid slots hold normal 64 for recipe pattern
             }
 
             @Override
             public boolean isItemValid(int slot, @NotNull ItemStack stack) {
-                // Output slot cannot be placed into directly by player or JEI
-                if (slot == outputSlotIndex) {
+                // Auto-output buffer slots cannot be inserted into externally
+                if (slot >= autoOutputSlotStart) {
                     return false;
                 }
-                // Grid slots (0..totalInputSlots-1) and Buffer slots (bufferSlotStart..totalSlots-1) can accept items
                 return true;
             }
 
             @Override
             protected void onContentsChanged(int slot) {
                 setChanged();
-                if (slot < totalInputSlots) {
-                    // Grid changed: recalculate output for manual player crafting
-                    checkAndSetRecipeOutput();
-                }
             }
         };
 
@@ -108,22 +111,23 @@ public class ExtendedCraftingTableBlockEntity extends BlockEntity implements Men
                     itemHandler,
                     dir,
                     sideConfig,
-                    slot -> slot >= bufferSlotStart && slot < totalSlots, // External pipe import goes ONLY to buffer
-                    slot -> slot == outputSlotIndex                       // External export extracts from output slot
+                    slot -> slot >= bufferSlotStart && slot < autoOutputSlotStart, // Input -> Material Buffer (18 slots)
+                    slot -> slot >= autoOutputSlotStart && slot < totalSlots       // Output -> Auto Output Buffer (9 slots)
             )));
         }
     }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, ExtendedCraftingTableBlockEntity be) {
-        // 1. Auto-crafting (Mekanism Formulaic Assemblicator / 定式組立機 behavior: batch craft as many as possible per tick)
+        // 1. Auto-crafting (Batch craft as many as possible per tick into the 9 auto-output buffer slots)
         be.tickAutoCraft();
 
-        // 2. Auto-eject to adjacent inventories
-        AutoEjectHelper.eject(level, pos, be.sideConfig, be.itemHandler, Collections.singletonList(be.outputSlotIndex));
+        // 2. Auto-eject products from auto-output buffer to adjacent inventories
+        AutoEjectHelper.eject(level, pos, be.sideConfig, be.itemHandler, be.autoOutputIndices);
     }
 
     /**
      * Crafts as many items as possible in 1 tick based on materials in the material buffer.
+     * Outputs to the 9 auto-craft output buffer slots.
      */
     private void tickAutoCraft() {
         ExtendedCraftingRecipe recipe = ExtendedCraftingRecipeManager.findMatchingRecipe(tier, new IItemHandler() {
@@ -144,11 +148,6 @@ public class ExtendedCraftingTableBlockEntity extends BlockEntity implements Men
         if (recipe == null) return;
 
         ItemStack output = recipe.getOutput();
-        ItemStack currentOut = itemHandler.getStackInSlot(outputSlotIndex);
-        if (!currentOut.isEmpty()) {
-            if (!ItemStack.isSameItemSameTags(currentOut, output)) return;
-            if (currentOut.getCount() >= Integer.MAX_VALUE) return;
-        }
 
         // Count required items for this recipe (per single craft)
         Map<ItemStackKey, Integer> required = new HashMap<>();
@@ -164,7 +163,7 @@ public class ExtendedCraftingTableBlockEntity extends BlockEntity implements Men
 
         // Count available items in material buffer
         Map<ItemStackKey, Long> available = new HashMap<>();
-        for (int b = bufferSlotStart; b < totalSlots; b++) {
+        for (int b = bufferSlotStart; b < autoOutputSlotStart; b++) {
             ItemStack stack = itemHandler.getStackInSlot(b);
             if (!stack.isEmpty()) {
                 ItemStackKey key = new ItemStackKey(stack);
@@ -182,18 +181,29 @@ public class ExtendedCraftingTableBlockEntity extends BlockEntity implements Men
             }
         }
 
-        // Check output slot capacity limit
+        if (maxCrafts <= 0) return;
+
+        // Calculate available output capacity in the 9 auto-output slots
         int outPerCraft = Math.max(1, output.getCount());
-        long space = currentOut.isEmpty() ? (long) Integer.MAX_VALUE : ((long) Integer.MAX_VALUE - currentOut.getCount());
+        long space = 0;
+        for (int o = autoOutputSlotStart; o < totalSlots; o++) {
+            ItemStack inSlot = itemHandler.getStackInSlot(o);
+            if (inSlot.isEmpty()) {
+                space += Integer.MAX_VALUE;
+            } else if (ItemStack.isSameItemSameTags(inSlot, output)) {
+                space += ((long) Integer.MAX_VALUE - inSlot.getCount());
+            }
+        }
+
         long maxBySpace = space / outPerCraft;
         maxCrafts = Math.min(maxCrafts, maxBySpace);
 
         if (maxCrafts <= 0) return;
 
-        // Consume required materials from buffer (each key needs req.getValue() * maxCrafts)
+        // Consume required materials from material buffer
         for (Map.Entry<ItemStackKey, Integer> req : required.entrySet()) {
             long toConsume = (long) req.getValue() * maxCrafts;
-            for (int b = bufferSlotStart; b < totalSlots && toConsume > 0; b++) {
+            for (int b = bufferSlotStart; b < autoOutputSlotStart && toConsume > 0; b++) {
                 ItemStack inSlot = itemHandler.getStackInSlot(b);
                 if (!inSlot.isEmpty() && new ItemStackKey(inSlot).equals(req.getKey())) {
                     int taken = (int) Math.min((long) inSlot.getCount(), toConsume);
@@ -203,61 +213,34 @@ public class ExtendedCraftingTableBlockEntity extends BlockEntity implements Men
             }
         }
 
-        // Add produced output (outPerCraft * maxCrafts)
-        long totalProduced = (long) outPerCraft * maxCrafts;
-        if (currentOut.isEmpty()) {
-            ItemStack newOut = output.copy();
-            newOut.setCount((int) totalProduced);
-            itemHandler.setStackInSlot(outputSlotIndex, newOut);
-        } else {
-            currentOut.grow((int) totalProduced);
-        }
-        setChanged();
-    }
+        // Add produced output into the 9 auto-output slots
+        long toAdd = (long) outPerCraft * maxCrafts;
 
-    /**
-     * Checks recipe and updates output slot for manual player crafting.
-     */
-    public void checkAndSetRecipeOutput() {
-        ExtendedCraftingRecipe recipe = ExtendedCraftingRecipeManager.findMatchingRecipe(tier, new IItemHandler() {
-            @Override
-            public int getSlots() { return totalInputSlots; }
-            @Override
-            public @NotNull ItemStack getStackInSlot(int slot) { return itemHandler.getStackInSlot(slot); }
-            @Override
-            public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) { return stack; }
-            @Override
-            public @NotNull ItemStack extractItem(int slot, int amount, boolean simulate) { return ItemStack.EMPTY; }
-            @Override
-            public int getSlotLimit(int slot) { return 64; }
-            @Override
-            public boolean isItemValid(int slot, @NotNull ItemStack stack) { return true; }
-        });
-
-        if (recipe != null) {
-            ItemStack out = recipe.getOutput();
-            ItemStack current = itemHandler.getStackInSlot(outputSlotIndex);
-            if (current.isEmpty()) {
-                itemHandler.setStackInSlot(outputSlotIndex, out.copy());
-            }
-        } else {
-            // If grid has no valid recipe and output slot has 1 item matching a previous craft preview, clear it
-            ItemStack current = itemHandler.getStackInSlot(outputSlotIndex);
-            if (!current.isEmpty() && current.getCount() == 1) {
-                // Clear output preview if manual recipe is broken
-                itemHandler.setStackInSlot(outputSlotIndex, ItemStack.EMPTY);
+        // 1. Merge with existing matching stacks
+        for (int o = autoOutputSlotStart; o < totalSlots && toAdd > 0; o++) {
+            ItemStack inSlot = itemHandler.getStackInSlot(o);
+            if (!inSlot.isEmpty() && ItemStack.isSameItemSameTags(inSlot, output)) {
+                long room = (long) Integer.MAX_VALUE - inSlot.getCount();
+                if (room > 0) {
+                    int add = (int) Math.min(room, toAdd);
+                    inSlot.grow(add);
+                    toAdd -= add;
+                }
             }
         }
-    }
 
-    public void onManualTake() {
-        for (int i = 0; i < totalInputSlots; i++) {
-            ItemStack stack = itemHandler.getStackInSlot(i);
-            if (!stack.isEmpty()) {
-                itemHandler.extractItem(i, 1, false);
+        // 2. Put into empty slots
+        for (int o = autoOutputSlotStart; o < totalSlots && toAdd > 0; o++) {
+            ItemStack inSlot = itemHandler.getStackInSlot(o);
+            if (inSlot.isEmpty()) {
+                int add = (int) Math.min((long) Integer.MAX_VALUE, toAdd);
+                ItemStack newStack = output.copy();
+                newStack.setCount(add);
+                itemHandler.setStackInSlot(o, newStack);
+                toAdd -= add;
             }
         }
-        checkAndSetRecipeOutput();
+
         setChanged();
     }
 
@@ -273,12 +256,12 @@ public class ExtendedCraftingTableBlockEntity extends BlockEntity implements Men
         return totalInputSlots;
     }
 
-    public int getOutputSlotIndex() {
-        return outputSlotIndex;
-    }
-
     public int getBufferSlotStart() {
         return bufferSlotStart;
+    }
+
+    public int getAutoOutputSlotStart() {
+        return autoOutputSlotStart;
     }
 
     public int getTotalSlots() {

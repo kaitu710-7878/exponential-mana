@@ -221,6 +221,7 @@
   "gui.exponential_mana.input": "入力スロット",
   "gui.exponential_mana.compressed_mana_output": "一括マナ",
   "gui.exponential_mana.material_buffer": "素材インベントリ (Material Buffer)",
+  "gui.exponential_mana.auto_output": "自動クラフト成果物",
   "gui.exponential_mana.side_config.title": "面設定",
   "gui.exponential_mana.side_mode.disabled": "遮断",
   "gui.exponential_mana.side_mode.input": "搬入",

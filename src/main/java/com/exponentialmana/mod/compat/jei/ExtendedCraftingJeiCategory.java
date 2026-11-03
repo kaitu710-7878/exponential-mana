@@ -40,8 +40,9 @@ public class ExtendedCraftingJeiCategory implements IRecipeCategory<ExtendedCraf
         this.recipeType = RecipeType.create(ExponentialMana.MOD_ID, "extended_crafting_tier_" + tier, ExtendedCraftingRecipe.class);
 
         int gridPixels = gridSize * 18;
-        this.width = Math.max(176, gridPixels + 76);
-        this.height = Math.max(100, gridPixels + 28);
+        // Ample width so grid, arrow, output slot, and "+" button do not crowd or overlap
+        this.width = Math.max(186, gridPixels + 94);
+        this.height = Math.max(110, gridPixels + 32);
 
         this.background = guiHelper.createBlankDrawable(width, height);
         this.icon = guiHelper.createDrawableItemStack(new ItemStack(ModBlocks.EXTENDED_CRAFTING_TABLES.get(tier - 1).get()));
@@ -80,34 +81,35 @@ public class ExtendedCraftingJeiCategory implements IRecipeCategory<ExtendedCraf
     public void setRecipe(@NotNull IRecipeLayoutBuilder builder, @NotNull ExtendedCraftingRecipe recipe, @NotNull IFocusGroup focuses) {
         List<List<ItemStack>> inputs = recipe.getInputs();
 
-        int startX = 6;
-        int startY = 22;
+        int startX = 8;
+        int startY = 24;
 
         // 18x18 pitch for all slots (standard Extended Crafting Reforked layout)
         for (int row = 0; row < gridSize; row++) {
             for (int col = 0; col < gridSize; col++) {
                 int index = col + row * gridSize;
+                var slotBuilder = builder.addSlot(RecipeIngredientRole.INPUT, startX + col * 18, startY + row * 18)
+                        .setBackground(slotDrawable, -1, -1);
+
                 if (index < inputs.size()) {
                     List<ItemStack> slotInputs = inputs.get(index);
                     if (slotInputs != null && !slotInputs.isEmpty()) {
-                        builder.addSlot(RecipeIngredientRole.INPUT, startX + col * 18, startY + row * 18)
-                                .addItemStacks(slotInputs)
-                                .setBackground(slotDrawable, -1, -1);
+                        slotBuilder.addItemStacks(slotInputs);
                     }
                 }
             }
         }
 
-        // Output Slot placed to the right of the grid
-        int outX = startX + gridSize * 18 + 38;
+        // Output Slot placed cleanly to the right of the grid
+        int outX = startX + gridSize * 18 + 48;
         int outY = startY + (gridSize * 18) / 2 - 8;
 
         builder.addSlot(RecipeIngredientRole.OUTPUT, outX, outY)
                 .addItemStack(recipe.getOutput())
                 .setBackground(slotDrawable, -1, -1);
 
-        // Move Recipe Transfer ("+") button cleanly beneath the output slot to prevent overlapping the grid
-        builder.moveRecipeTransferButton(outX, outY + 24);
+        // Move Recipe Transfer ("+") button cleanly beneath the output slot
+        builder.moveRecipeTransferButton(outX, outY + 28);
     }
 
     @Override
@@ -121,20 +123,20 @@ public class ExtendedCraftingJeiCategory implements IRecipeCategory<ExtendedCraf
 
         // Header: Tier title and recipe item name
         Component title = Component.translatable("jei.exponential_mana.extended_crafting.tier_grid", tier, gridSize, gridSize);
-        guiGraphics.drawString(font, title, 6, 5, 0x1A237E, false);
+        guiGraphics.drawString(font, title, 8, 6, 0x1A237E, false);
 
         Component name = recipe.getRecipeName();
-        guiGraphics.drawString(font, name, 6, 14, 0x333333, false);
+        guiGraphics.drawString(font, name, 8, 15, 0x333333, false);
 
         // Crafting Arrow
-        int startX = 6;
-        int startY = 22;
-        int arrowX = startX + gridSize * 18 + 10;
+        int startX = 8;
+        int startY = 24;
+        int arrowX = startX + gridSize * 18 + 14;
         int arrowY = startY + (gridSize * 18) / 2 - 7;
         guiGraphics.blit(CRAFTING_TEXTURE, arrowX, arrowY, 90, 35, 22, 15);
 
-        // 26x26 big frame around output slot
-        int outFrameX = startX + gridSize * 18 + 33;
+        // Big 26x26 output slot frame around the output slot
+        int outFrameX = startX + gridSize * 18 + 43;
         int outFrameY = startY + (gridSize * 18) / 2 - 13;
         guiGraphics.blit(CRAFTING_TEXTURE, outFrameX, outFrameY, 119, 30, 26, 26);
     }
