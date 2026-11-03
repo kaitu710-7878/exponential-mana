@@ -1,5 +1,9 @@
 package com.exponentialmana.mod;
 
+import com.exponentialmana.mod.registry.ModBlockEntities;
+import com.exponentialmana.mod.registry.ModBlocks;
+import com.exponentialmana.mod.registry.ModCreativeModeTabs;
+import com.exponentialmana.mod.registry.ModItems;
 import com.mojang.logging.LogUtils;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraftforge.api.distmarker.Dist;
@@ -22,11 +26,17 @@ import org.slf4j.Logger;
 @Mod(ExponentialMana.MOD_ID)
 public class ExponentialMana {
     public static final String MOD_ID = "exponential_mana";
-    public static final String VERSION = "0.1.0-alpha";
+    public static final String VERSION = "0.2.0-alpha";
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public ExponentialMana() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+
+        // Register registries
+        ModItems.register(modEventBus);
+        ModBlocks.register(modEventBus);
+        ModBlockEntities.register(modEventBus);
+        ModCreativeModeTabs.register(modEventBus);
 
         // Register lifecycle events
         modEventBus.addListener(this::commonSetup);
