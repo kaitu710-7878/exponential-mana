@@ -7,12 +7,23 @@
   "tooltip.exponential_mana.fairy_attractor.desc": "Attracts and captures 1 Fairy Block every 5 minutes.",
   "tooltip.exponential_mana.large_stack_info": "Quantity: %s (%s)",
 
+  "tooltip.exponential_mana.batch_compressed_mana.desc": "NBT-compressed batch mana data. Use a Thawer to extract.",
+  "tooltip.exponential_mana.batch_compressed_mana.empty": "No mana stored.",
+  "tooltip.exponential_mana.batch_ore_breaker.desc": "Processes 10x10 slots (Int_MAX each) of inactive ores into mana without world lag.",
+  "tooltip.exponential_mana.thawer.desc": "Safely unpacks Batch Compressed Mana into real item stacks.",
+
   "message.exponential_mana.fairy.collected_mana": "Collected generated mana from Fairy.",
   "message.exponential_mana.fairy.retrieved_catalyst": "Retrieved catalyst from Fairy.",
   "message.exponential_mana.fairy.inserted_catalyst": "Inserted catalyst into Fairy.",
   "message.exponential_mana.fairy.status": "Catalyst: %s | Output: %s | Cooldown: %ss",
   "message.exponential_mana.attractor.collected": "Collected lured Fairy Block.",
   "message.exponential_mana.attractor.status": "Luring in progress: %ss remaining",
+  "message.exponential_mana.breaker.inserted": "Batch inserted inactive ores into breaker.",
+  "message.exponential_mana.breaker.status": "Internal Breaker Mana: %s total stored",
+  "message.exponential_mana.thawer.inserted": "Inserted Batch Compressed Mana into Thawer.",
+  "message.exponential_mana.thawer.collected": "Collected thawed mana from Thawer.",
+  "message.exponential_mana.thawer.empty": "Thawer is empty. Insert Batch Compressed Mana.",
+  "message.exponential_mana.thawer.thawing": "Thawing in progress...",
 
   "item.exponential_mana.tier0_mana": "Tier 0 Mana",
   "item.exponential_mana.tier1_mana": "Tier 1 Mana",
@@ -83,6 +94,7 @@
   "item.exponential_mana.marine_mana": "Marine Mana",
   "item.exponential_mana.mana_root": "Root of Mana",
   "item.exponential_mana.infinite_mana": "Infinite Mana",
+  "item.exponential_mana.batch_compressed_mana": "Batch Compressed Mana",
 
   "block.exponential_mana.tier0_mana_ore": "Tier 0 Mana Ore",
   "block.exponential_mana.tier1_mana_ore": "Tier 1 Mana Ore",
@@ -120,5 +132,8 @@
   "block.exponential_mana.compressed_fairy_block_8": "Compressed Fairy Block (8x)",
   "block.exponential_mana.compressed_fairy_block_9": "Compressed Fairy Block (9x)",
   "block.exponential_mana.compressed_fairy_block_10": "Compressed Fairy Block (10x)",
-  "block.exponential_mana.fairy_attractor": "Fairy Attractor"
+  "block.exponential_mana.fairy_attractor": "Fairy Attractor",
+
+  "block.exponential_mana.batch_ore_breaker": "Batch Ore Breaker",
+  "block.exponential_mana.thawer": "Thawer"
 }

@@ -169,6 +169,10 @@ public class ModItems {
     public static final RegistryObject<Item> INFINITE_MANA = ITEMS.register("infinite_mana",
             () -> new Item(new Item.Properties().rarity(Rarity.EPIC)));
 
+    // Batch Compressed Mana
+    public static final RegistryObject<Item> BATCH_COMPRESSED_MANA = ITEMS.register("batch_compressed_mana",
+            com.exponentialmana.mod.item.BatchCompressedManaItem::new);
+
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);
     }

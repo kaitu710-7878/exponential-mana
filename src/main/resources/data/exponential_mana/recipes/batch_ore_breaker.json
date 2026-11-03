@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "OOO",
+    "O O",
+    "OOO"
+  ],
+  "key": {
+    "O": {
+      "item": "exponential_mana:tier0_mana_ore"
+    }
+  },
+  "result": {
+    "item": "exponential_mana:batch_ore_breaker",
+    "count": 1
+  }
+}

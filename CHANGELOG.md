@@ -8,6 +8,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.4.0-alpha] - 2026-11-03
+
+### Added / 追加
+- **EN**:
+  - Implemented Batch Ore Breaker (`batch_ore_breaker`) with 10×10 internal slots (`Int_MAX` capacity per slot) and virtual timer processing.
+  - Implemented safe unscattered drop mechanism: drops NBT-encoded Batch Compressed Mana (`batch_compressed_mana`) on breaker dismantle.
+  - Implemented Thawer (`thawer`) to safely extract and output real item-form mana from Batch Compressed Mana.
+  - Added recipe for Batch Ore Breaker (8 Mana Ores) and Thawer.
+  - Synchronized bilingual translations in `en_us.json` and `ja_jp.json`.
+- **JA**:
+  - 10×10（100スロット、各スロット`Int_MAX`容量）の内部インベントリと仮想タイマー処理を備えた鉱石一括破壊機（`batch_ore_breaker`）を実装。
+  - ワールド撤去時にアイテムを散乱させず、内部データを焼き込んだ一括圧縮状態のマナ（`batch_compressed_mana`）として安全にドロップする機構を実装。
+  - 一括圧縮状態のマナから通常アイテム状態のマナを安全に解凍・抽出する解凍機（`thawer`）を実装。
+  - 鉱石一括破壊機（マナ鉱石×8）および解凍機のクラフトレシピを追加。
+  - 日英言語ファイル（`en_us.json`, `ja_jp.json`）を完全同期更新。
+
 ## [0.3.0-alpha] - 2026-11-03
 
 ### Added / 追加

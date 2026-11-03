@@ -60,6 +60,18 @@ public class ModBlockEntities {
                             ModBlocks.FAIRY_ATTRACTOR.get()
                     ).build(null));
 
+    public static final RegistryObject<BlockEntityType<com.exponentialmana.mod.block.entity.BatchOreBreakerBlockEntity>> BATCH_ORE_BREAKER_BE =
+            BLOCK_ENTITIES.register("batch_ore_breaker", () ->
+                    BlockEntityType.Builder.of(com.exponentialmana.mod.block.entity.BatchOreBreakerBlockEntity::new,
+                            ModBlocks.BATCH_ORE_BREAKER.get()
+                    ).build(null));
+
+    public static final RegistryObject<BlockEntityType<com.exponentialmana.mod.block.entity.ThawerBlockEntity>> THAWER_BE =
+            BLOCK_ENTITIES.register("thawer", () ->
+                    BlockEntityType.Builder.of(com.exponentialmana.mod.block.entity.ThawerBlockEntity::new,
+                            ModBlocks.THAWER.get()
+                    ).build(null));
+
     public static void register(IEventBus eventBus) {
         BLOCK_ENTITIES.register(eventBus);
     }

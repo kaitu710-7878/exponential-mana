@@ -94,6 +94,7 @@ public class ModCreativeModeTabs {
                         output.accept(ModItems.MARINE_MANA.get());
                         output.accept(ModItems.MANA_ROOT.get());
                         output.accept(ModItems.INFINITE_MANA.get());
+                        output.accept(ModItems.BATCH_COMPRESSED_MANA.get());
 
                         // Blocks - Active Ores
                         output.accept(ModBlocks.TIER0_MANA_ORE.get());
@@ -135,6 +136,10 @@ public class ModCreativeModeTabs {
                         output.accept(ModBlocks.COMPRESSED_FAIRY_BLOCK_9.get());
                         output.accept(ModBlocks.COMPRESSED_FAIRY_BLOCK_10.get());
                         output.accept(ModBlocks.FAIRY_ATTRACTOR.get());
+
+                        // Blocks - Batch Processing & Thawing
+                        output.accept(ModBlocks.BATCH_ORE_BREAKER.get());
+                        output.accept(ModBlocks.THAWER.get());
                     })
                     .build());
 

@@ -7,12 +7,23 @@
   "tooltip.exponential_mana.fairy_attractor.desc": "5分ごとに妖精ブロックを1匹誘引・捕獲します。",
   "tooltip.exponential_mana.large_stack_info": "数量: %s (%s)",
 
+  "tooltip.exponential_mana.batch_compressed_mana.desc": "NBTに圧縮保持された一括マナデータ。解凍機にかけて抽出します。",
+  "tooltip.exponential_mana.batch_compressed_mana.empty": "マナは蓄積されていません。",
+  "tooltip.exponential_mana.batch_ore_breaker.desc": "内部10×10スロット（各スロットInt_MAX）で非活性鉱石をサーバー負荷なく一括処理します。",
+  "tooltip.exponential_mana.thawer.desc": "一括圧縮状態のマナから通常アイテム状態のマナを安全に解凍・抽出します。",
+
   "message.exponential_mana.fairy.collected_mana": "妖精から生産されたマナを回収しました。",
   "message.exponential_mana.fairy.retrieved_catalyst": "妖精から触媒を回収しました。",
   "message.exponential_mana.fairy.inserted_catalyst": "妖精に触媒をセットしました。",
   "message.exponential_mana.fairy.status": "触媒: %s | 生産物: %s | クールダウン: %s秒",
   "message.exponential_mana.attractor.collected": "誘引された妖精ブロックを回収しました。",
   "message.exponential_mana.attractor.status": "妖精を誘引中: 残り %s秒",
+  "message.exponential_mana.breaker.inserted": "破壊機に非活性鉱石を一括投入しました。",
+  "message.exponential_mana.breaker.status": "内部蓄積マナ合計: %s",
+  "message.exponential_mana.thawer.inserted": "解凍機に一括圧縮マナをセットしました。",
+  "message.exponential_mana.thawer.collected": "解凍機からマナを回収しました。",
+  "message.exponential_mana.thawer.empty": "解凍機は空です。一括圧縮マナをセットしてください。",
+  "message.exponential_mana.thawer.thawing": "マナを解凍中...",
 
   "item.exponential_mana.tier0_mana": "Tier0 マナ",
   "item.exponential_mana.tier1_mana": "Tier1 マナ",
@@ -83,6 +94,7 @@
   "item.exponential_mana.marine_mana": "海洋のマナ",
   "item.exponential_mana.mana_root": "マナの根源",
   "item.exponential_mana.infinite_mana": "無限のマナ",
+  "item.exponential_mana.batch_compressed_mana": "一括圧縮状態のマナ",
 
   "block.exponential_mana.tier0_mana_ore": "Tier0 マナ鉱石",
   "block.exponential_mana.tier1_mana_ore": "Tier1 マナ鉱石",
@@ -120,5 +132,8 @@
   "block.exponential_mana.compressed_fairy_block_8": "圧縮妖精ブロック (8段階)",
   "block.exponential_mana.compressed_fairy_block_9": "圧縮妖精ブロック (9段階)",
   "block.exponential_mana.compressed_fairy_block_10": "圧縮妖精ブロック (10段階)",
-  "block.exponential_mana.fairy_attractor": "妖精誘引機"
+  "block.exponential_mana.fairy_attractor": "妖精誘引機",
+
+  "block.exponential_mana.batch_ore_breaker": "鉱石一括破壊機",
+  "block.exponential_mana.thawer": "解凍機"
 }

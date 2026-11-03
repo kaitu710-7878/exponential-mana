@@ -133,6 +133,12 @@ public class ModBlocks {
     public static final RegistryObject<Block> FAIRY_ATTRACTOR = registerBlock("fairy_attractor",
             com.exponentialmana.mod.block.FairyAttractorBlock::new);
 
+    // Batch Ore Breaker & Thawer
+    public static final RegistryObject<Block> BATCH_ORE_BREAKER = registerBlock("batch_ore_breaker",
+            com.exponentialmana.mod.block.BatchOreBreakerBlock::new);
+    public static final RegistryObject<Block> THAWER = registerBlock("thawer",
+            com.exponentialmana.mod.block.ThawerBlock::new);
+
     private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block) {
         RegistryObject<T> registeredBlock = BLOCKS.register(name, block);
         registerBlockItem(name, registeredBlock);
