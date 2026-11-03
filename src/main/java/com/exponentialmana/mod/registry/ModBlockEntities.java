@@ -72,6 +72,27 @@ public class ModBlockEntities {
                             ModBlocks.THAWER.get()
                     ).build(null));
 
+    public static final RegistryObject<BlockEntityType<com.exponentialmana.mod.block.entity.ExtendedCraftingTableBlockEntity>> EXTENDED_CRAFTING_TABLE_BE =
+            BLOCK_ENTITIES.register("extended_crafting_table", () ->
+                    BlockEntityType.Builder.of((pos, state) -> {
+                        int tier = 1;
+                        if (state.getBlock() instanceof com.exponentialmana.mod.block.ExtendedCraftingTableBlock tb) {
+                            tier = tb.getTier();
+                        }
+                        return new com.exponentialmana.mod.block.entity.ExtendedCraftingTableBlockEntity(pos, state, tier);
+                    },
+                    ModBlocks.TIER1_EXTENDED_CRAFTING_TABLE.get(),
+                    ModBlocks.TIER2_EXTENDED_CRAFTING_TABLE.get(),
+                    ModBlocks.TIER3_EXTENDED_CRAFTING_TABLE.get(),
+                    ModBlocks.TIER4_EXTENDED_CRAFTING_TABLE.get(),
+                    ModBlocks.TIER5_EXTENDED_CRAFTING_TABLE.get(),
+                    ModBlocks.TIER6_EXTENDED_CRAFTING_TABLE.get(),
+                    ModBlocks.TIER7_EXTENDED_CRAFTING_TABLE.get(),
+                    ModBlocks.TIER8_EXTENDED_CRAFTING_TABLE.get(),
+                    ModBlocks.TIER9_EXTENDED_CRAFTING_TABLE.get(),
+                    ModBlocks.TIER10_EXTENDED_CRAFTING_TABLE.get()
+            ).build(null));
+
     public static void register(IEventBus eventBus) {
         BLOCK_ENTITIES.register(eventBus);
     }

@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "CCC",
+    "COC",
+    "CCC"
+  ],
+  "key": {
+    "C": { "item": "exponential_mana:tier1_core" },
+    "O": { "item": "exponential_mana:tier0_mana_ore" }
+  },
+  "result": { "item": "exponential_mana:tier1_mana_ore", "count": 1 }
+}

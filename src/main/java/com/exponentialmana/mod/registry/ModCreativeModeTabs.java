@@ -140,6 +140,18 @@ public class ModCreativeModeTabs {
                         // Blocks - Batch Processing & Thawing
                         output.accept(ModBlocks.BATCH_ORE_BREAKER.get());
                         output.accept(ModBlocks.THAWER.get());
+
+                        // Blocks - Extended Crafting Tables (Tier 1 to 10)
+                        output.accept(ModBlocks.TIER1_EXTENDED_CRAFTING_TABLE.get());
+                        output.accept(ModBlocks.TIER2_EXTENDED_CRAFTING_TABLE.get());
+                        output.accept(ModBlocks.TIER3_EXTENDED_CRAFTING_TABLE.get());
+                        output.accept(ModBlocks.TIER4_EXTENDED_CRAFTING_TABLE.get());
+                        output.accept(ModBlocks.TIER5_EXTENDED_CRAFTING_TABLE.get());
+                        output.accept(ModBlocks.TIER6_EXTENDED_CRAFTING_TABLE.get());
+                        output.accept(ModBlocks.TIER7_EXTENDED_CRAFTING_TABLE.get());
+                        output.accept(ModBlocks.TIER8_EXTENDED_CRAFTING_TABLE.get());
+                        output.accept(ModBlocks.TIER9_EXTENDED_CRAFTING_TABLE.get());
+                        output.accept(ModBlocks.TIER10_EXTENDED_CRAFTING_TABLE.get());
                     })
                     .build());
 

@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "CCC",
+    "CRC",
+    "CCC"
+  ],
+  "key": {
+    "C": { "item": "exponential_mana:tier1_core" },
+    "R": { "item": "exponential_mana:fairy_residue" }
+  },
+  "result": { "item": "exponential_mana:tier1_fairy_catalyst", "count": 1 }
+}

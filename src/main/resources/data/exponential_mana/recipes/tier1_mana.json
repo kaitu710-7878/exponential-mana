@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "MMM",
+    "MCM",
+    "MMM"
+  ],
+  "key": {
+    "M": { "item": "exponential_mana:tier0_mana" },
+    "C": { "item": "minecraft:coal" }
+  },
+  "result": { "item": "exponential_mana:tier1_mana", "count": 1 }
+}

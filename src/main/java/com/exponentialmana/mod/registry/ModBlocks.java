@@ -139,6 +139,28 @@ public class ModBlocks {
     public static final RegistryObject<Block> THAWER = registerBlock("thawer",
             com.exponentialmana.mod.block.ThawerBlock::new);
 
+    // Extended Crafting Tables (Tier 1: 4x4 up to Tier 10: 13x13)
+    public static final RegistryObject<Block> TIER1_EXTENDED_CRAFTING_TABLE = registerBlock("tier1_extended_crafting_table",
+            () -> new com.exponentialmana.mod.block.ExtendedCraftingTableBlock(1));
+    public static final RegistryObject<Block> TIER2_EXTENDED_CRAFTING_TABLE = registerBlock("tier2_extended_crafting_table",
+            () -> new com.exponentialmana.mod.block.ExtendedCraftingTableBlock(2));
+    public static final RegistryObject<Block> TIER3_EXTENDED_CRAFTING_TABLE = registerBlock("tier3_extended_crafting_table",
+            () -> new com.exponentialmana.mod.block.ExtendedCraftingTableBlock(3));
+    public static final RegistryObject<Block> TIER4_EXTENDED_CRAFTING_TABLE = registerBlock("tier4_extended_crafting_table",
+            () -> new com.exponentialmana.mod.block.ExtendedCraftingTableBlock(4));
+    public static final RegistryObject<Block> TIER5_EXTENDED_CRAFTING_TABLE = registerBlock("tier5_extended_crafting_table",
+            () -> new com.exponentialmana.mod.block.ExtendedCraftingTableBlock(5));
+    public static final RegistryObject<Block> TIER6_EXTENDED_CRAFTING_TABLE = registerBlock("tier6_extended_crafting_table",
+            () -> new com.exponentialmana.mod.block.ExtendedCraftingTableBlock(6));
+    public static final RegistryObject<Block> TIER7_EXTENDED_CRAFTING_TABLE = registerBlock("tier7_extended_crafting_table",
+            () -> new com.exponentialmana.mod.block.ExtendedCraftingTableBlock(7));
+    public static final RegistryObject<Block> TIER8_EXTENDED_CRAFTING_TABLE = registerBlock("tier8_extended_crafting_table",
+            () -> new com.exponentialmana.mod.block.ExtendedCraftingTableBlock(8));
+    public static final RegistryObject<Block> TIER9_EXTENDED_CRAFTING_TABLE = registerBlock("tier9_extended_crafting_table",
+            () -> new com.exponentialmana.mod.block.ExtendedCraftingTableBlock(9));
+    public static final RegistryObject<Block> TIER10_EXTENDED_CRAFTING_TABLE = registerBlock("tier10_extended_crafting_table",
+            () -> new com.exponentialmana.mod.block.ExtendedCraftingTableBlock(10));
+
     private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block) {
         RegistryObject<T> registeredBlock = BLOCKS.register(name, block);
         registerBlockItem(name, registeredBlock);

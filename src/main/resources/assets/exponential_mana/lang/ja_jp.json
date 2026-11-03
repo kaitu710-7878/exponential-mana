@@ -11,6 +11,7 @@
   "tooltip.exponential_mana.batch_compressed_mana.empty": "マナは蓄積されていません。",
   "tooltip.exponential_mana.batch_ore_breaker.desc": "内部10×10スロット（各スロットInt_MAX）で非活性鉱石をサーバー負荷なく一括処理します。",
   "tooltip.exponential_mana.thawer.desc": "一括圧縮状態のマナから通常アイテム状態のマナを安全に解凍・抽出します。",
+  "tooltip.exponential_mana.extended_crafting_table.desc": "拡張作業台 (%s×%s、%sスロット)。エネルギー消費なしで自動クラフトに対応。",
 
   "message.exponential_mana.fairy.collected_mana": "妖精から生産されたマナを回収しました。",
   "message.exponential_mana.fairy.retrieved_catalyst": "妖精から触媒を回収しました。",
@@ -24,6 +25,10 @@
   "message.exponential_mana.thawer.collected": "解凍機からマナを回収しました。",
   "message.exponential_mana.thawer.empty": "解凍機は空です。一括圧縮マナをセットしてください。",
   "message.exponential_mana.thawer.thawing": "マナを解凍中...",
+
+  "message.exponential_mana.crafting_table.extracted": "拡張作業台から全アイテムを取り出しました。",
+  "message.exponential_mana.crafting_table.empty": "拡張作業台は空です。",
+  "message.exponential_mana.crafting_table.status": "グリッド: %s×%s | 投入済スロット: %s/%s | 完成品: %s",
 
   "item.exponential_mana.tier0_mana": "Tier0 マナ",
   "item.exponential_mana.tier1_mana": "Tier1 マナ",
@@ -135,5 +140,16 @@
   "block.exponential_mana.fairy_attractor": "妖精誘引機",
 
   "block.exponential_mana.batch_ore_breaker": "鉱石一括破壊機",
-  "block.exponential_mana.thawer": "解凍機"
+  "block.exponential_mana.thawer": "解凍機",
+
+  "block.exponential_mana.tier1_extended_crafting_table": "Tier1 拡張作業台 (4×4)",
+  "block.exponential_mana.tier2_extended_crafting_table": "Tier2 拡張作業台 (5×5)",
+  "block.exponential_mana.tier3_extended_crafting_table": "Tier3 拡張作業台 (6×6)",
+  "block.exponential_mana.tier4_extended_crafting_table": "Tier4 拡張作業台 (7×7)",
+  "block.exponential_mana.tier5_extended_crafting_table": "Tier5 拡張作業台 (8×8)",
+  "block.exponential_mana.tier6_extended_crafting_table": "Tier6 拡張作業台 (9×9)",
+  "block.exponential_mana.tier7_extended_crafting_table": "Tier7 拡張作業台 (10×10)",
+  "block.exponential_mana.tier8_extended_crafting_table": "Tier8 拡張作業台 (11×11)",
+  "block.exponential_mana.tier9_extended_crafting_table": "Tier9 拡張作業台 (12×12)",
+  "block.exponential_mana.tier10_extended_crafting_table": "Tier10 拡張作業台 (13×13)"
 }

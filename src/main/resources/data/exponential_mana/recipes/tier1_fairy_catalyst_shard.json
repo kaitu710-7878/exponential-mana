@@ -1,0 +1,5 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [ { "item": "exponential_mana:tier1_fairy_catalyst" } ],
+  "result": { "item": "exponential_mana:tier1_fairy_catalyst_shard", "count": 4 }
+}

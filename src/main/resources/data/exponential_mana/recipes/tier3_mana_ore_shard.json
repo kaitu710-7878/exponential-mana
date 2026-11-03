@@ -1,0 +1,5 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [ { "item": "exponential_mana:tier3_mana_ore" } ],
+  "result": { "item": "exponential_mana:tier3_mana_ore_shard", "count": 4 }
+}

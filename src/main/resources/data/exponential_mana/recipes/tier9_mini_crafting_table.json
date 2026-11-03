@@ -1,0 +1,5 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [ { "item": "exponential_mana:tier9_extended_crafting_table" } ],
+  "result": { "item": "exponential_mana:tier9_mini_crafting_table", "count": 4 }
+}

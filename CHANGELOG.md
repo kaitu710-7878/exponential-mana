@@ -8,6 +8,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.5.0-alpha] - 2026-11-03
+
+### Added / 追加
+- **EN**:
+  - Implemented Extended Crafting Table blocks from Tier 1 (4×4) up to Tier 10 (13×13, 169 slots).
+  - Implemented `ExtendedCraftingTableBlockEntity` supporting energy-free automatic crafting with AE2 Pattern Provider compatibility (`IItemHandler`).
+  - Added Tier 1 crafting recipes (Tier 1 Mana, Core, Ore, Catalyst, and 4×4 Crafting Table).
+  - Implemented Even-Tier deconstruction recipes (breaking down Tier 1, 3, 5, 7, 9 ores, catalysts, and tables into 4 shards).
+  - Synchronized bilingual translations in `en_us.json` and `ja_jp.json`.
+- **JA**:
+  - Tier 1（4×4）から Tier 10（13×13、169スロット）に至る拡張作業台ブロックを実装。
+  - AE2のパターンプロバイダー等の自動クラフトにデフォルト対応（`IItemHandler`公開・エネルギー消費なし）する `ExtendedCraftingTableBlockEntity` を実装。
+  - Tier 1の各種進化クラフトレシピ（Tier1マナ、コア、鉱石、触媒、4×4拡張作業台）を追加。
+  - 偶数Tier移行用の設備分解レシピ（Tier 1, 3, 5, 7, 9の鉱石・触媒・作業台を単体クラフトで欠片×4に分解）を実装。
+  - 日英言語ファイル（`en_us.json`, `ja_jp.json`）を完全同期更新。
+
 ## [0.4.0-alpha] - 2026-11-03
 
 ### Added / 追加

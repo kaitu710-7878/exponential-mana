@@ -11,6 +11,7 @@
   "tooltip.exponential_mana.batch_compressed_mana.empty": "No mana stored.",
   "tooltip.exponential_mana.batch_ore_breaker.desc": "Processes 10x10 slots (Int_MAX each) of inactive ores into mana without world lag.",
   "tooltip.exponential_mana.thawer.desc": "Safely unpacks Batch Compressed Mana into real item stacks.",
+  "tooltip.exponential_mana.extended_crafting_table.desc": "Extended Crafting Table (%sx%s, %s slots). Energy-free automation enabled.",
 
   "message.exponential_mana.fairy.collected_mana": "Collected generated mana from Fairy.",
   "message.exponential_mana.fairy.retrieved_catalyst": "Retrieved catalyst from Fairy.",
@@ -24,6 +25,10 @@
   "message.exponential_mana.thawer.collected": "Collected thawed mana from Thawer.",
   "message.exponential_mana.thawer.empty": "Thawer is empty. Insert Batch Compressed Mana.",
   "message.exponential_mana.thawer.thawing": "Thawing in progress...",
+
+  "message.exponential_mana.crafting_table.extracted": "Extracted all items from Extended Crafting Table.",
+  "message.exponential_mana.crafting_table.empty": "Extended Crafting Table is empty.",
+  "message.exponential_mana.crafting_table.status": "Table Grid: %sx%s | Slots Filled: %s/%s | Output: %s",
 
   "item.exponential_mana.tier0_mana": "Tier 0 Mana",
   "item.exponential_mana.tier1_mana": "Tier 1 Mana",
@@ -135,5 +140,16 @@
   "block.exponential_mana.fairy_attractor": "Fairy Attractor",
 
   "block.exponential_mana.batch_ore_breaker": "Batch Ore Breaker",
-  "block.exponential_mana.thawer": "Thawer"
+  "block.exponential_mana.thawer": "Thawer",
+
+  "block.exponential_mana.tier1_extended_crafting_table": "Tier 1 Extended Crafting Table (4x4)",
+  "block.exponential_mana.tier2_extended_crafting_table": "Tier 2 Extended Crafting Table (5x5)",
+  "block.exponential_mana.tier3_extended_crafting_table": "Tier 3 Extended Crafting Table (6x6)",
+  "block.exponential_mana.tier4_extended_crafting_table": "Tier 4 Extended Crafting Table (7x7)",
+  "block.exponential_mana.tier5_extended_crafting_table": "Tier 5 Extended Crafting Table (8x8)",
+  "block.exponential_mana.tier6_extended_crafting_table": "Tier 6 Extended Crafting Table (9x9)",
+  "block.exponential_mana.tier7_extended_crafting_table": "Tier 7 Extended Crafting Table (10x10)",
+  "block.exponential_mana.tier8_extended_crafting_table": "Tier 8 Extended Crafting Table (11x11)",
+  "block.exponential_mana.tier9_extended_crafting_table": "Tier 9 Extended Crafting Table (12x12)",
+  "block.exponential_mana.tier10_extended_crafting_table": "Tier 10 Extended Crafting Table (13x13)"
 }
