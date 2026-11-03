@@ -6,7 +6,9 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -20,15 +22,22 @@ public class FairyMenu extends AbstractContainerMenu {
 
     private final FairyBlockEntity blockEntity;
     private final ContainerLevelAccess levelAccess;
+    private final ContainerData data;
 
     public FairyMenu(int containerId, Inventory inv, FriendlyByteBuf extraData) {
-        this(containerId, inv, inv.player.level().getBlockEntity(extraData.readBlockPos()));
+        this(containerId, inv, inv.player.level().getBlockEntity(extraData.readBlockPos()), new SimpleContainerData(1));
     }
 
     public FairyMenu(int containerId, Inventory inv, BlockEntity entity) {
+        this(containerId, inv, entity, ((FairyBlockEntity) entity).getDataAccess());
+    }
+
+    public FairyMenu(int containerId, Inventory inv, BlockEntity entity, ContainerData data) {
         super(ModMenuTypes.FAIRY_MENU.get(), containerId);
         this.blockEntity = (FairyBlockEntity) entity;
         this.levelAccess = ContainerLevelAccess.create(blockEntity.getLevel(), blockEntity.getBlockPos());
+        this.data = data;
+        this.addDataSlots(data);
 
         // Left: 8x8 Catalyst Inputs (0..63)
         int catStartX = 12;
@@ -56,7 +65,7 @@ public class FairyMenu extends AbstractContainerMenu {
                         outStartX + col * 18, outStartY + row * 18) {
                     @Override
                     public boolean mayPlace(@NotNull ItemStack stack) {
-                        return false; // Player cannot insert items into output slots directly
+                        return false;
                     }
                 });
             }
@@ -79,6 +88,10 @@ public class FairyMenu extends AbstractContainerMenu {
 
     public FairyBlockEntity getBlockEntity() {
         return blockEntity;
+    }
+
+    public int getCooldownSeconds() {
+        return Math.max(0, this.data.get(0) / 20);
     }
 
     @Override

@@ -53,12 +53,9 @@ public class FairyScreen extends AbstractContainerScreen<FairyMenu> {
         guiGraphics.drawString(this.font, Component.translatable("gui.exponential_mana.catalysts"), 12, 18, 0x555555, false);
         guiGraphics.drawString(this.font, Component.translatable("gui.exponential_mana.outputs"), 184, 18, 0x555555, false);
 
-        FairyBlockEntity be = menu.getBlockEntity();
-        if (be != null) {
-            int seconds = be.getCooldown() / 20;
-            String timeStr = seconds + "s";
-            guiGraphics.drawString(this.font, timeStr, 158, 100, 0x1565C0, false);
-        }
+        int seconds = menu.getCooldownSeconds();
+        String timeStr = seconds + "s";
+        guiGraphics.drawString(this.font, timeStr, 158, 100, 0x1565C0, false);
     }
 
     @Override

@@ -219,8 +219,10 @@
   "gui.exponential_mana.catalysts": "Catalysts (8x8)",
   "gui.exponential_mana.outputs": "Outputs",
   "gui.exponential_mana.input": "Input",
+  "gui.exponential_mana.compressed_mana_output": "Batch Mana",
 
   "jei.exponential_mana.extended_crafting.title": "Extended Crafting",
+  "jei.exponential_mana.extended_crafting.tier_title": "Tier %s Extended Crafting (%sx%s)",
   "jei.exponential_mana.extended_crafting.tier_grid": "Tier %s Extended Crafting Table (%s×%s)",
   "tooltip.exponential_mana.extended_crafting_table.tier": "Tier %s Extended Crafting Table (%s×%s)",
   "jei.exponential_mana.recipe.tier1_table": "Tier 1 Extended Crafting Table (4x4)",

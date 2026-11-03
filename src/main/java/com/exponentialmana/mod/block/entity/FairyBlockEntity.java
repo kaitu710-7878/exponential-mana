@@ -11,6 +11,7 @@ import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -28,9 +29,9 @@ import org.jetbrains.annotations.Nullable;
  * BlockEntity for Fairy Blocks and Compressed Fairy Blocks.
  * Features 8x8 (64 slots) Catalyst inputs and 8x8 (64 slots) Mana outputs,
  * each slot supporting up to Integer.MAX_VALUE stacks.
- * Generates tiered mana or Tier 0 mana without catalysts every 60 seconds (1200 ticks).
- * Supports 9^compression production multiplier.
- * Preserves internal items via NBT on block pickup.
+ * Generates tiered mana based on catalyst count, and fills any remaining quota with Tier 0 mana.
+ * Total production quota per 60s cycle = 9^compressionTier.
+ * Synchronizes cooldown with client via ContainerData for live GUI countdown.
  */
 public class FairyBlockEntity extends BlockEntity implements MenuProvider {
     public static final int BASE_COOLDOWN = 1200; // 60 seconds at 20 TPS
@@ -40,6 +41,26 @@ public class FairyBlockEntity extends BlockEntity implements MenuProvider {
 
     private int cooldown = BASE_COOLDOWN;
     private final int compressionTier; // 0 for base, 1 to 10 for compressed
+
+    // ContainerData for real-time cooldown sync with GUI
+    private final ContainerData dataAccess = new ContainerData() {
+        @Override
+        public int get(int index) {
+            return index == 0 ? cooldown : 0;
+        }
+
+        @Override
+        public void set(int index, int value) {
+            if (index == 0) {
+                cooldown = value;
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return 1;
+        }
+    };
 
     // Slots 0..63: Catalysts (Int_MAX limit, not consumed)
     // Slots 64..127: Output Mana (Int_MAX limit)
@@ -88,30 +109,38 @@ public class FairyBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     /**
-     * Inspects 8x8 catalyst slots. If any catalyst exists, produces corresponding mana.
-     * If entirely empty, produces Tier 0 mana.
+     * Total cycle quota = 9^compressionTier.
+     * Each catalyst in slots 0..63 consumes its count from the quota to produce its corresponding mana tier.
+     * Any remaining quota is produced as Tier 0 mana!
      */
     private void processProduction() {
-        boolean hasAnyCatalyst = false;
-        long multiplier = 1;
+        long totalQuota = 1;
         for (int i = 0; i < compressionTier; i++) {
-            multiplier *= 9L;
+            totalQuota *= 9L;
         }
 
+        long remainingQuota = totalQuota;
+
+        // Iterate catalysts and allocate quota based on catalyst counts
         for (int i = 0; i < CATALYST_SLOTS; i++) {
+            if (remainingQuota <= 0) break;
+
             ItemStack catalyst = itemHandler.getStackInSlot(i);
             if (!catalyst.isEmpty() && isCatalyst(catalyst.getItem())) {
-                hasAnyCatalyst = true;
                 Item producedMana = getManaForCatalyst(catalyst.getItem());
                 if (producedMana != null) {
-                    insertOutputMana(producedMana, multiplier);
+                    long toProduce = Math.min((long) catalyst.getCount(), remainingQuota);
+                    if (toProduce > 0) {
+                        insertOutputMana(producedMana, toProduce);
+                        remainingQuota -= toProduce;
+                    }
                 }
             }
         }
 
-        if (!hasAnyCatalyst) {
-            // No catalyst: produce Tier 0 mana
-            insertOutputMana(ModItems.TIER0_MANA.get(), multiplier);
+        // Remainder of quota is produced as Tier 0 mana!
+        if (remainingQuota > 0) {
+            insertOutputMana(ModItems.TIER0_MANA.get(), remainingQuota);
         }
     }
 
@@ -175,6 +204,10 @@ public class FairyBlockEntity extends BlockEntity implements MenuProvider {
         return cooldown;
     }
 
+    public ContainerData getDataAccess() {
+        return dataAccess;
+    }
+
     public ItemStackHandler getItemHandler() {
         return itemHandler;
     }
@@ -209,7 +242,7 @@ public class FairyBlockEntity extends BlockEntity implements MenuProvider {
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
-        return new FairyMenu(containerId, playerInventory, this);
+        return new FairyMenu(containerId, playerInventory, this, this.dataAccess);
     }
 
     @Override

@@ -8,6 +8,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.12.0-alpha] - 2026-11-03
+
+### Fixed / 修正
+- **EN**:
+  - Overhauled JEI Extended Crafting categories into 10 dedicated tier categories (Tier 1 4x4 up to Tier 10 13x13) matching Extended Crafting Reforked. Standardized on 18x18 slot pitch with background frames to completely eliminate crowded and overlapping icons.
+  - Implemented JEI Recipe Transfer Handler support ("+" button) on Extended Crafting Tables, allowing one-click auto-filling of recipes from player inventory.
+  - Added dedicated output slot to the Batch Ore Breaker UI for packing and extracting Batch Compressed Mana without dismantling the machine.
+  - Fixed Fairy catalyst quota logic: 1 cycle total quota = $9^{\text{compressionTier}}$. Catalysts consume their counts from the quota to produce tiered mana, and any remaining quota fills with Tier 0 mana. Multiple catalyst types cleanly share the single cycle quota without duplicate multi-cycle explosions.
+  - Synchronized Fairy Block countdown timer to client via `ContainerData` so the UI seconds counter updates smoothly in real time.
+- **JA**:
+  - JEIの拡張クラフトを Extended Crafting Reforked 準拠の10段階専用カテゴリ（Tier 1 4×4 〜 Tier 10 13×13）へと大幅刷新。全スロットを18×18ピッチに統一し、アイコン同士の重なり・密集を完全解消。
+  - 拡張作業台にJEIレシピ自動配置機能（「＋」ボタン）を追加。プレイヤーインベントリから作業台グリッドへワンクリックで材料を一括配置可能に。
+  - 鉱石一括破壊機に「一括圧縮マナ」専用出力スロットを追加。機械を撤去しなくても、蓄積されたマナをUI上から直接回収可能に改善。
+  - 圧縮妖精の触媒処理ロジックを完全適正化：1サイクルの生産枠 $9^{\text{compressionTier}}$ 個に対し、投入された触媒数分だけ該当Tierのマナが生産され、**余った生産枠はすべてTier 0マナとして生産**されるように修正。複数種の触媒投入時も1サイクルの総生産枠内で正しく按分。
+  - 妖精ブロックのクールダウン秒数を `ContainerData` でパケット同期し、UI上の残り秒数カウントダウンがリアルタイムに変化するよう修正。
+
+---
+
 ## [0.11.2-alpha] - 2026-11-03
 
 ### Fixed / 修正

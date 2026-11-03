@@ -219,8 +219,10 @@
   "gui.exponential_mana.catalysts": "触媒スロット (8×8)",
   "gui.exponential_mana.outputs": "生産スロット",
   "gui.exponential_mana.input": "入力スロット",
+  "gui.exponential_mana.compressed_mana_output": "一括マナ",
 
   "jei.exponential_mana.extended_crafting.title": "拡張クラフト",
+  "jei.exponential_mana.extended_crafting.tier_title": "Tier %s 拡張クラフト (%s×%s)",
   "jei.exponential_mana.extended_crafting.tier_grid": "Tier %s 拡張作業台 (%s×%s)",
   "tooltip.exponential_mana.extended_crafting_table.tier": "Tier %s 拡張作業台 (%s×%s)",
   "jei.exponential_mana.recipe.tier1_table": "Tier1 拡張作業台 (4×4)",
