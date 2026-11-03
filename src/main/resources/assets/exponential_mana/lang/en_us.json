@@ -9,7 +9,7 @@
 
   "tooltip.exponential_mana.batch_compressed_mana.desc": "NBT-compressed batch mana data. Use a Thawer to extract.",
   "tooltip.exponential_mana.batch_compressed_mana.empty": "No mana stored.",
-  "tooltip.exponential_mana.batch_ore_breaker.desc": "Processes 10x10 slots (Int_MAX each) of inactive ores into mana without world lag.",
+  "tooltip.exponential_mana.batch_ore_breaker.desc": "Virtually manages inactive ores in 10x10 slots (Int_MAX each). Mines ores and extracts mana every 5 min without consuming ores. Instantly batch-inactivates active ores.",
   "tooltip.exponential_mana.thawer.desc": "Safely unpacks Batch Compressed Mana into real item stacks.",
   "tooltip.exponential_mana.extended_crafting_table.desc": "Extended Crafting Table (%sx%s, %s slots). Energy-free automation enabled.",
 

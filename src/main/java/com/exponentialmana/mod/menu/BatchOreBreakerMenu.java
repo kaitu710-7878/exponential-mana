@@ -83,6 +83,10 @@ public class BatchOreBreakerMenu extends AbstractContainerMenu {
         return this.data.get(1);
     }
 
+    public int getTimerSeconds() {
+        return Math.max(0, this.data.get(0) / 20);
+    }
+
     @Override
     public @NotNull ItemStack quickMoveStack(@NotNull Player player, int index) {
         ItemStack itemstack = ItemStack.EMPTY;

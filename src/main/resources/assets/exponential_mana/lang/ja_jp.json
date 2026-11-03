@@ -9,7 +9,7 @@
 
   "tooltip.exponential_mana.batch_compressed_mana.desc": "NBTに圧縮保持された一括マナデータ。解凍機にかけて抽出します。",
   "tooltip.exponential_mana.batch_compressed_mana.empty": "マナは蓄積されていません。",
-  "tooltip.exponential_mana.batch_ore_breaker.desc": "内部10×10スロット（各スロットInt_MAX）で非活性鉱石をサーバー負荷なく一括処理します。",
+  "tooltip.exponential_mana.batch_ore_breaker.desc": "内部10×10スロット（各スロットInt_MAX）で非活性鉱石を仮想管理。5分ごとに自動活性化・一括破壊してマナを抽出します（鉱石は消費されません）。活性鉱石は即座に一括非活性化されます。",
   "tooltip.exponential_mana.thawer.desc": "一括圧縮状態のマナから通常アイテム状態のマナを安全に解凍・抽出します。",
   "tooltip.exponential_mana.extended_crafting_table.desc": "拡張作業台 (%s×%s、%sスロット)。エネルギー消費なしで自動クラフトに対応。",
 

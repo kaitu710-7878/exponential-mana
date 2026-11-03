@@ -52,9 +52,9 @@ public class BatchOreBreakerScreen extends AbstractContainerScreen<BatchOreBreak
     protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
         guiGraphics.drawString(this.font, this.title, 10, 6, 0x404040, false);
 
-        int poolCount = menu.getStoredManaCount();
-        String poolStr = "Pool: " + CompactStackFormatter.formatCount(poolCount);
-        guiGraphics.drawString(this.font, poolStr, 110, 6, 0x1565C0, false);
+        int timerSec = menu.getTimerSeconds();
+        String timeStr = "Cycle: " + timerSec + "s";
+        guiGraphics.drawString(this.font, timeStr, 110, 6, 0x2E7D32, false);
 
         // Label above output slot
         guiGraphics.drawString(this.font, Component.translatable("gui.exponential_mana.compressed_mana_output"), 188, 86, 0x555555, false);

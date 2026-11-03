@@ -8,6 +8,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.12.1-alpha] - 2026-11-03
+
+### Fixed / 修正
+- **EN**:
+  - Clarified and aligned Batch Ore Breaker behavior with the mod specification:
+    - Ores are **not consumed**! The machine virtually manages the 5-minute inactive-to-active cooldown and mines them periodically, extracting mana into Batch Compressed Mana.
+    - Added instant Batch Inactivation: Inserting active mana ores immediately converts them into inactive ores while granting initial mining mana.
+    - Added live cycle countdown (5 minutes) in the UI.
+- **JA**:
+  - 鉱石一括破壊機の仕様を企画書通りに完全適正化：
+    - **鉱石は消費されません**。10×10インベントリ内の非活性鉱石を仮想管理し、5分ごとに自動で活性化＆一括採掘を行ってマナを一括圧縮マナとして出力スロットへ抽出します。
+    - 活性状態の通常マナ鉱石を投入した際、即座に採掘マナを排出しつつ「非活性マナ鉱石」へと一括変換する「一括非活性化」機能を実装。
+    - UI上に仮想サイクルの残り時間（5分カウントダウン）をリアルタイム表示。
+
+---
+
 ## [0.12.0-alpha] - 2026-11-03
 
 ### Fixed / 修正
