@@ -19,6 +19,8 @@ public class ExtendedCraftingMenu extends AbstractContainerMenu {
     private final int gridSize;
     private final int totalInputSlots;
     private final int outputSlotIndex;
+    private final int imageWidth;
+    private final int imageHeight;
 
     public ExtendedCraftingMenu(int containerId, Inventory inv, FriendlyByteBuf extraData) {
         this(containerId, inv, inv.player.level().getBlockEntity(extraData.readBlockPos()));
@@ -32,26 +34,32 @@ public class ExtendedCraftingMenu extends AbstractContainerMenu {
         this.totalInputSlots = blockEntity.getTotalInputSlots();
         this.outputSlotIndex = blockEntity.getOutputSlotIndex();
 
-        // Calculate slot layout coordinates
-        // Grid slots on the left / center
-        int startX = 8;
-        int startY = 18;
+        int gridStartX = 10;
+        int gridStartY = 18;
+        int gridWidth = gridSize * 18;
+        int gridHeight = gridSize * 18;
 
-        // If grid is large (> 9), scale slot spacing to fit screen
-        int slotSize = (gridSize <= 7) ? 18 : (gridSize <= 9) ? 16 : 14;
+        this.imageWidth = Math.max(184, gridWidth + 80);
+        int playerInvY = gridStartY + gridHeight + 12;
+        this.imageHeight = playerInvY + 86;
 
+        // 1. Input matrix slots (18x18 pitch always, matching Extended Crafting)
         for (int row = 0; row < gridSize; row++) {
             for (int col = 0; col < gridSize; col++) {
                 int slotIndex = col + row * gridSize;
                 this.addSlot(new SlotItemHandler(blockEntity.getItemHandler(), slotIndex,
-                        startX + col * slotSize, startY + row * slotSize));
+                        gridStartX + col * 18, gridStartY + row * 18));
             }
         }
 
-        // Output Slot (to the right of the grid)
-        int outputX = startX + gridSize * slotSize + 20;
-        int outputY = startY + (gridSize * slotSize) / 2 - 8;
-        this.addSlot(new SlotItemHandler(blockEntity.getItemHandler(), outputSlotIndex, outputX, outputY) {
+        // 2. Output Slot (to the right of the grid, centered vertically)
+        // 26x26 big frame has item at +5, +5
+        int outputFrameX = gridStartX + gridWidth + 34;
+        int outputFrameY = gridStartY + gridHeight / 2 - 13;
+        int outputItemX = outputFrameX + 5;
+        int outputItemY = outputFrameY + 5;
+
+        this.addSlot(new SlotItemHandler(blockEntity.getItemHandler(), outputSlotIndex, outputItemX, outputItemY) {
             @Override
             public boolean mayPlace(@NotNull ItemStack stack) {
                 return false;
@@ -59,7 +67,6 @@ public class ExtendedCraftingMenu extends AbstractContainerMenu {
 
             @Override
             public void onTake(@NotNull Player player, @NotNull ItemStack stack) {
-                // Consume 1 item from each non-empty input slot
                 for (int i = 0; i < totalInputSlots; i++) {
                     ItemStack in = blockEntity.getItemHandler().getStackInSlot(i);
                     if (!in.isEmpty()) {
@@ -71,17 +78,15 @@ public class ExtendedCraftingMenu extends AbstractContainerMenu {
             }
         });
 
-        // Player Inventory
-        int playerInvY = Math.max(startY + gridSize * slotSize + 14, 140);
-        int playerInvX = Math.max(startX, (startX + gridSize * slotSize + 40 - 162) / 2);
-
+        // 3. Player Inventory (centered horizontally)
+        int playerInvX = (imageWidth - 162) / 2;
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 9; col++) {
                 this.addSlot(new Slot(inv, col + row * 9 + 9, playerInvX + col * 18, playerInvY + row * 18));
             }
         }
 
-        // Player Hotbar
+        // 4. Player Hotbar
         for (int col = 0; col < 9; col++) {
             this.addSlot(new Slot(inv, col, playerInvX + col * 18, playerInvY + 58));
         }
@@ -95,6 +100,18 @@ public class ExtendedCraftingMenu extends AbstractContainerMenu {
         return gridSize;
     }
 
+    public int getImageWidth() {
+        return imageWidth;
+    }
+
+    public int getImageHeight() {
+        return imageHeight;
+    }
+
+    public int getOutputSlotIndex() {
+        return outputSlotIndex;
+    }
+
     @Override
     public @NotNull ItemStack quickMoveStack(@NotNull Player player, int index) {
         ItemStack itemstack = ItemStack.EMPTY;
@@ -103,21 +120,21 @@ public class ExtendedCraftingMenu extends AbstractContainerMenu {
             ItemStack stackInSlot = slot.getItem();
             itemstack = stackInSlot.copy();
 
-            int totalTableSlots = totalInputSlots + 1; // inputs + 1 output
+            int totalTableSlots = totalInputSlots + 1; // inputs + output
 
             if (index == outputSlotIndex) {
-                // Taking from output
+                // Taking from output to player inventory
                 if (!this.moveItemStackTo(stackInSlot, totalTableSlots, this.slots.size(), true)) {
                     return ItemStack.EMPTY;
                 }
                 slot.onQuickCraft(stackInSlot, itemstack);
-            } else if (index < totalTableSlots) {
-                // From input grid to player
+            } else if (index < totalInputSlots) {
+                // Taking from input matrix to player inventory
                 if (!this.moveItemStackTo(stackInSlot, totalTableSlots, this.slots.size(), true)) {
                     return ItemStack.EMPTY;
                 }
             } else {
-                // From player to input grid
+                // Moving from player inventory to input matrix
                 if (!this.moveItemStackTo(stackInSlot, 0, totalInputSlots, false)) {
                     return ItemStack.EMPTY;
                 }
@@ -128,6 +145,12 @@ public class ExtendedCraftingMenu extends AbstractContainerMenu {
             } else {
                 slot.setChanged();
             }
+
+            if (stackInSlot.getCount() == itemstack.getCount()) {
+                return ItemStack.EMPTY;
+            }
+
+            slot.onTake(player, stackInSlot);
         }
         return itemstack;
     }

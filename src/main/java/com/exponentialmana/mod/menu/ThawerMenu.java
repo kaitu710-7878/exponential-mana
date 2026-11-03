@@ -15,6 +15,10 @@ import net.minecraftforge.items.SlotItemHandler;
 import org.jetbrains.annotations.NotNull;
 
 public class ThawerMenu extends AbstractContainerMenu {
+    public static final int INPUT_SLOTS = ThawerBlockEntity.INPUT_SLOTS;   // 4
+    public static final int OUTPUT_SLOTS = ThawerBlockEntity.OUTPUT_SLOTS; // 100
+    public static final int TOTAL_MACHINE_SLOTS = ThawerBlockEntity.TOTAL_SLOTS; // 104
+
     private final ThawerBlockEntity blockEntity;
     private final ContainerLevelAccess levelAccess;
 
@@ -27,37 +31,50 @@ public class ThawerMenu extends AbstractContainerMenu {
         this.blockEntity = (ThawerBlockEntity) entity;
         this.levelAccess = ContainerLevelAccess.create(blockEntity.getLevel(), blockEntity.getBlockPos());
 
-        // Slot 0: Input Batch Compressed Mana
-        this.addSlot(new SlotItemHandler(blockEntity.getItemHandler(), 0, 44, 35) {
-            @Override
-            public boolean mayPlace(@NotNull ItemStack stack) {
-                return stack.is(ModItems.BATCH_COMPRESSED_MANA.get());
-            }
-        });
-
-        // Slots 1 to 9: Output Slots (3x3 grid)
-        for (int row = 0; row < 3; row++) {
-            for (int col = 0; col < 3; col++) {
-                int slotIndex = 1 + col + row * 3;
-                this.addSlot(new SlotItemHandler(blockEntity.getItemHandler(), slotIndex, 98 + col * 18, 17 + row * 18) {
+        // Left: 2x2 Input Slots (0..3) for Batch Compressed Mana
+        int inStartX = 18;
+        int inStartY = 70;
+        for (int row = 0; row < 2; row++) {
+            for (int col = 0; col < 2; col++) {
+                int slotIndex = col + row * 2;
+                this.addSlot(new SlotItemHandler(blockEntity.getItemHandler(), slotIndex,
+                        inStartX + col * 18, inStartY + row * 18) {
                     @Override
                     public boolean mayPlace(@NotNull ItemStack stack) {
-                        return false;
+                        return stack.is(ModItems.BATCH_COMPRESSED_MANA.get());
                     }
                 });
             }
         }
 
-        // Player Inventory
-        for (int row = 0; row < 3; row++) {
-            for (int col = 0; col < 9; col++) {
-                this.addSlot(new Slot(inv, col + row * 9 + 9, 8 + col * 18, 84 + row * 18));
+        // Right: 10x10 Output Slots (4..103)
+        int outStartX = 68;
+        int outStartY = 18;
+        for (int row = 0; row < 10; row++) {
+            for (int col = 0; col < 10; col++) {
+                int slotIndex = INPUT_SLOTS + col + row * 10;
+                this.addSlot(new SlotItemHandler(blockEntity.getItemHandler(), slotIndex,
+                        outStartX + col * 18, outStartY + row * 18) {
+                    @Override
+                    public boolean mayPlace(@NotNull ItemStack stack) {
+                        return false; // Output slots only
+                    }
+                });
             }
         }
 
-        // Player Hotbar
+        // Player Inventory (3 rows x 9 columns)
+        int playerInvX = 77;
+        int playerInvY = 206;
+        for (int row = 0; row < 3; row++) {
+            for (int col = 0; col < 9; col++) {
+                this.addSlot(new Slot(inv, col + row * 9 + 9, playerInvX + col * 18, playerInvY + row * 18));
+            }
+        }
+
+        // Player Hotbar (1 row x 9 columns)
         for (int col = 0; col < 9; col++) {
-            this.addSlot(new Slot(inv, col, 8 + col * 18, 142));
+            this.addSlot(new Slot(inv, col, playerInvX + col * 18, playerInvY + 58));
         }
     }
 
@@ -73,22 +90,18 @@ public class ThawerMenu extends AbstractContainerMenu {
             ItemStack stackInSlot = slot.getItem();
             itemstack = stackInSlot.copy();
 
-            if (index < 10) {
-                // From thawer to player
-                if (!this.moveItemStackTo(stackInSlot, 10, this.slots.size(), true)) {
+            if (index < TOTAL_MACHINE_SLOTS) {
+                // Moving from machine to player inventory
+                if (!this.moveItemStackTo(stackInSlot, TOTAL_MACHINE_SLOTS, this.slots.size(), true)) {
                     return ItemStack.EMPTY;
                 }
             } else {
-                // From player to thawer
+                // Moving from player to machine
                 if (stackInSlot.is(ModItems.BATCH_COMPRESSED_MANA.get())) {
-                    if (!this.moveItemStackTo(stackInSlot, 0, 1, false)) {
+                    if (!this.moveItemStackTo(stackInSlot, 0, INPUT_SLOTS, false)) {
                         return ItemStack.EMPTY;
                     }
-                } else if (index < 37) {
-                    if (!this.moveItemStackTo(stackInSlot, 37, 46, false)) {
-                        return ItemStack.EMPTY;
-                    }
-                } else if (!this.moveItemStackTo(stackInSlot, 10, 37, false)) {
+                } else {
                     return ItemStack.EMPTY;
                 }
             }
@@ -98,6 +111,12 @@ public class ThawerMenu extends AbstractContainerMenu {
             } else {
                 slot.setChanged();
             }
+
+            if (stackInSlot.getCount() == itemstack.getCount()) {
+                return ItemStack.EMPTY;
+            }
+
+            slot.onTake(player, stackInSlot);
         }
         return itemstack;
     }

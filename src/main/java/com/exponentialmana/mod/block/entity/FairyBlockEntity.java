@@ -1,16 +1,13 @@
 package com.exponentialmana.mod.block.entity;
 
+import com.exponentialmana.mod.menu.FairyMenu;
 import com.exponentialmana.mod.registry.ModBlockEntities;
 import com.exponentialmana.mod.registry.ModItems;
-import com.exponentialmana.mod.registry.ModMenuTypes;
-import com.exponentialmana.mod.menu.FairyMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -29,18 +26,24 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * BlockEntity for Fairy Blocks and Compressed Fairy Blocks.
- * Automatically generates tiered mana or Tier 0 mana without catalysts every 60 seconds (1200 ticks).
- * Supports Int_MAX catalyst capacity and 9^compression production multiplier.
+ * Features 8x8 (64 slots) Catalyst inputs and 8x8 (64 slots) Mana outputs,
+ * each slot supporting up to Integer.MAX_VALUE stacks.
+ * Generates tiered mana or Tier 0 mana without catalysts every 60 seconds (1200 ticks).
+ * Supports 9^compression production multiplier.
  * Preserves internal items via NBT on block pickup.
  */
 public class FairyBlockEntity extends BlockEntity implements MenuProvider {
     public static final int BASE_COOLDOWN = 1200; // 60 seconds at 20 TPS
+    public static final int CATALYST_SLOTS = 64; // 8x8
+    public static final int OUTPUT_SLOTS = 64;   // 8x8
+    public static final int TOTAL_SLOTS = CATALYST_SLOTS + OUTPUT_SLOTS; // 128
+
     private int cooldown = BASE_COOLDOWN;
     private final int compressionTier; // 0 for base, 1 to 10 for compressed
 
-    // Slot 0: Catalyst (Int_MAX limit, not consumed)
-    // Slot 1: Output Mana (Int_MAX limit)
-    private final ItemStackHandler itemHandler = new ItemStackHandler(2) {
+    // Slots 0..63: Catalysts (Int_MAX limit, not consumed)
+    // Slots 64..127: Output Mana (Int_MAX limit)
+    private final ItemStackHandler itemHandler = new ItemStackHandler(TOTAL_SLOTS) {
         @Override
         public int getSlotLimit(int slot) {
             return Integer.MAX_VALUE;
@@ -48,10 +51,10 @@ public class FairyBlockEntity extends BlockEntity implements MenuProvider {
 
         @Override
         public boolean isItemValid(int slot, @NotNull ItemStack stack) {
-            if (slot == 0) {
+            if (slot < CATALYST_SLOTS) {
                 return isCatalyst(stack.getItem());
             }
-            return true;
+            return false;
         }
 
         @Override
@@ -72,111 +75,103 @@ public class FairyBlockEntity extends BlockEntity implements MenuProvider {
             return;
         }
 
-        ItemStack catalystStack = entity.itemHandler.getStackInSlot(0);
         entity.cooldown--;
         if (entity.cooldown <= 0) {
             entity.cooldown = BASE_COOLDOWN;
-            if (!catalystStack.isEmpty() && isCatalyst(catalystStack.getItem())) {
-                entity.produceMana(catalystStack);
-            } else {
-                // When fairy has no catalyst, produce Tier 0 mana!
-                entity.produceTier0Mana();
+            entity.processProduction();
+        }
+    }
+
+    /**
+     * Inspects 8x8 catalyst slots. If any catalyst exists, produces corresponding mana.
+     * If entirely empty, produces Tier 0 mana.
+     */
+    private void processProduction() {
+        boolean hasAnyCatalyst = false;
+        long multiplier = 1;
+        for (int i = 0; i < compressionTier; i++) {
+            multiplier *= 9L;
+        }
+
+        for (int i = 0; i < CATALYST_SLOTS; i++) {
+            ItemStack catalyst = itemHandler.getStackInSlot(i);
+            if (!catalyst.isEmpty() && isCatalyst(catalyst.getItem())) {
+                hasAnyCatalyst = true;
+                Item producedMana = getManaForCatalyst(catalyst.getItem());
+                if (producedMana != null) {
+                    insertOutputMana(producedMana, multiplier);
+                }
+            }
+        }
+
+        if (!hasAnyCatalyst) {
+            // No catalyst: produce Tier 0 mana
+            insertOutputMana(ModItems.TIER0_MANA.get(), multiplier);
+        }
+    }
+
+    private void insertOutputMana(Item manaItem, long amount) {
+        long remaining = amount;
+
+        // Pass 1: Try adding to existing matching stacks in output slots
+        for (int i = CATALYST_SLOTS; i < TOTAL_SLOTS; i++) {
+            ItemStack existing = itemHandler.getStackInSlot(i);
+            if (!existing.isEmpty() && existing.is(manaItem)) {
+                long space = (long) Integer.MAX_VALUE - existing.getCount();
+                if (space > 0) {
+                    long toAdd = Math.min(remaining, space);
+                    existing.grow((int) toAdd);
+                    itemHandler.setStackInSlot(i, existing);
+                    remaining -= toAdd;
+                    if (remaining <= 0) break;
+                }
+            }
+        }
+
+        // Pass 2: Place in empty output slots
+        if (remaining > 0) {
+            for (int i = CATALYST_SLOTS; i < TOTAL_SLOTS; i++) {
+                ItemStack existing = itemHandler.getStackInSlot(i);
+                if (existing.isEmpty()) {
+                    long toAdd = Math.min(remaining, (long) Integer.MAX_VALUE);
+                    itemHandler.setStackInSlot(i, new ItemStack(manaItem, (int) toAdd));
+                    remaining -= toAdd;
+                    if (remaining <= 0) break;
+                }
             }
         }
     }
 
-    private void produceTier0Mana() {
-        Item tier0 = ModItems.TIER0_MANA.get();
-        long multiplier = 1;
-        for (int i = 0; i < compressionTier; i++) {
-            multiplier *= 9L;
-        }
-
-        ItemStack currentOutput = itemHandler.getStackInSlot(1);
-        if (currentOutput.isEmpty()) {
-            itemHandler.setStackInSlot(1, new ItemStack(tier0, (int) Math.min((long) Integer.MAX_VALUE, multiplier)));
-        } else if (currentOutput.is(tier0)) {
-            long newCount = (long) currentOutput.getCount() + multiplier;
-            currentOutput.setCount((int) Math.min((long) Integer.MAX_VALUE, newCount));
-            itemHandler.setStackInSlot(1, currentOutput);
-        }
-        setChanged();
-    }
-
-    private void produceMana(ItemStack catalystStack) {
-        Item manaItem = getManaForCatalyst(catalystStack.getItem());
-        if (manaItem == null) return;
-
-        // Calculate output: 9^compressionTier * catalystCount (capped at Integer.MAX_VALUE)
-        long multiplier = 1;
-        for (int i = 0; i < compressionTier; i++) {
-            multiplier *= 9L;
-        }
-
-        long catalystCount = catalystStack.getCount();
-        long totalProduced = Math.min((long) Integer.MAX_VALUE, multiplier * catalystCount);
-
-        ItemStack currentOutput = itemHandler.getStackInSlot(1);
-        if (currentOutput.isEmpty()) {
-            itemHandler.setStackInSlot(1, new ItemStack(manaItem, (int) totalProduced));
-        } else if (currentOutput.is(manaItem)) {
-            long newCount = (long) currentOutput.getCount() + totalProduced;
-            currentOutput.setCount((int) Math.min((long) Integer.MAX_VALUE, newCount));
-            itemHandler.setStackInSlot(1, currentOutput);
-        }
-        setChanged();
-    }
-
     public static boolean isCatalyst(Item item) {
-        return item == ModItems.TIER1_FAIRY_CATALYST.get() ||
-                item == ModItems.TIER2_FAIRY_CATALYST.get() ||
-                item == ModItems.TIER3_FAIRY_CATALYST.get() ||
-                item == ModItems.TIER4_FAIRY_CATALYST.get() ||
-                item == ModItems.TIER5_FAIRY_CATALYST.get() ||
-                item == ModItems.TIER6_FAIRY_CATALYST.get() ||
-                item == ModItems.TIER7_FAIRY_CATALYST.get() ||
-                item == ModItems.TIER8_FAIRY_CATALYST.get() ||
-                item == ModItems.TIER9_FAIRY_CATALYST.get() ||
-                item == ModItems.TIER10_FAIRY_CATALYST.get() ||
-                item == ModItems.PURE_FAIRY_CATALYST.get();
+        return getManaForCatalyst(item) != null;
     }
 
     @Nullable
-    public static Item getManaForCatalyst(Item catalyst) {
-        if (catalyst == ModItems.TIER1_FAIRY_CATALYST.get()) return ModItems.TIER1_MANA.get();
-        if (catalyst == ModItems.TIER2_FAIRY_CATALYST.get()) return ModItems.TIER2_MANA.get();
-        if (catalyst == ModItems.TIER3_FAIRY_CATALYST.get()) return ModItems.TIER3_MANA.get();
-        if (catalyst == ModItems.TIER4_FAIRY_CATALYST.get()) return ModItems.TIER4_MANA.get();
-        if (catalyst == ModItems.TIER5_FAIRY_CATALYST.get()) return ModItems.TIER5_MANA.get();
-        if (catalyst == ModItems.TIER6_FAIRY_CATALYST.get()) return ModItems.TIER6_MANA.get();
-        if (catalyst == ModItems.TIER7_FAIRY_CATALYST.get()) return ModItems.TIER7_MANA.get();
-        if (catalyst == ModItems.TIER8_FAIRY_CATALYST.get()) return ModItems.TIER8_MANA.get();
-        if (catalyst == ModItems.TIER9_FAIRY_CATALYST.get()) return ModItems.TIER9_MANA.get();
-        if (catalyst == ModItems.TIER10_FAIRY_CATALYST.get()) return ModItems.TIER10_MANA.get();
-        if (catalyst == ModItems.PURE_FAIRY_CATALYST.get()) return ModItems.PURE_MANA.get();
+    public static Item getManaForCatalyst(Item item) {
+        if (item == ModItems.TIER1_FAIRY_CATALYST.get()) return ModItems.TIER1_MANA.get();
+        if (item == ModItems.TIER2_FAIRY_CATALYST.get()) return ModItems.TIER2_MANA.get();
+        if (item == ModItems.TIER3_FAIRY_CATALYST.get()) return ModItems.TIER3_MANA.get();
+        if (item == ModItems.TIER4_FAIRY_CATALYST.get()) return ModItems.TIER4_MANA.get();
+        if (item == ModItems.TIER5_FAIRY_CATALYST.get()) return ModItems.TIER5_MANA.get();
+        if (item == ModItems.TIER6_FAIRY_CATALYST.get()) return ModItems.TIER6_MANA.get();
+        if (item == ModItems.TIER7_FAIRY_CATALYST.get()) return ModItems.TIER7_MANA.get();
+        if (item == ModItems.TIER8_FAIRY_CATALYST.get()) return ModItems.TIER8_MANA.get();
+        if (item == ModItems.TIER9_FAIRY_CATALYST.get()) return ModItems.TIER9_MANA.get();
+        if (item == ModItems.TIER10_FAIRY_CATALYST.get()) return ModItems.TIER10_MANA.get();
+        if (item == ModItems.PURE_FAIRY_CATALYST.get()) return ModItems.PURE_MANA.get();
         return null;
-    }
-
-    public int getCooldown() {
-        return cooldown;
     }
 
     public int getCompressionTier() {
         return compressionTier;
     }
 
-    public ItemStackHandler getItemHandler() {
-        return itemHandler;
+    public int getCooldown() {
+        return cooldown;
     }
 
-    public void drops() {
-        SimpleContainer inventory = new SimpleContainer(itemHandler.getSlots());
-        for (int i = 0; i < itemHandler.getSlots(); i++) {
-            inventory.setItem(i, itemHandler.getStackInSlot(i));
-        }
-        if (level != null) {
-            Containers.dropContents(level, worldPosition, inventory);
-        }
+    public ItemStackHandler getItemHandler() {
+        return itemHandler;
     }
 
     @Override
@@ -223,6 +218,8 @@ public class FairyBlockEntity extends BlockEntity implements MenuProvider {
     public void load(CompoundTag tag) {
         super.load(tag);
         itemHandler.deserializeNBT(tag.getCompound("inventory"));
-        cooldown = tag.getInt("cooldown");
+        if (tag.contains("cooldown")) {
+            cooldown = tag.getInt("cooldown");
+        }
     }
 }

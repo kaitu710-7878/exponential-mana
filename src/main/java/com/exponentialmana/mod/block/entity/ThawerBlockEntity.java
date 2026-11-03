@@ -8,9 +8,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -29,23 +27,25 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * BlockEntity for the Thawer.
- * Safely extracts real item-form mana from Batch Compressed Mana into output slots.
+ * Features 2x2 (4 slots) input for Batch Compressed Mana, and 10x10 (100 slots) output,
+ * each output slot supporting up to Integer.MAX_VALUE stacks.
+ * Safely extracts real item-form mana from Batch Compressed Mana into 100 output slots.
  * Supports GUI and preserves contents on block pickup.
  */
 public class ThawerBlockEntity extends BlockEntity implements MenuProvider {
-    // Slot 0: Input Batch Compressed Mana
-    // Slot 1 to 11: Output Mana for Tier 0 to 10
-    public static final int TOTAL_SLOTS = 12;
+    public static final int INPUT_SLOTS = 4;   // 2x2 grid
+    public static final int OUTPUT_SLOTS = 100; // 10x10 grid
+    public static final int TOTAL_SLOTS = INPUT_SLOTS + OUTPUT_SLOTS; // 104
 
     private final ItemStackHandler itemHandler = new ItemStackHandler(TOTAL_SLOTS) {
         @Override
         public int getSlotLimit(int slot) {
-            return (slot == 0) ? 1 : 64;
+            return (slot < INPUT_SLOTS) ? 64 : Integer.MAX_VALUE;
         }
 
         @Override
         public boolean isItemValid(int slot, @NotNull ItemStack stack) {
-            if (slot == 0) {
+            if (slot < INPUT_SLOTS) {
                 return stack.is(ModItems.BATCH_COMPRESSED_MANA.get());
             }
             return false;
@@ -66,57 +66,91 @@ public class ThawerBlockEntity extends BlockEntity implements MenuProvider {
     public static void tick(Level level, BlockPos pos, BlockState state, ThawerBlockEntity entity) {
         if (level.isClientSide) return;
 
-        ItemStack input = entity.itemHandler.getStackInSlot(0);
-        if (!input.isEmpty() && input.is(ModItems.BATCH_COMPRESSED_MANA.get())) {
-            CompoundTag tag = input.getTag();
-            if (tag != null && tag.contains("ManaCounts")) {
-                CompoundTag manaTag = tag.getCompound("ManaCounts");
-                boolean anyRemaining = false;
+        boolean changed = false;
 
-                for (int tier = 0; tier <= 10; tier++) {
-                    String key = "Tier" + tier;
-                    long count = manaTag.getLong(key);
-                    if (count > 0) {
-                        int outputSlot = tier + 1;
-                        Item manaItem = getManaItem(tier);
-                        ItemStack currentOutput = entity.itemHandler.getStackInSlot(outputSlot);
+        // Process each input slot
+        for (int inSlot = 0; inSlot < INPUT_SLOTS; inSlot++) {
+            ItemStack input = entity.itemHandler.getStackInSlot(inSlot);
+            if (!input.isEmpty() && input.is(ModItems.BATCH_COMPRESSED_MANA.get())) {
+                CompoundTag tag = input.getTag();
+                if (tag != null && tag.contains("ManaCounts")) {
+                    CompoundTag manaTag = tag.getCompound("ManaCounts");
+                    boolean anyRemaining = false;
 
-                        if (currentOutput.isEmpty() || (currentOutput.is(manaItem) && currentOutput.getCount() < 64)) {
-                            int space = currentOutput.isEmpty() ? 64 : (64 - currentOutput.getCount());
-                            int toExtract = (int) Math.min(count, (long) space);
+                    for (int tier = 0; tier <= 10; tier++) {
+                        String key = "Tier" + tier;
+                        long count = manaTag.getLong(key);
+                        if (count > 0) {
+                            Item manaItem = getManaItem(tier);
+                            // Extract up to 64 per tick per tier to prevent massive single-tick freeze
+                            int toExtract = (int) Math.min(count, 64L);
+                            int inserted = entity.insertOutputMana(manaItem, toExtract);
 
-                            if (toExtract > 0) {
-                                count -= toExtract;
+                            if (inserted > 0) {
+                                count -= inserted;
                                 if (count <= 0) {
                                     manaTag.remove(key);
                                 } else {
                                     manaTag.putLong(key, count);
                                 }
+                                changed = true;
+                            }
 
-                                if (currentOutput.isEmpty()) {
-                                    entity.itemHandler.setStackInSlot(outputSlot, new ItemStack(manaItem, toExtract));
-                                } else {
-                                    currentOutput.grow(toExtract);
-                                    entity.itemHandler.setStackInSlot(outputSlot, currentOutput);
-                                }
-                                entity.setChanged();
+                            if (count > 0) {
+                                anyRemaining = true;
                             }
                         }
-
-                        if (count > 0) {
-                            anyRemaining = true;
-                        }
                     }
-                }
 
-                // If completely thawed and all tiers empty, consume the input container
-                if (!anyRemaining) {
-                    input.shrink(1);
-                    entity.itemHandler.setStackInSlot(0, input);
-                    entity.setChanged();
+                    // If all mana counts are depleted, shrink input stack by 1
+                    if (!anyRemaining) {
+                        input.shrink(1);
+                        entity.itemHandler.setStackInSlot(inSlot, input);
+                        changed = true;
+                    }
                 }
             }
         }
+
+        if (changed) {
+            entity.setChanged();
+        }
+    }
+
+    /**
+     * Inserts unpacked mana items into the 10x10 output slots (Int_MAX stack size).
+     * Returns the actual amount inserted.
+     */
+    private int insertOutputMana(Item manaItem, int amount) {
+        int remaining = amount;
+
+        // Pass 1: Try adding to existing matching stacks
+        for (int i = INPUT_SLOTS; i < TOTAL_SLOTS; i++) {
+            ItemStack existing = itemHandler.getStackInSlot(i);
+            if (!existing.isEmpty() && existing.is(manaItem)) {
+                long space = (long) Integer.MAX_VALUE - existing.getCount();
+                if (space > 0) {
+                    int toAdd = (int) Math.min((long) remaining, space);
+                    existing.grow(toAdd);
+                    itemHandler.setStackInSlot(i, existing);
+                    remaining -= toAdd;
+                    if (remaining <= 0) return amount;
+                }
+            }
+        }
+
+        // Pass 2: Place in empty output slots
+        if (remaining > 0) {
+            for (int i = INPUT_SLOTS; i < TOTAL_SLOTS; i++) {
+                ItemStack existing = itemHandler.getStackInSlot(i);
+                if (existing.isEmpty()) {
+                    itemHandler.setStackInSlot(i, new ItemStack(manaItem, remaining));
+                    return amount;
+                }
+            }
+        }
+
+        return amount - remaining;
     }
 
     public static Item getManaItem(int tier) {
@@ -136,22 +170,8 @@ public class ThawerBlockEntity extends BlockEntity implements MenuProvider {
         };
     }
 
-    public boolean isThawing() {
-        return !itemHandler.getStackInSlot(0).isEmpty();
-    }
-
     public ItemStackHandler getItemHandler() {
         return itemHandler;
-    }
-
-    public void drops() {
-        SimpleContainer inventory = new SimpleContainer(itemHandler.getSlots());
-        for (int i = 0; i < itemHandler.getSlots(); i++) {
-            inventory.setItem(i, itemHandler.getStackInSlot(i));
-        }
-        if (level != null) {
-            Containers.dropContents(level, worldPosition, inventory);
-        }
     }
 
     @Override

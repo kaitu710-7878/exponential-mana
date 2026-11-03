@@ -8,6 +8,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.11.0-alpha] - 2026-11-03
+
+### Fixed / 修正
+- **EN**:
+  - Fixed server freeze / infinite loop when shift-clicking or inserting ores into the Batch Ore Breaker. Enabled processing for both active and inactive mana ores.
+  - Fixed slot alignment, clipping, and overlapping in Extended Crafting Tables (4x4 to 13x13) by standardizing to 18x18 pitch and dynamically calculating panel width/height (referencing Extended Crafting Reforked architecture).
+  - Resolved slot rendering offset bugs across all GUI screens by synchronizing slot backgrounds directly with menu slot coordinates.
+- **JA**:
+  - 鉱石一括破壊機への鉱石投入時（Shiftクリック含む）に無限ループとなりサーバー/ゲームがフリーズする不具合を完全修正。活性マナ鉱石および非活性マナ鉱石の両方の一括溶解処理に対応。
+  - 拡張作業台（4×4〜13×13）においてスロットが重なったりインベントリがGUI枠外にはみ出る不具合を、18×18ピッチ統一および画面サイズ・スロット背景描画の完全同期（Extended Crafting Reforked準拠）により解決。
+  - 全GUIスクリーンにおいて、Menu側のスロット座標とScreen側のスロット枠描画のズレ・隙間・不要な重なりを完全に解消。
+
+### Changed / 変更
+- **EN**:
+  - Overhauled Fairy inventory: 8x8 (64 slots) Catalyst inputs and 8x8 (64 slots) Mana outputs, each supporting up to `Integer.MAX_VALUE` stacks.
+  - Overhauled Thawer: UI-managed 2x2 input slots and 10x10 (100 slots) output grid, each supporting up to `Integer.MAX_VALUE` stacks.
+  - Added dedicated Extended Crafting category (`ExtendedCraftingJeiCategory`) to JEI displaying recipes from Tier 1 (4x4) through Tier 10 (13x13).
+- **JA**:
+  - 妖精ブロックのインベントリを大幅刷新：触媒入力 8×8 (64スロット) および生産マナ出力 8×8 (64スロット) をUI管理化し、全スロット上限を `Integer.MAX_VALUE`（約21億個）に対応。
+  - 解凍機のUIを大幅刷新：入力（2×2）および出力 10×10 (100スロット) をUI管理化し、出力スロット上限を `Integer.MAX_VALUE` に拡張。
+  - JEIに「拡張クラフト」専用カテゴリ（`ExtendedCraftingJeiCategory`）を新設し、Tier 1 (4×4) から Tier 10 (13×13) の全レシピを視覚的に閲覧可能に対応。
+
+---
+
 ## [0.10.0-alpha] - 2026-11-03
 
 ### Added / 追加

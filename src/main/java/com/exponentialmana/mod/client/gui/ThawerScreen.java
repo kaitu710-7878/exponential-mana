@@ -1,6 +1,5 @@
 package com.exponentialmana.mod.client.gui;
 
-import com.exponentialmana.mod.block.entity.ThawerBlockEntity;
 import com.exponentialmana.mod.menu.ThawerMenu;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
@@ -9,36 +8,49 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.Slot;
 
 public class ThawerScreen extends AbstractContainerScreen<ThawerMenu> {
-    private static final ResourceLocation TEXTURE = new ResourceLocation("minecraft", "textures/gui/container/dispenser.png");
+    private static final ResourceLocation SLOT_TEXTURE = new ResourceLocation("minecraft", "textures/gui/container/generic_54.png");
+    private static final ResourceLocation CRAFTING_TEXTURE = new ResourceLocation("minecraft", "textures/gui/container/crafting_table.png");
 
     public ThawerScreen(ThawerMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title);
-        this.imageWidth = 176;
-        this.imageHeight = 166;
+        this.imageWidth = 258;
+        this.imageHeight = 292;
     }
 
     @Override
     protected void renderBg(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.setShaderTexture(0, TEXTURE);
         int x = (width - imageWidth) / 2;
         int y = (height - imageHeight) / 2;
-        guiGraphics.blit(TEXTURE, x, y, 0, 0, imageWidth, imageHeight);
 
-        // Draw heat indicator
-        ThawerBlockEntity be = menu.getBlockEntity();
-        if (be != null && be.isThawing()) {
-            guiGraphics.fill(x + 68, y + 39, x + 92, y + 43, 0xFFFF7043);
+        // Container background
+        guiGraphics.fill(x, y, x + imageWidth, y + imageHeight, 0xFFC6C6C6);
+        guiGraphics.renderOutline(x, y, imageWidth, imageHeight, 0xFF373737);
+
+        // Precise slot drawing
+        RenderSystem.setShaderTexture(0, SLOT_TEXTURE);
+        for (Slot slot : menu.slots) {
+            int sx = x + slot.x - 1;
+            int sy = y + slot.y - 1;
+            guiGraphics.blit(SLOT_TEXTURE, sx, sy, 7, 17, 18, 18);
         }
+
+        // Draw arrow from input to output
+        RenderSystem.setShaderTexture(0, CRAFTING_TEXTURE);
+        int arrowX = x + 48;
+        int arrowY = y + 78;
+        guiGraphics.blit(CRAFTING_TEXTURE, arrowX, arrowY, 90, 35, 18, 15);
     }
 
     @Override
     protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
-        guiGraphics.drawString(this.font, this.title, this.titleLabelX, this.titleLabelY, 0x404040, false);
-        guiGraphics.drawString(this.font, this.playerInventoryTitle, this.inventoryLabelX, this.inventoryLabelY, 0x404040, false);
+        guiGraphics.drawString(this.font, this.title, 8, 6, 0x404040, false);
+        guiGraphics.drawString(this.font, Component.translatable("gui.exponential_mana.input"), 18, 56, 0x555555, false);
+        guiGraphics.drawString(this.font, Component.translatable("gui.exponential_mana.outputs"), 68, 6, 0x555555, false);
     }
 
     @Override

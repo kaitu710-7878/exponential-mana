@@ -1,8 +1,6 @@
 package com.exponentialmana.mod.menu;
 
-import com.exponentialmana.mod.block.InactiveManaOreBlock;
 import com.exponentialmana.mod.block.entity.BatchOreBreakerBlockEntity;
-import com.exponentialmana.mod.registry.ModBlocks;
 import com.exponentialmana.mod.registry.ModMenuTypes;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -10,14 +8,13 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.items.SlotItemHandler;
 import org.jetbrains.annotations.NotNull;
 
 public class BatchOreBreakerMenu extends AbstractContainerMenu {
+    public static final int MACHINE_SLOTS = 100;
     private final BatchOreBreakerBlockEntity blockEntity;
     private final ContainerLevelAccess levelAccess;
 
@@ -30,34 +27,33 @@ public class BatchOreBreakerMenu extends AbstractContainerMenu {
         this.blockEntity = (BatchOreBreakerBlockEntity) entity;
         this.levelAccess = ContainerLevelAccess.create(blockEntity.getLevel(), blockEntity.getBlockPos());
 
-        // 10x10 Grid (100 Slots) for Inactive Ores
+        // 10x10 Grid (100 Slots) for Inactive & Active Ores
+        // Width of grid: 10 * 18 = 180. Center in panel (panel width = 198)
+        // startX = 9, startY = 18
         for (int row = 0; row < 10; row++) {
             for (int col = 0; col < 10; col++) {
                 int slotIndex = col + row * 10;
                 this.addSlot(new SlotItemHandler(blockEntity.getItemHandler(), slotIndex, 10 + col * 18, 18 + row * 18) {
                     @Override
                     public boolean mayPlace(@NotNull ItemStack stack) {
-                        if (stack.getItem() instanceof BlockItem bi) {
-                            Block b = bi.getBlock();
-                            return b instanceof InactiveManaOreBlock || b == ModBlocks.INACTIVE_TIER0_MANA_ORE.get();
-                        }
-                        return false;
+                        return BatchOreBreakerBlockEntity.isOreValid(stack);
                     }
                 });
             }
         }
 
-        // Player Inventory
-        int playerInvY = 204;
+        // Player Inventory (3 rows x 9 columns)
+        // startX = (198 - 162) / 2 = 18
+        int playerInvY = 206;
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 9; col++) {
-                this.addSlot(new Slot(inv, col + row * 9 + 9, 19 + col * 18, playerInvY + row * 18));
+                this.addSlot(new Slot(inv, col + row * 9 + 9, 18 + col * 18, playerInvY + row * 18));
             }
         }
 
-        // Player Hotbar
+        // Player Hotbar (1 row x 9 columns)
         for (int col = 0; col < 9; col++) {
-            this.addSlot(new Slot(inv, col, 19 + col * 18, playerInvY + 58));
+            this.addSlot(new Slot(inv, col, 18 + col * 18, playerInvY + 58));
         }
     }
 
@@ -73,20 +69,19 @@ public class BatchOreBreakerMenu extends AbstractContainerMenu {
             ItemStack stackInSlot = slot.getItem();
             itemstack = stackInSlot.copy();
 
-            if (index < 100) {
+            if (index < MACHINE_SLOTS) {
                 // Moving from machine to player inventory
-                if (!this.moveItemStackTo(stackInSlot, 100, this.slots.size(), true)) {
+                if (!this.moveItemStackTo(stackInSlot, MACHINE_SLOTS, this.slots.size(), true)) {
                     return ItemStack.EMPTY;
                 }
             } else {
                 // Moving from player to machine
-                if (stackInSlot.getItem() instanceof BlockItem bi) {
-                    Block b = bi.getBlock();
-                    if (b instanceof InactiveManaOreBlock || b == ModBlocks.INACTIVE_TIER0_MANA_ORE.get()) {
-                        if (!this.moveItemStackTo(stackInSlot, 0, 100, false)) {
-                            return ItemStack.EMPTY;
-                        }
+                if (BatchOreBreakerBlockEntity.isOreValid(stackInSlot)) {
+                    if (!this.moveItemStackTo(stackInSlot, 0, MACHINE_SLOTS, false)) {
+                        return ItemStack.EMPTY;
                     }
+                } else {
+                    return ItemStack.EMPTY;
                 }
             }
 
@@ -95,6 +90,12 @@ public class BatchOreBreakerMenu extends AbstractContainerMenu {
             } else {
                 slot.setChanged();
             }
+
+            if (stackInSlot.getCount() == itemstack.getCount()) {
+                return ItemStack.EMPTY;
+            }
+
+            slot.onTake(player, stackInSlot);
         }
         return itemstack;
     }

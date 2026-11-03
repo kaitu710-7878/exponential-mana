@@ -1,11 +1,11 @@
 package com.exponentialmana.mod.block.entity;
 
 import com.exponentialmana.mod.block.InactiveManaOreBlock;
+import com.exponentialmana.mod.block.ManaOreBlock;
 import com.exponentialmana.mod.menu.BatchOreBreakerMenu;
 import com.exponentialmana.mod.registry.ModBlockEntities;
 import com.exponentialmana.mod.registry.ModBlocks;
 import com.exponentialmana.mod.registry.ModItems;
-import com.exponentialmana.mod.registry.ModMenuTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -31,7 +31,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * BlockEntity for the Batch Ore Breaker.
  * Features a 10x10 (100 slots) inventory, each slot holding up to Int_MAX.
- * Processes inactive mana ores in batches into internal mana pools.
+ * Processes both inactive and active mana ores in batches into internal mana pools.
  * Supports GUI and preserves contents on block pickup.
  */
 public class BatchOreBreakerBlockEntity extends BlockEntity implements MenuProvider {
@@ -51,11 +51,7 @@ public class BatchOreBreakerBlockEntity extends BlockEntity implements MenuProvi
 
         @Override
         public boolean isItemValid(int slot, @NotNull ItemStack stack) {
-            if (stack.getItem() instanceof BlockItem bi) {
-                Block block = bi.getBlock();
-                return block instanceof InactiveManaOreBlock || block == ModBlocks.INACTIVE_TIER0_MANA_ORE.get();
-            }
-            return false;
+            return isOreValid(stack);
         }
 
         @Override
@@ -70,6 +66,16 @@ public class BatchOreBreakerBlockEntity extends BlockEntity implements MenuProvi
         super(ModBlockEntities.BATCH_ORE_BREAKER_BE.get(), pos, state);
     }
 
+    public static boolean isOreValid(ItemStack stack) {
+        if (!stack.isEmpty() && stack.getItem() instanceof BlockItem bi) {
+            Block block = bi.getBlock();
+            return block instanceof InactiveManaOreBlock ||
+                   block instanceof ManaOreBlock ||
+                   block == ModBlocks.INACTIVE_TIER0_MANA_ORE.get();
+        }
+        return false;
+    }
+
     public static void tick(Level level, BlockPos pos, BlockState state, BatchOreBreakerBlockEntity entity) {
         if (level.isClientSide) return;
 
@@ -81,7 +87,7 @@ public class BatchOreBreakerBlockEntity extends BlockEntity implements MenuProvi
     }
 
     /**
-     * Processes inactive ores in the 10x10 inventory, converting them into mana counts.
+     * Processes inactive and active ores in the 10x10 inventory, converting them into mana counts.
      */
     private void processBatch() {
         boolean changed = false;
@@ -95,10 +101,12 @@ public class BatchOreBreakerBlockEntity extends BlockEntity implements MenuProvi
                     tier = 0;
                 } else if (block instanceof InactiveManaOreBlock inactiveBlock) {
                     tier = inactiveBlock.getTier();
+                } else if (block instanceof ManaOreBlock manaBlock) {
+                    tier = manaBlock.getTier();
                 }
 
                 if (tier >= 0 && tier <= 10) {
-                    // Extract up to 64 (or whole stack in batches)
+                    // Extract up to 64 per batch (or all remaining if smaller)
                     int toExtract = Math.min(stack.getCount(), 64);
                     stack.shrink(toExtract);
                     manaPool[tier] = Math.min((long) Integer.MAX_VALUE * 1000L, manaPool[tier] + toExtract);
@@ -123,13 +131,14 @@ public class BatchOreBreakerBlockEntity extends BlockEntity implements MenuProvi
 
         for (int tier = 0; tier <= 10; tier++) {
             long totalTierMana = manaPool[tier];
-            // Also convert any remaining unprocessed inactive ores in slots to mana count
+            // Also convert any remaining unprocessed inactive/active ores in slots to mana count
             for (int slot = 0; slot < SLOTS; slot++) {
                 ItemStack stack = itemHandler.getStackInSlot(slot);
                 if (!stack.isEmpty() && stack.getItem() instanceof BlockItem bi) {
                     int oreTier = -1;
                     if (bi.getBlock() == ModBlocks.INACTIVE_TIER0_MANA_ORE.get()) oreTier = 0;
                     else if (bi.getBlock() instanceof InactiveManaOreBlock inb) oreTier = inb.getTier();
+                    else if (bi.getBlock() instanceof ManaOreBlock mob) oreTier = mob.getTier();
 
                     if (oreTier == tier) {
                         totalTierMana += stack.getCount();

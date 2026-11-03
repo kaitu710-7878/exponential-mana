@@ -214,5 +214,30 @@
   "jei.exponential_mana.batch_compressed_mana.info": "Batch Compressed Mana:\nHigh-density NBT storage item that bundles up to Integer.MAX_VALUE mana items safely into a single unscattered stack. Feed into a Thawer to extract physical items.",
   "jei.exponential_mana.infinite_mana.info": "Infinite Mana:\nUltimate cosmic singularity catalyst. Multiplies any non-NBT item stack by 64 in the crafting table. Strictly blocks NBT/container items to prevent infinite recursive recursion.",
   "jei.exponential_mana.extended_crafting_table.info": "Extended Crafting Tables:\nTier 1 (4x4) through Tier 10 (13x13, 169 slots) huge crafting grids. Requires zero energy and fully integrates with AE2 automation and item handlers.",
-  "jei.exponential_mana.origin_equipment.info": "Origin Series Equipment:\nTier 10 endgame gear providing Creative Flight, complete immunity to the Void and /kill commands, and an instant-deletion /kill attack."
+  "jei.exponential_mana.origin_equipment.info": "Origin Series Equipment:\nTier 10 endgame gear providing Creative Flight, complete immunity to the Void and /kill commands, and an instant-deletion /kill attack.",
+
+  "gui.exponential_mana.catalysts": "Catalysts (8x8)",
+  "gui.exponential_mana.outputs": "Outputs",
+  "gui.exponential_mana.input": "Input",
+
+  "jei.exponential_mana.extended_crafting.title": "Extended Crafting",
+  "jei.exponential_mana.recipe.tier1_table": "Tier 1 Extended Crafting Table (4x4)",
+  "jei.exponential_mana.recipe.tier1_core": "Tier 1 Core",
+  "jei.exponential_mana.recipe.tier1_catalyst": "Tier 1 Fairy Catalyst",
+  "jei.exponential_mana.recipe.compressed_fairy_1": "Compressed Fairy (Tier 1)",
+  "jei.exponential_mana.recipe.tier2_table": "Tier 2 Extended Crafting Table (5x5)",
+  "jei.exponential_mana.recipe.tier3_table": "Tier 3 Extended Crafting Table (6x6)",
+  "jei.exponential_mana.recipe.tier4_table": "Tier 4 Extended Crafting Table (7x7)",
+  "jei.exponential_mana.recipe.tier5_table": "Tier 5 Extended Crafting Table (8x8)",
+  "jei.exponential_mana.recipe.tier6_table": "Tier 6 Extended Crafting Table (9x9)",
+  "jei.exponential_mana.recipe.tier7_table": "Tier 7 Extended Crafting Table (10x10)",
+  "jei.exponential_mana.recipe.tier8_table": "Tier 8 Extended Crafting Table (11x11)",
+  "jei.exponential_mana.recipe.tier9_table": "Tier 9 Extended Crafting Table (12x12)",
+  "jei.exponential_mana.recipe.tier10_table": "Tier 10 Extended Crafting Table (13x13)",
+  "jei.exponential_mana.recipe.origin_sword": "Origin God Sword",
+  "jei.exponential_mana.recipe.origin_helmet": "Origin Helmet",
+  "jei.exponential_mana.recipe.origin_chestplate": "Origin Chestplate",
+  "jei.exponential_mana.recipe.origin_leggings": "Origin Leggings",
+  "jei.exponential_mana.recipe.origin_boots": "Origin Boots",
+  "jei.exponential_mana.recipe.infinite_mana": "Infinite Mana"
 }

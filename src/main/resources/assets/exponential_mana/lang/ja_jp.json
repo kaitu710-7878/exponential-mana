@@ -214,5 +214,30 @@
   "jei.exponential_mana.batch_compressed_mana.info": "【一括圧縮マナ】\n最大21億個（Integer.MAX_VALUE）以上のマナを、ラグを起こさずに1つのアイテム内に安全に封入した超圧縮NBTアイテム。解凍機に投入することで実体アイテムとして安全に取り出せます。",
   "jei.exponential_mana.infinite_mana.info": "【無限のマナ】\n宇宙の特異点を閉じ込めた究極のマナ。作業台でクラフトすると、NBTを持たないアイテムスタックを「64倍」に無限増殖させます。無限の自己再帰やクラッシュを防ぐため、NBTを持つアイテムの増殖は厳格に遮断されています。",
   "jei.exponential_mana.extended_crafting_table.info": "【拡張作業台】\nTier1（4×4）からTier10（13×13、169スロット）までの巨大グリッド作業台。エネルギー消費ゼロで動作し、AE2の自動クラフトやパイプ搬入出にも完全対応しています。",
-  "jei.exponential_mana.origin_equipment.info": "【根源シリーズ装備】\nTier10エンドゲーム究極装備。クリエイティブ飛行、奈落や/killコマンドに対する完全無敵化、そして相手を/kill即死消滅させる根源の剣で構成されます。"
+  "jei.exponential_mana.origin_equipment.info": "【根源シリーズ装備】\nTier10エンドゲーム究極装備。クリエイティブ飛行、奈落や/killコマンドに対する完全無敵化、そして相手を/kill即死消滅させる根源の剣で構成されます。",
+
+  "gui.exponential_mana.catalysts": "触媒スロット (8×8)",
+  "gui.exponential_mana.outputs": "生産スロット",
+  "gui.exponential_mana.input": "入力スロット",
+
+  "jei.exponential_mana.extended_crafting.title": "拡張クラフト",
+  "jei.exponential_mana.recipe.tier1_table": "Tier1 拡張作業台 (4×4)",
+  "jei.exponential_mana.recipe.tier1_core": "Tier1 コア合成",
+  "jei.exponential_mana.recipe.tier1_catalyst": "Tier1 妖精触媒",
+  "jei.exponential_mana.recipe.compressed_fairy_1": "圧縮妖精 (1段階)",
+  "jei.exponential_mana.recipe.tier2_table": "Tier2 拡張作業台 (5×5)",
+  "jei.exponential_mana.recipe.tier3_table": "Tier3 拡張作業台 (6×6)",
+  "jei.exponential_mana.recipe.tier4_table": "Tier4 拡張作業台 (7×7)",
+  "jei.exponential_mana.recipe.tier5_table": "Tier5 拡張作業台 (8×8)",
+  "jei.exponential_mana.recipe.tier6_table": "Tier6 拡張作業台 (9×9)",
+  "jei.exponential_mana.recipe.tier7_table": "Tier7 拡張作業台 (10×10)",
+  "jei.exponential_mana.recipe.tier8_table": "Tier8 拡張作業台 (11×11)",
+  "jei.exponential_mana.recipe.tier9_table": "Tier9 拡張作業台 (12×12)",
+  "jei.exponential_mana.recipe.tier10_table": "Tier10 拡張作業台 (13×13)",
+  "jei.exponential_mana.recipe.origin_sword": "根源の神剣",
+  "jei.exponential_mana.recipe.origin_helmet": "根源の兜",
+  "jei.exponential_mana.recipe.origin_chestplate": "根源の胸当て",
+  "jei.exponential_mana.recipe.origin_leggings": "根源の脚甲",
+  "jei.exponential_mana.recipe.origin_boots": "根源の具足",
+  "jei.exponential_mana.recipe.infinite_mana": "無限のマナ"
 }
