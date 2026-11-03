@@ -29,7 +29,8 @@ public class ModBlockEntities {
                             ModBlocks.INACTIVE_TIER7_MANA_ORE.get(),
                             ModBlocks.INACTIVE_TIER8_MANA_ORE.get(),
                             ModBlocks.INACTIVE_TIER9_MANA_ORE.get(),
-                            ModBlocks.INACTIVE_TIER10_MANA_ORE.get()
+                            ModBlocks.INACTIVE_TIER10_MANA_ORE.get(),
+                            ModBlocks.INACTIVE_PURE_MANA_ORE.get()
                     ).build(null));
 
     public static final RegistryObject<BlockEntityType<FairyBlockEntity>> FAIRY_BLOCK_BE =

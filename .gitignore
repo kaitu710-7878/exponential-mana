@@ -20,6 +20,8 @@ build
 # other
 eclipse
 run
+*.class
+vanilla_assets/
 
 # Files from Forge MDK
 forge*changelog.txt

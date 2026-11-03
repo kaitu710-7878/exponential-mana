@@ -8,6 +8,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.9.0-alpha] - 2026-11-03
+
+### Added / 追加
+- **EN**:
+  - Added Inactive Pure Mana Ore (`inactive_pure_mana_ore`).
+  - Extracted genuine vanilla assets (`stone.png`, `obsidian.png`, `diamond_*.png`) for pixel-perfect texture recoloring.
+  - Recycled vanilla diamond armor & sword textures with Origin color palette.
+  - Overlaid mana crystal veins directly onto vanilla `stone.png` and `obsidian.png`.
+  - Adjusted Abyssal Mana to darker, deeper sculk/echo-shard blue.
+  - Synchronized bilingual translations in `en_us.json` and `ja_jp.json`.
+- **JA**:
+  - 非活性無垢のマナ鉱石（`inactive_pure_mana_ore`）を追加。
+  - 公式バニラアセット（`stone.png`, `obsidian.png`, `diamond_*.png`等）を直接流用したピクセル完全準拠のテクスチャリカラーを適用。
+  - 根源武具一式（兜、胸当て、脚甲、靴、剣）をバニラダイヤ装備のテクスチャから根源カラーへリカラー。
+  - バニラの石（`stone.png`）および黒曜石（`obsidian.png`）のテクスチャをそのまま下敷きにし、鉱脈部分のみ各Tierテーマ色で着色。
+  - 深淵のマナの明るさを落とし、暗く神秘的な青（ダークスカルクブルー）に調整。
+  - 日英言語ファイル（`en_us.json`, `ja_jp.json`）を完全同期更新。
+
 ## [0.8.0-alpha] - 2026-11-03
 
 ### Changed / 変更

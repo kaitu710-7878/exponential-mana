@@ -67,7 +67,8 @@ public class ModBlocks {
 
     // Pure Mana Ore
     public static final RegistryObject<Block> PURE_MANA_ORE = registerBlock("pure_mana_ore",
-            () -> new ManaOreBlock(11, 40.0F, 100.0F, () -> new ItemStack(ModBlocks.PURE_MANA_ORE.get()), null));
+            () -> new ManaOreBlock(11, 40.0F, 100.0F, () -> new ItemStack(ModItems.PURE_MANA.get()),
+                    () -> new ItemStack(ModBlocks.INACTIVE_PURE_MANA_ORE.get())));
 
     // --- Inactive Mana Ores (Obsidian-level hardness: 50.0F, takes 5 minutes to activate) ---
     public static final RegistryObject<Block> INACTIVE_TIER0_MANA_ORE = registerBlock("inactive_tier0_mana_ore",
@@ -102,6 +103,9 @@ public class ModBlocks {
 
     public static final RegistryObject<Block> INACTIVE_TIER10_MANA_ORE = registerBlock("inactive_tier10_mana_ore",
             () -> new InactiveManaOreBlock(10, TIER10_MANA_ORE::get));
+
+    public static final RegistryObject<Block> INACTIVE_PURE_MANA_ORE = registerBlock("inactive_pure_mana_ore",
+            () -> new InactiveManaOreBlock(11, PURE_MANA_ORE::get));
 
     // --- Fairy Blocks & Compressed Fairies (9^1 to 9^10) ---
     public static final RegistryObject<Block> FAIRY_BLOCK = registerCustomBlock("fairy_block",

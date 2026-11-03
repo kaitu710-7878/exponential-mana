@@ -49,6 +49,7 @@ public class InactiveManaOreBlockEntity extends BlockEntity {
                     case 8 -> com.exponentialmana.mod.registry.ModBlocks.TIER8_MANA_ORE.get();
                     case 9 -> com.exponentialmana.mod.registry.ModBlocks.TIER9_MANA_ORE.get();
                     case 10 -> com.exponentialmana.mod.registry.ModBlocks.TIER10_MANA_ORE.get();
+                    case 11 -> com.exponentialmana.mod.registry.ModBlocks.PURE_MANA_ORE.get();
                     default -> null;
                 };
             }

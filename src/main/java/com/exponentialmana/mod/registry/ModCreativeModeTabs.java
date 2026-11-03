@@ -169,6 +169,7 @@ public class ModCreativeModeTabs {
                         output.accept(ModBlocks.INACTIVE_TIER8_MANA_ORE.get());
                         output.accept(ModBlocks.INACTIVE_TIER9_MANA_ORE.get());
                         output.accept(ModBlocks.INACTIVE_TIER10_MANA_ORE.get());
+                        output.accept(ModBlocks.INACTIVE_PURE_MANA_ORE.get());
 
                         // Blocks - Fairy & Automation
                         output.accept(ModBlocks.FAIRY_BLOCK.get());

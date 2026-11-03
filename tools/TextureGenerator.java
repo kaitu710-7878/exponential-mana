@@ -34,69 +34,45 @@ public class TextureGenerator {
             { new Color(237, 231, 246), new Color(124, 77, 255), new Color(55, 42, 61), new Color(26, 26, 36) },
     };
 
-    // Pure Mana colors: Brilliant pure white with gentle silver/pearl shading
     public static final Color[] PURE_COLORS = new Color[]{
-            new Color(255, 255, 255), new Color(255, 255, 255), new Color(235, 240, 245), new Color(195, 205, 215)
+            new Color(255, 255, 255), new Color(255, 255, 255), new Color(235, 240, 245), new Color(200, 210, 220)
     };
 
-    // Origin palette: Sacred cosmic blending star gold (#FFD700), quantum cyan (#00E5FF), abyssal dark purple (#7C4DFF)
-    public static final Color[] ORIGIN_PALETTE = new Color[]{
-            new Color(255, 255, 255), // Highlight
-            new Color(255, 215, 0),   // Star Gold
-            new Color(0, 229, 255),   // Quantum Cyan
-            new Color(124, 77, 255),  // Abyssal Violet
-            new Color(25, 15, 45)     // Deep Core
-    };
-
-    // Vanilla Stone Matrix (16x16 brightness indices from standard stone texture)
-    public static final int[][] STONE_NOISE = {
-            {2, 1, 2, 2, 3, 2, 1, 2, 3, 3, 2, 1, 2, 2, 2, 1},
-            {1, 2, 3, 2, 2, 1, 0, 1, 2, 2, 3, 2, 1, 3, 2, 2},
-            {2, 3, 3, 1, 1, 2, 2, 2, 1, 1, 2, 3, 2, 2, 1, 2},
-            {2, 2, 1, 0, 1, 3, 3, 1, 0, 1, 2, 2, 1, 0, 1, 2},
-            {3, 2, 1, 2, 2, 3, 2, 2, 1, 2, 3, 1, 0, 1, 2, 3},
-            {2, 3, 2, 3, 1, 2, 1, 3, 2, 3, 2, 2, 1, 2, 3, 2},
-            {1, 2, 3, 2, 2, 1, 2, 2, 3, 2, 1, 2, 2, 3, 2, 1},
-            {2, 1, 2, 1, 0, 1, 3, 2, 2, 1, 0, 1, 3, 2, 1, 2},
-            {3, 2, 1, 1, 2, 2, 3, 1, 1, 2, 2, 3, 2, 1, 2, 3},
-            {2, 3, 2, 2, 3, 1, 2, 2, 2, 3, 1, 2, 2, 2, 3, 2},
-            {1, 2, 2, 3, 2, 2, 1, 0, 1, 2, 2, 1, 0, 1, 2, 2},
-            {2, 1, 3, 2, 1, 2, 2, 1, 2, 3, 2, 2, 1, 2, 3, 1},
-            {2, 2, 2, 1, 2, 3, 2, 2, 3, 2, 1, 2, 2, 3, 2, 2},
-            {3, 2, 1, 0, 1, 2, 3, 1, 2, 1, 0, 1, 3, 2, 1, 2},
-            {2, 3, 2, 1, 2, 2, 2, 2, 1, 2, 2, 2, 2, 1, 2, 3},
-            {1, 2, 3, 2, 1, 2, 1, 3, 2, 1, 2, 1, 3, 2, 2, 1}
-    };
-
-    public static final Color[] STONE_PAL = {
-            new Color(95, 95, 95), new Color(115, 115, 115), new Color(128, 128, 128), new Color(145, 145, 145)
-    };
-
-    public static final Color[] OBSIDIAN_PAL = {
-            new Color(16, 12, 28), new Color(27, 18, 44), new Color(38, 23, 60), new Color(59, 39, 84)
+    public static final Color[] INFINITE_COLORS = new Color[]{
+            new Color(255, 255, 255), new Color(124, 77, 255), new Color(0, 229, 255), new Color(10, 10, 20)
     };
 
     public static void main(String[] args) throws IOException {
         String baseDir = args.length > 0 ? args[0] : "src/main/resources/assets/exponential_mana/textures";
         File itemDir = new File(baseDir, "item");
         File blockDir = new File(baseDir, "block");
+        File vanillaDir = new File("vanilla_assets");
+
         itemDir.mkdirs();
         blockDir.mkdirs();
 
-        System.out.println("Updating textures in: " + baseDir);
+        System.out.println("Generating pixel-accurate textures into: " + baseDir);
 
-        // 1. Mana Spheres (Tier 0 to 10)
+        // Load genuine vanilla source images
+        BufferedImage vanillaStone = ImageIO.read(new File(vanillaDir, "stone.png"));
+        BufferedImage vanillaObsidian = ImageIO.read(new File(vanillaDir, "obsidian.png"));
+        BufferedImage vanillaDiamondOre = ImageIO.read(new File(vanillaDir, "diamond_ore.png"));
+
+        BufferedImage vanillaSword = ImageIO.read(new File(vanillaDir, "diamond_sword.png"));
+        BufferedImage vanillaHelmet = ImageIO.read(new File(vanillaDir, "diamond_helmet.png"));
+        BufferedImage vanillaChestplate = ImageIO.read(new File(vanillaDir, "diamond_chestplate.png"));
+        BufferedImage vanillaLeggings = ImageIO.read(new File(vanillaDir, "diamond_leggings.png"));
+        BufferedImage vanillaBoots = ImageIO.read(new File(vanillaDir, "diamond_boots.png"));
+
+        // 1. Mana Spheres
         for (int t = 0; t <= 10; t++) {
             save(createManaSphere(TIER_COLORS[t]), new File(itemDir, "tier" + t + "_mana.png"));
         }
-        // Pure Mana: Pure white
         save(createPureManaSphere(), new File(itemDir, "pure_mana.png"));
-        // Infinite Mana: Multicolored cosmic nexus with singularity core
         save(createInfiniteMana(), new File(itemDir, "infinite_mana.png"));
-        // Mana Root: 4 roots converging swirl
         save(createRootOfMana(), new File(itemDir, "mana_root.png"));
 
-        // 2. Cores (Tier 1 to 10): Mystical ring & casing with large theme sphere peeking through
+        // 2. Cores (Large theme sphere peeking through casing slits)
         for (int t = 1; t <= 10; t++) {
             save(createCoreWithPeekingSphere(TIER_COLORS[t]), new File(itemDir, "tier" + t + "_core.png"));
         }
@@ -106,12 +82,13 @@ public class TextureGenerator {
         save(createStarMana(true), new File(itemDir, "uncompressed_star_mana.png"));
         save(createQuantumMana(false), new File(itemDir, "quantum_mana.png"));
         save(createQuantumMana(true), new File(itemDir, "uncompressed_quantum_mana.png"));
+        // Darkened, deeper blue Abyssal Mana
         save(createAbyssalMana(false), new File(itemDir, "abyssal_mana.png"));
         save(createAbyssalMana(true), new File(itemDir, "uncompressed_abyssal_mana.png"));
         save(createMarineMana(false), new File(itemDir, "marine_mana.png"));
         save(createMarineMana(true), new File(itemDir, "uncompressed_marine_mana.png"));
 
-        // 4. Batch Compressed Mana: 1/4 size Tier 0 mana in 4 corners + enchantment shimmer
+        // 4. Batch Compressed Mana (4 corners 1/4 size T0 + enchantment shimmer)
         save(createBatchCompressedMana(), new File(itemDir, "batch_compressed_mana.png"));
 
         // 5. Fairy Catalysts & Residue
@@ -124,7 +101,7 @@ public class TextureGenerator {
         // 6. Shards & Mini Tables
         for (int t : new int[]{1, 3, 5, 7, 9}) {
             save(createShard(TIER_COLORS[t]), new File(itemDir, "tier" + t + "_mana_ore_shard.png"));
-            save(createCatalystShard(TIER_COLORS[t]), new File(itemDir, "tier" + t + "_fairy_catalyst_shard.png"));
+            save(createShard(TIER_COLORS[t]), new File(itemDir, "tier" + t + "_fairy_catalyst_shard.png"));
             save(createMiniTable(t), new File(itemDir, "tier" + t + "_mini_crafting_table.png"));
         }
 
@@ -137,48 +114,48 @@ public class TextureGenerator {
         save(createCompressedMineral(new Color(75, 0, 130), new Color(186, 85, 211)), new File(itemDir, "compressed_amethyst.png"));
         save(createCompressedMineral(new Color(180, 180, 180), new Color(245, 245, 245)), new File(itemDir, "compressed_quartz.png"));
 
-        // 8. Mana Symbols
         for (int t = 0; t <= 10; t++) {
             save(createManaSphere(TIER_COLORS[t]), new File(itemDir, "mana_symbol_tier" + t + "_mana.png"));
             save(createManaSphere(TIER_COLORS[t]), new File(itemDir, "mana_symbol_tier" + t + ".png"));
         }
-
         save(createOriginAlloy(false), new File(itemDir, "origin_alloy.png"));
         save(createOriginAlloy(true), new File(itemDir, "compressed_origin_alloy.png"));
         save(createKnowledgeBook(), new File(itemDir, "mana_knowledge.png"));
         save(createKnowledgeBook(), new File(itemDir, "mana_wisdom.png"));
 
-        // 9. Origin Armor & Sword based on vanilla armor/sword shapes with Origin colors
-        save(createVanillaStyledArmor(0), new File(itemDir, "origin_helmet.png"));
-        save(createVanillaStyledArmor(1), new File(itemDir, "origin_chestplate.png"));
-        save(createVanillaStyledArmor(2), new File(itemDir, "origin_leggings.png"));
-        save(createVanillaStyledArmor(3), new File(itemDir, "origin_boots.png"));
-        save(createVanillaStyledSword(), new File(itemDir, "origin_sword.png"));
+        // 8. Origin Armor & Sword directly recolored from vanilla diamond assets
+        save(recolorVanillaArmor(vanillaHelmet, 0), new File(itemDir, "origin_helmet.png"));
+        save(recolorVanillaArmor(vanillaChestplate, 1), new File(itemDir, "origin_chestplate.png"));
+        save(recolorVanillaArmor(vanillaLeggings, 2), new File(itemDir, "origin_leggings.png"));
+        save(recolorVanillaArmor(vanillaBoots, 3), new File(itemDir, "origin_boots.png"));
+        save(recolorVanillaSword(vanillaSword), new File(itemDir, "origin_sword.png"));
 
-        // 10. Blocks: Ores using Vanilla Stone / Obsidian base
+        // 9. Ores: Using EXACT vanilla stone.png and obsidian.png directly!
         for (int t = 0; t <= 10; t++) {
-            save(createVanillaOre(TIER_COLORS[t], false), new File(blockDir, "tier" + t + "_mana_ore.png"));
-            save(createVanillaOre(TIER_COLORS[t], true), new File(blockDir, "inactive_tier" + t + "_mana_ore.png"));
+            save(createAuthenticOre(vanillaStone, vanillaDiamondOre, TIER_COLORS[t], false), new File(blockDir, "tier" + t + "_mana_ore.png"));
+            save(createAuthenticOre(vanillaObsidian, vanillaDiamondOre, TIER_COLORS[t], true), new File(blockDir, "inactive_tier" + t + "_mana_ore.png"));
         }
-        save(createVanillaOre(PURE_COLORS, false), new File(blockDir, "pure_mana_ore.png"));
+        // Pure Ore & Inactive Pure Ore
+        save(createAuthenticOre(vanillaStone, vanillaDiamondOre, PURE_COLORS, false), new File(blockDir, "pure_mana_ore.png"));
+        save(createAuthenticOre(vanillaObsidian, vanillaDiamondOre, PURE_COLORS, true), new File(blockDir, "inactive_pure_mana_ore.png"));
 
-        // 11. Fairy Blocks (0 to 10) with progressive brightness & compression rings
+        // 10. Fairy Blocks
         save(createFairyBlock(0), new File(blockDir, "fairy_block.png"));
         for (int c = 1; c <= 10; c++) {
             save(createFairyBlock(c), new File(blockDir, "compressed_fairy_block_" + c + ".png"));
         }
         save(createFairyAttractorBlock(), new File(blockDir, "fairy_attractor.png"));
 
-        // 12. Distinct Batch Breaker (Crusher teeth) & Thawer (Frost / Steam chamber)
+        // 11. Batch Breaker (Crusher teeth) & Thawer (Frost chamber)
         save(createBatchBreakerBlock(), new File(blockDir, "batch_ore_breaker.png"));
         save(createThawerBlock(), new File(blockDir, "thawer.png"));
 
-        // 13. Extended Crafting Tables
+        // 12. Extended Tables
         for (int t = 1; t <= 10; t++) {
             save(createTableBlock(t), new File(blockDir, "tier" + t + "_extended_crafting_table.png"));
         }
 
-        System.out.println("Textures regenerated successfully!");
+        System.out.println("All textures generated with authentic vanilla assets!");
     }
 
     public static BufferedImage createManaSphere(Color[] pal) {
@@ -188,15 +165,10 @@ public class TextureGenerator {
             for (int x = 0; x < 16; x++) {
                 double dist = Math.sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy));
                 if (dist <= 4.8) {
-                    if (dist <= 1.6 && x <= 7 && y <= 7) {
-                        img.setRGB(x, y, pal[0].getRGB());
-                    } else if (x < 7 && y < 7) {
-                        img.setRGB(x, y, pal[1].getRGB());
-                    } else if (dist <= 3.8) {
-                        img.setRGB(x, y, pal[2].getRGB());
-                    } else {
-                        img.setRGB(x, y, pal[3].getRGB());
-                    }
+                    if (dist <= 1.6 && x <= 7 && y <= 7) img.setRGB(x, y, pal[0].getRGB());
+                    else if (x < 7 && y < 7) img.setRGB(x, y, pal[1].getRGB());
+                    else if (dist <= 3.8) img.setRGB(x, y, pal[2].getRGB());
+                    else img.setRGB(x, y, pal[3].getRGB());
                 } else if (dist <= 5.8) {
                     Color aura = new Color(pal[1].getRed(), pal[1].getGreen(), pal[1].getBlue(), 80);
                     img.setRGB(x, y, aura.getRGB());
@@ -210,21 +182,17 @@ public class TextureGenerator {
         BufferedImage img = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
         int cx = 8, cy = 8;
         Color pureWhite = Color.WHITE;
-        Color lightSilver = new Color(245, 248, 250);
-        Color rimWhite = new Color(225, 235, 245);
+        Color lightSilver = new Color(248, 250, 252);
+        Color rimSilver = new Color(225, 230, 238);
         Color auraWhite = new Color(255, 255, 255, 120);
 
         for (int y = 0; y < 16; y++) {
             for (int x = 0; x < 16; x++) {
                 double dist = Math.sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy));
                 if (dist <= 4.8) {
-                    if (dist <= 2.2 && x <= 8 && y <= 8) {
-                        img.setRGB(x, y, pureWhite.getRGB());
-                    } else if (dist <= 3.8) {
-                        img.setRGB(x, y, lightSilver.getRGB());
-                    } else {
-                        img.setRGB(x, y, rimWhite.getRGB());
-                    }
+                    if (dist <= 2.2 && x <= 8 && y <= 8) img.setRGB(x, y, pureWhite.getRGB());
+                    else if (dist <= 3.8) img.setRGB(x, y, lightSilver.getRGB());
+                    else img.setRGB(x, y, rimSilver.getRGB());
                 } else if (dist <= 5.8) {
                     img.setRGB(x, y, auraWhite.getRGB());
                 }
@@ -237,7 +205,6 @@ public class TextureGenerator {
         BufferedImage img = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
         int cx = 8, cy = 8;
 
-        // 1. Draw large theme sphere in center (radius 5.6)
         for (int y = 0; y < 16; y++) {
             for (int x = 0; x < 16; x++) {
                 double dist = Math.sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy));
@@ -249,7 +216,6 @@ public class TextureGenerator {
             }
         }
 
-        // 2. Overlaid Mystic/Relic Casing (not industrial, but magical rune casing leaving generous openings)
         Color casingLight = new Color(85, 75, 95);
         Color casingDark = new Color(38, 30, 48);
         Color casingGem = new Color(220, 210, 230);
@@ -257,15 +223,12 @@ public class TextureGenerator {
         for (int y = 2; y <= 13; y++) {
             for (int x = 2; x <= 13; x++) {
                 double dist = Math.sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy));
-                // Leave a large circular aperture in the center (dist <= 3.8) and wide 2-pixel cross slits
                 boolean isOpen = (dist <= 3.8) || (x >= 7 && x <= 8 && y >= 3 && y <= 12) || (y >= 7 && y <= 8 && x >= 3 && x <= 12);
 
                 if (!isOpen) {
-                    if (x == 2 || y == 2 || (x == 3 && y == 3)) {
-                        img.setRGB(x, y, casingLight.getRGB());
-                    } else if (x == 13 || y == 13 || (x == 12 && y == 12)) {
-                        img.setRGB(x, y, casingDark.getRGB());
-                    } else if ((x == 3 && y == 3) || (x == 12 && y == 3) || (x == 3 && y == 12) || (x == 12 && y == 12)) {
+                    if (x == 2 || y == 2) img.setRGB(x, y, casingLight.getRGB());
+                    else if (x == 13 || y == 13) img.setRGB(x, y, casingDark.getRGB());
+                    else if ((x == 3 && y == 3) || (x == 12 && y == 3) || (x == 3 && y == 12) || (x == 12 && y == 12)) {
                         img.setRGB(x, y, casingGem.getRGB());
                     } else {
                         img.setRGB(x, y, new Color(55, 45, 68).getRGB());
@@ -279,7 +242,6 @@ public class TextureGenerator {
     public static BufferedImage createRootOfMana() {
         BufferedImage img = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
         int cx = 8, cy = 8;
-        // 4 colors spiral: Gold (Star), Cyan (Quantum), Dark Purple (Abyssal), Marine Teal (Marine)
         Color[] roots = {
                 new Color(255, 215, 0), new Color(0, 229, 255), new Color(156, 39, 176), new Color(0, 188, 212)
         };
@@ -288,13 +250,10 @@ public class TextureGenerator {
             for (int x = 0; x < 16; x++) {
                 double dist = Math.sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy));
                 if (dist <= 5.0) {
-                    double angle = Math.atan2(y - cy, x - cx) + Math.PI; // 0 to 2PI
+                    double angle = Math.atan2(y - cy, x - cx) + Math.PI;
                     int quadrant = (int) ((angle / (Math.PI * 2)) * 4) % 4;
-                    if (dist <= 1.5) {
-                        img.setRGB(x, y, Color.WHITE.getRGB()); // Converged radiant core
-                    } else {
-                        img.setRGB(x, y, roots[quadrant].getRGB());
-                    }
+                    if (dist <= 1.5) img.setRGB(x, y, Color.WHITE.getRGB());
+                    else img.setRGB(x, y, roots[quadrant].getRGB());
                 } else if (dist <= 6.2) {
                     img.setRGB(x, y, new Color(255, 255, 255, 60).getRGB());
                 }
@@ -310,17 +269,12 @@ public class TextureGenerator {
             for (int x = 0; x < 16; x++) {
                 double dist = Math.sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy));
                 if (dist <= 5.2) {
-                    if (dist <= 1.8) {
-                        img.setRGB(x, y, new Color(10, 5, 20).getRGB()); // Singularity Black Hole center
-                    } else if (dist <= 3.2) {
-                        img.setRGB(x, y, Color.WHITE.getRGB()); // Event horizon bright ring
-                    } else if (dist <= 4.4) {
-                        img.setRGB(x, y, new Color(124, 77, 255).getRGB()); // Nebula Purple
-                    } else {
-                        img.setRGB(x, y, new Color(0, 229, 255).getRGB()); // Outer Quantum Cyan
-                    }
+                    if (dist <= 1.8) img.setRGB(x, y, new Color(10, 5, 20).getRGB());
+                    else if (dist <= 3.2) img.setRGB(x, y, Color.WHITE.getRGB());
+                    else if (dist <= 4.4) img.setRGB(x, y, new Color(124, 77, 255).getRGB());
+                    else img.setRGB(x, y, new Color(0, 229, 255).getRGB());
                 } else if (dist <= 6.5) {
-                    img.setRGB(x, y, new Color(255, 215, 0, 70).getRGB()); // Golden halo
+                    img.setRGB(x, y, new Color(255, 215, 0, 70).getRGB());
                 }
             }
         }
@@ -333,7 +287,6 @@ public class TextureGenerator {
         Color starGold = uncompressed ? new Color(255, 245, 150) : new Color(255, 215, 0);
         Color darkEdge = new Color(200, 140, 0);
 
-        // Nether Star 4-pointed cross shape
         int cx = 8, cy = 8;
         for (int y = 2; y <= 13; y++) {
             for (int x = 2; x <= 13; x++) {
@@ -355,38 +308,36 @@ public class TextureGenerator {
         Color magentaCore = uncompressed ? new Color(225, 140, 255) : new Color(213, 0, 249);
         Color cyanCore = new Color(0, 229, 255);
 
-        // End Crystal diamond glass shell
         for (int y = 2; y <= 13; y++) {
             for (int x = 2; x <= 13; x++) {
                 int dx = Math.abs(x - 8);
                 int dy = Math.abs(y - 8);
                 if (dx + dy <= 6) {
-                    if (dx + dy == 6 || dx == dy) {
-                        img.setRGB(x, y, glass.getRGB()); // Glass frame
-                    } else if (dx + dy <= 2) {
-                        img.setRGB(x, y, cyanCore.getRGB()); // Inner core
-                    } else {
-                        img.setRGB(x, y, magentaCore.getRGB());
-                    }
+                    if (dx + dy == 6 || dx == dy) img.setRGB(x, y, glass.getRGB());
+                    else if (dx + dy <= 2) img.setRGB(x, y, cyanCore.getRGB());
+                    else img.setRGB(x, y, magentaCore.getRGB());
                 }
             }
         }
         return img;
     }
 
+    /**
+     * Abyssal Mana: Darkened, deeper sculk/echo-shard blue per feedback.
+     */
     public static BufferedImage createAbyssalMana(boolean uncompressed) {
         BufferedImage img = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
-        Color darkSlate = new Color(11, 25, 33);
-        Color sculkCyan = uncompressed ? new Color(100, 245, 230) : new Color(0, 240, 200);
-        Color deepBlue = new Color(15, 60, 75);
+        Color deepAbyss = new Color(3, 20, 28);
+        Color darkSculk = new Color(6, 45, 58);
+        Color sculkBlue = uncompressed ? new Color(0, 140, 160) : new Color(0, 95, 115);
+        Color glowBlue = new Color(0, 175, 185);
 
-        // Echo shard / Sculk shape
         for (int y = 2; y <= 13; y++) {
             for (int x = 4; x <= 11; x++) {
                 if (Math.abs(x - 7.5) <= (y < 8 ? y * 0.4 : (15 - y) * 0.5)) {
-                    if (x == 7 || x == 8) img.setRGB(x, y, sculkCyan.getRGB());
-                    else if ((x + y) % 2 == 0) img.setRGB(x, y, deepBlue.getRGB());
-                    else img.setRGB(x, y, darkSlate.getRGB());
+                    if (x == 7 || x == 8) img.setRGB(x, y, (y >= 6 && y <= 9) ? glowBlue.getRGB() : sculkBlue.getRGB());
+                    else if ((x + y) % 2 == 0) img.setRGB(x, y, darkSculk.getRGB());
+                    else img.setRGB(x, y, deepAbyss.getRGB());
                 }
             }
         }
@@ -399,7 +350,6 @@ public class TextureGenerator {
         Color heartOrange = uncompressed ? new Color(255, 170, 90) : new Color(245, 110, 40);
         Color aqua = new Color(100, 230, 210);
 
-        // Conduit core
         int cx = 8, cy = 8;
         for (int y = 2; y <= 13; y++) {
             for (int x = 2; x <= 13; x++) {
@@ -416,7 +366,6 @@ public class TextureGenerator {
 
     public static BufferedImage createBatchCompressedMana() {
         BufferedImage img = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
-        // 1/4 size Tier 0 mana in the 4 corners
         Color[] t0 = TIER_COLORS[0];
         int[][] centers = { {4, 4}, {11, 4}, {4, 11}, {11, 11} };
 
@@ -438,59 +387,130 @@ public class TextureGenerator {
             }
         }
 
-        // Enchantment glint / shimmer overlays
-        Color shimmer = new Color(213, 0, 249, 110);
-        Color shimmerLight = new Color(255, 128, 255, 160);
+        Color shimmer = new Color(213, 0, 249, 120);
+        Color shimmerLight = new Color(255, 128, 255, 170);
         for (int i = 0; i < 16; i++) {
-            if (i < 16) {
-                img.setRGB(i, i, shimmer.getRGB());
-                if (i + 1 < 16) img.setRGB(i, i + 1, shimmerLight.getRGB());
-            }
+            img.setRGB(i, i, shimmer.getRGB());
+            if (i + 1 < 16) img.setRGB(i, i + 1, shimmerLight.getRGB());
         }
         return img;
     }
 
-    public static BufferedImage createVanillaOre(Color[] pal, boolean inactive) {
+    /**
+     * Overlays mana veins directly onto genuine Vanilla Stone / Obsidian.
+     */
+    public static BufferedImage createAuthenticOre(BufferedImage baseStone, BufferedImage diamondOre, Color[] pal, boolean inactive) {
         BufferedImage img = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
-        Color[] basePal = inactive ? OBSIDIAN_PAL : STONE_PAL;
 
-        // 1. Render realistic Vanilla Stone / Obsidian background from noise matrix
+        // Copy genuine vanilla base (stone or obsidian)
         for (int y = 0; y < 16; y++) {
             for (int x = 0; x < 16; x++) {
-                int noiseIdx = STONE_NOISE[y][x];
-                img.setRGB(x, y, basePal[noiseIdx].getRGB());
+                img.setRGB(x, y, baseStone.getRGB(x, y));
             }
         }
 
-        // 2. Add organic mineral veins matching vanilla coal/iron/diamond style
-        int[][] veinCoords = {
-                {4, 3}, {5, 3}, {4, 4}, {5, 4}, {6, 4},
-                {10, 8}, {11, 8}, {10, 9}, {11, 9}, {12, 9}, {11, 10},
-                {3, 11}, {4, 11}, {4, 12}, {5, 12}
-        };
-
-        for (int[] pt : veinCoords) {
-            int px = pt[0], py = pt[1];
-            img.setRGB(px, py, pal[1].getRGB());
+        // Detect vanilla diamond vein pixels from diamond_ore.png (where diamond color is present)
+        for (int y = 0; y < 16; y++) {
+            for (int x = 0; x < 16; x++) {
+                int rgb = diamondOre.getRGB(x, y);
+                Color c = new Color(rgb, true);
+                // Diamond ore pixels have distinct blue tint: Blue > Red + 20
+                if (c.getBlue() > c.getRed() + 25) {
+                    float brightness = (c.getRed() + c.getGreen() + c.getBlue()) / (3.0f * 255.0f);
+                    if (brightness > 0.65f) img.setRGB(x, y, pal[0].getRGB());
+                    else if (brightness > 0.45f) img.setRGB(x, y, pal[1].getRGB());
+                    else img.setRGB(x, y, pal[2].getRGB());
+                }
+            }
         }
-        // Highlights on top-left of clusters
-        img.setRGB(4, 3, pal[0].getRGB());
-        img.setRGB(10, 8, pal[0].getRGB());
-        img.setRGB(3, 11, pal[0].getRGB());
-
-        // Shadow outlines
-        img.setRGB(6, 5, pal[2].getRGB());
-        img.setRGB(12, 10, pal[2].getRGB());
-        img.setRGB(5, 13, pal[2].getRGB());
 
         if (inactive) {
-            // Steel restraint bands across the inactive ore
             Color band = new Color(75, 75, 90);
             Color highlight = new Color(110, 110, 130);
             for (int x = 0; x < 16; x++) {
                 img.setRGB(x, 6, highlight.getRGB());
                 img.setRGB(x, 7, band.getRGB());
                 img.setRGB(x, 8, band.darker().getRGB());
+            }
+        }
+        return img;
+    }
+
+    /**
+     * Directly recolors genuine Vanilla Diamond Armor into Origin Armor (Gold & Deep Violet & Cyan).
+     */
+    public static BufferedImage recolorVanillaArmor(BufferedImage src, int type) {
+        BufferedImage img = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+        Color gold = new Color(255, 215, 0);
+        Color deepViolet = new Color(110, 50, 200);
+        Color darkViolet = new Color(45, 20, 85);
+        Color cyan = new Color(0, 229, 255);
+
+        for (int y = 0; y < 16; y++) {
+            for (int x = 0; x < 16; x++) {
+                int rgb = src.getRGB(x, y);
+                int alpha = (rgb >> 24) & 0xFF;
+                if (alpha > 20) {
+                    Color c = new Color(rgb, true);
+                    float brightness = (c.getRed() + c.getGreen() + c.getBlue()) / (3.0f * 255.0f);
+
+                    // Map brightness to Origin colors
+                    if (brightness > 0.75f) {
+                        img.setRGB(x, y, gold.getRGB()); // Bright highlights become Divine Gold
+                    } else if (brightness > 0.55f) {
+                        img.setRGB(x, y, cyan.getRGB()); // Mid-highlights become Quantum Cyan
+                    } else if (brightness > 0.35f) {
+                        img.setRGB(x, y, deepViolet.getRGB()); // Body becomes Cosmic Deep Violet
+                    } else {
+                        img.setRGB(x, y, darkViolet.getRGB()); // Dark shadows
+                    }
+                }
+            }
+        }
+        return img;
+    }
+
+    /**
+     * Directly recolors genuine Vanilla Diamond Sword into Origin Sword.
+     */
+    public static BufferedImage recolorVanillaSword(BufferedImage src) {
+        BufferedImage img = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+        Color gold = new Color(255, 215, 0);
+        Color darkGold = new Color(180, 140, 0);
+        Color cyanTip = new Color(0, 240, 255);
+        Color purpleBlade = new Color(130, 60, 220);
+        Color darkBlade = new Color(55, 25, 95);
+        Color grip = new Color(75, 45, 25);
+
+        for (int y = 0; y < 16; y++) {
+            for (int x = 0; x < 16; x++) {
+                int rgb = src.getRGB(x, y);
+                int alpha = (rgb >> 24) & 0xFF;
+                if (alpha > 20) {
+                    Color c = new Color(rgb, true);
+
+                    // Detect blade vs guard/hilt
+                    if (c.getRed() > c.getBlue() + 10) {
+                        // Wood grip / handle
+                        img.setRGB(x, y, grip.getRGB());
+                    } else if (x <= 6 && y >= 8 && y <= 11) {
+                        // Guard -> Gold
+                        img.setRGB(x, y, gold.getRGB());
+                    } else if (x <= 3 && y >= 12) {
+                        // Pommel -> Gold
+                        img.setRGB(x, y, darkGold.getRGB());
+                    } else {
+                        // Blade -> Gradient from Deep Purple to Quantum Cyan tip
+                        if (x >= 11 && y <= 4) {
+                            img.setRGB(x, y, cyanTip.getRGB()); // Tip is Quantum Cyan
+                        } else {
+                            float b = (c.getRed() + c.getGreen() + c.getBlue()) / (3.0f * 255.0f);
+                            if (b > 0.6f) img.setRGB(x, y, purpleBlade.brighter().getRGB());
+                            else if (b > 0.4f) img.setRGB(x, y, purpleBlade.getRGB());
+                            else img.setRGB(x, y, darkBlade.getRGB());
+                        }
+                    }
+                }
             }
         }
         return img;
@@ -509,7 +529,7 @@ public class TextureGenerator {
                 } else {
                     double d = Math.sqrt((x - 7.5) * (x - 7.5) + (y - 7.5) * (y - 7.5));
                     if (d <= (2.5 + compression * 0.3)) {
-                        img.setRGB(x, y, mintGlow.getRGB()); // Core grows with compression
+                        img.setRGB(x, y, mintGlow.getRGB());
                     } else {
                         img.setRGB(x, y, mintBase.getRGB());
                     }
@@ -517,7 +537,6 @@ public class TextureGenerator {
             }
         }
 
-        // Distinct rings for higher compression
         if (compression > 0) {
             Color ringColor = (compression >= 7) ? new Color(255, 215, 0) : Color.WHITE;
             for (int i = 3; i <= 12; i++) {
@@ -544,7 +563,6 @@ public class TextureGenerator {
             }
         }
 
-        // Heavy industrial crusher teeth in the center
         for (int x = 3; x <= 12; x++) {
             if (x % 2 == 0) {
                 img.setRGB(x, 6, teeth.getRGB());
@@ -553,7 +571,6 @@ public class TextureGenerator {
                 img.setRGB(x, 9, teeth.darker().getRGB());
             }
         }
-        // Warning hazard stripes top & bottom
         img.setRGB(4, 2, warning.getRGB());
         img.setRGB(7, 2, warning.getRGB());
         img.setRGB(10, 2, warning.getRGB());
@@ -573,115 +590,13 @@ public class TextureGenerator {
             }
         }
 
-        // Circular thawing chamber with frost border and glowing heat vent
         int cx = 8, cy = 8;
         for (int y = 3; y <= 12; y++) {
             for (int x = 3; x <= 12; x++) {
                 double d = Math.sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy));
                 if (d <= 4.0) {
-                    if (d <= 2.0) img.setRGB(x, y, steamGlow.getRGB()); // Heat element
-                    else img.setRGB(x, y, frostIce.getRGB()); // Ice chamber
-                }
-            }
-        }
-        return img;
-    }
-
-    public static BufferedImage createVanillaStyledSword() {
-        BufferedImage img = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
-        // Canonical Vanilla Sword silhouette (45-degree diagonal)
-        // Origin Colors: Blade = Deep Purple -> Star Gold -> Quantum Cyan tip
-        Color tip = new Color(0, 240, 255);
-        Color blade = new Color(255, 215, 0);
-        Color bladeDark = new Color(124, 77, 255);
-        Color guard = new Color(230, 180, 0);
-        Color grip = new Color(75, 45, 25);
-        Color pommel = new Color(255, 215, 0);
-
-        // Blade diagonal from (13, 2) down to (6, 9)
-        int[][] bladePts = {
-                {13, 2}, {12, 3}, {13, 3},
-                {11, 4}, {12, 4}, {10, 5}, {11, 5},
-                {9, 6}, {10, 6}, {8, 7}, {9, 7},
-                {7, 8}, {8, 8}, {6, 9}, {7, 9}
-        };
-
-        for (int[] pt : bladePts) {
-            int x = pt[0], y = pt[1];
-            if (x >= 12 && y <= 3) img.setRGB(x, y, tip.getRGB());
-            else if (x >= 9) img.setRGB(x, y, blade.getRGB());
-            else img.setRGB(x, y, bladeDark.getRGB());
-        }
-
-        // Crossguard
-        img.setRGB(5, 8, guard.getRGB());
-        img.setRGB(6, 8, guard.getRGB());
-        img.setRGB(7, 10, guard.getRGB());
-        img.setRGB(8, 10, guard.getRGB());
-
-        // Grip & Pommel
-        img.setRGB(4, 11, grip.getRGB());
-        img.setRGB(3, 12, grip.getRGB());
-        img.setRGB(2, 13, pommel.getRGB());
-
-        return img;
-    }
-
-    public static BufferedImage createVanillaStyledArmor(int type) {
-        BufferedImage img = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
-        Color gold = new Color(255, 215, 0);
-        Color cosmicViolet = new Color(124, 77, 255);
-        Color deepCore = new Color(25, 15, 45);
-        Color cyanTrim = new Color(0, 229, 255);
-
-        // Standard vanilla armor icon silhouettes:
-        // 0: Helmet, 1: Chestplate, 2: Leggings, 3: Boots
-        switch (type) {
-            case 0 -> { // Helmet
-                for (int y = 2; y <= 9; y++) {
-                    for (int x = 4; x <= 11; x++) {
-                        if (y <= 7 || x == 4 || x == 11) {
-                            if (y == 2 || (x >= 7 && x <= 8 && y == 3)) img.setRGB(x, y, cyanTrim.getRGB());
-                            else if (x == 4 || x == 11) img.setRGB(x, y, gold.getRGB());
-                            else img.setRGB(x, y, cosmicViolet.getRGB());
-                        }
-                    }
-                }
-            }
-            case 1 -> { // Chestplate
-                for (int y = 2; y <= 13; y++) {
-                    for (int x = 2; x <= 13; x++) {
-                        // Notch neck (x in 6..9, y==2..3)
-                        if (y <= 3 && x >= 6 && x <= 9) continue;
-                        if (y <= 7 || (x >= 4 && x <= 11)) {
-                            if (x == 7 || x == 8) img.setRGB(x, y, cyanTrim.getRGB());
-                            else if (x == 2 || x == 13 || y == 2) img.setRGB(x, y, gold.getRGB());
-                            else if (y >= 11) img.setRGB(x, y, deepCore.getRGB());
-                            else img.setRGB(x, y, cosmicViolet.getRGB());
-                        }
-                    }
-                }
-            }
-            case 2 -> { // Leggings
-                for (int y = 2; y <= 13; y++) {
-                    for (int x = 3; x <= 12; x++) {
-                        // Crotch split
-                        if (y >= 6 && x >= 7 && x <= 8) continue;
-                        if (y == 2) img.setRGB(x, y, gold.getRGB());
-                        else if (x == 3 || x == 12) img.setRGB(x, y, cyanTrim.getRGB());
-                        else img.setRGB(x, y, cosmicViolet.getRGB());
-                    }
-                }
-            }
-            case 3 -> { // Boots
-                for (int y = 6; y <= 13; y++) {
-                    for (int x = 3; x <= 12; x++) {
-                        if (x <= 6 || x >= 9) {
-                            if (y == 12 || y == 13) img.setRGB(x, y, gold.getRGB());
-                            else if (x == 3 || x == 12) img.setRGB(x, y, cyanTrim.getRGB());
-                            else img.setRGB(x, y, cosmicViolet.getRGB());
-                        }
-                    }
+                    if (d <= 2.0) img.setRGB(x, y, steamGlow.getRGB());
+                    else img.setRGB(x, y, frostIce.getRGB());
                 }
             }
         }
@@ -703,9 +618,7 @@ public class TextureGenerator {
                     img.setRGB(x, y, glass.getRGB());
                 } else {
                     double d = Math.sqrt((x - 7.5) * (x - 7.5) + (y - 8.5) * (y - 8.5));
-                    if (d <= 2.2) {
-                        img.setRGB(x, y, pal[1].getRGB());
-                    }
+                    if (d <= 2.2) img.setRGB(x, y, pal[1].getRGB());
                 }
             }
         }
@@ -734,10 +647,6 @@ public class TextureGenerator {
             }
         }
         return img;
-    }
-
-    public static BufferedImage createCatalystShard(Color[] pal) {
-        return createShard(pal);
     }
 
     public static BufferedImage createMiniTable(int tier) {
