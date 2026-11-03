@@ -8,6 +8,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.8.0-alpha] - 2026-11-03
+
+### Changed / 変更
+- **EN**:
+  - Overhauled textures according to feedback:
+    - Pure Mana made brilliant pure white with subtle pearl shading.
+    - Completely differentiated Infinite Mana (Cosmic singularity) from Root of Mana (4 converging root colors).
+    - Redesigned 4 Root Manas based on origin items (Nether Star, End Crystal, Echo Shard/Sculk, Conduit Heart).
+    - Reduced industrial elements in core/casing textures in favor of mystical rune frames.
+    - Recreated Batch Compressed Mana with four 1/4-size Tier 0 mana spheres and diagonal enchantment shimmer.
+    - Rebuilt all Tier 0-10 active ores onto authentic vanilla Stone matrix, and inactive ores onto vanilla Obsidian matrix.
+    - Redesigned Batch Breaker (crusher teeth) and Thawer (frost chamber) for instant visual distinction.
+    - Restructured Origin Armor and Sword to match vanilla equipment silhouettes and Root of Mana color palette.
+- **JA**:
+  - フィードバックに基づき全テクスチャを抜本的に再設計・改訂:
+    - 無垢のマナを純白・パール陰影の真っ白な光球へ調整。
+    - 「無限のマナ」（宇宙特異点・ブラックホール）と「マナの根源」（4つの根源色が収束する渦）を完全差別化。
+    - 4つの根源マナをもととなるアイテム（ネザースター四芒星、エンドクリスタルガラス、残響の欠片スカルク、コンジット心臓）に寄せて再構築。
+    - コアの装甲から工業的要素を抑え、神秘的な魔導ルーンフレームへシフト。
+    - 一括圧縮マナをご指示通り「四隅にぴったりはまった1/4サイズTier0マナ＋対角エンチャント光彩」で制作。
+    - 全Tier（0〜10）の通常鉱石をバニラ石の斑点母岩へ、非活性鉱石をバニラ黒曜石母岩＋拘束バンドへ刷新。
+    - 一括破壊機（粉砕歯クラッシャー）と解凍機（氷霜加熱チャンバー）の見た目を一目で区別できるよう差別化。
+    - 根源装備一式および剣の形状をバニラ装備の正統なシルエットに統一し、マナの根源と同系統の神聖カラー（深淵紫・純金・量子シアン）で調和。
+
 ## [0.7.0-alpha] - 2026-11-03
 
 ### Added / 追加
