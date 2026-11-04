@@ -140,4 +140,9 @@ public class ExtendedCraftingJeiCategory implements IRecipeCategory<ExtendedCraf
         int outFrameY = startY + (gridSize * 18) / 2 - 13;
         guiGraphics.blit(CRAFTING_TEXTURE, outFrameX, outFrameY, 119, 30, 26, 26);
     }
+
+    @Override
+    public ResourceLocation getRegistryName(@NotNull ExtendedCraftingRecipe recipe) {
+        return recipe.getId();
+    }
 }

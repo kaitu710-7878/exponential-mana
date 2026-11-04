@@ -8,6 +8,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.15.1-beta] - 2026-11-05
+
+### Added / 追加
+- **EN**:
+  - **JEI Favorites & Bookmarks Full Compatibility**:
+    - Implemented unique recipe registry names (`ResourceLocation id`) across all Extended Crafting recipes (Tier 1 to 10).
+    - Overrode `IRecipeCategory.getRegistryName()` in `ExtendedCraftingJeiCategory` to enable full support for recipe bookmarks, favorites ('A' key), and recipe ID copying in JEI / JEI Unofficial.
+- **JA**:
+  - **JEIのお気に入り・ブックマーク機能の完全対応**:
+    - 拡張作業台（Tier 1〜10）の全レシピに一意の識別子（`ResourceLocation id`）を実装。
+    - `ExtendedCraftingJeiCategory` にて `IRecipeCategory.getRegistryName()` をオーバーライドし、JEI / JEI Unofficial におけるレシピのブックマーク（お気に入り登録・'A'キー）、レシピIDのコピー、ブックマークからの正確なレシピ復元に対応。
+
+---
+
 ## [0.15.0-beta] - 2026-11-04
 
 ### Added / 追加

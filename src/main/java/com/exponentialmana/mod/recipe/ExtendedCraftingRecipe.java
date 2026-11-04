@@ -1,28 +1,47 @@
 package com.exponentialmana.mod.recipe;
 
+import com.exponentialmana.mod.ExponentialMana;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.List;
 
 /**
  * Common recipe definition for Extended Crafting Tables (Tier 1 4x4 to Tier 10 13x13).
- * Usable both by JEI display and in-game crafting engine (manual crafting + 1t/craft automation).
+ * Usable both by JEI display (including bookmark/favorites support) and in-game crafting engine (manual crafting + 1t/craft automation).
  */
 public class ExtendedCraftingRecipe {
+    private final ResourceLocation id;
     private final int tier;
     private final int gridSize;
     private final List<List<ItemStack>> inputs; // gridSize * gridSize list of valid items per slot
     private final ItemStack output;
     private final Component recipeName;
 
-    public ExtendedCraftingRecipe(int tier, int gridSize, List<List<ItemStack>> inputs, ItemStack output, Component recipeName) {
+    public ExtendedCraftingRecipe(ResourceLocation id, int tier, int gridSize, List<List<ItemStack>> inputs, ItemStack output, Component recipeName) {
+        this.id = id != null ? id : generateDefaultId(tier, output);
         this.tier = tier;
         this.gridSize = gridSize;
         this.inputs = inputs;
         this.output = output;
         this.recipeName = recipeName;
+    }
+
+    public ExtendedCraftingRecipe(int tier, int gridSize, List<List<ItemStack>> inputs, ItemStack output, Component recipeName) {
+        this(null, tier, gridSize, inputs, output, recipeName);
+    }
+
+    private static ResourceLocation generateDefaultId(int tier, ItemStack output) {
+        ResourceLocation itemKey = ForgeRegistries.ITEMS.getKey(output.getItem());
+        String path = itemKey != null ? itemKey.getPath() : "unknown_recipe";
+        return new ResourceLocation(ExponentialMana.MOD_ID, "extended_crafting/tier" + tier + "/" + path);
+    }
+
+    public ResourceLocation getId() {
+        return id;
     }
 
     public int getTier() {
