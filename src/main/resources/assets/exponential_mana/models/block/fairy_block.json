@@ -1,6 +1,12 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "parent": "minecraft:block/cube",
   "textures": {
-    "all": "exponential_mana:block/fairy_block"
+    "down": "exponential_mana:block/fairy_block_d",
+    "up": "exponential_mana:block/fairy_block_u",
+    "north": "exponential_mana:block/fairy_block_n",
+    "south": "exponential_mana:block/fairy_block_s",
+    "west": "exponential_mana:block/fairy_block_w",
+    "east": "exponential_mana:block/fairy_block_e",
+    "particle": "exponential_mana:block/fairy_block_n"
   }
 }

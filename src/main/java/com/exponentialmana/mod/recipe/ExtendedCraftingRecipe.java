@@ -8,6 +8,7 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Common recipe definition for Extended Crafting Tables (Tier 1 4x4 to Tier 10 13x13).
@@ -20,6 +21,7 @@ public class ExtendedCraftingRecipe {
     private final List<List<ItemStack>> inputs; // gridSize * gridSize list of valid items per slot
     private final ItemStack output;
     private final Component recipeName;
+    private Map<net.minecraft.world.item.Item, Integer> requiredIngredients = null;
 
     public ExtendedCraftingRecipe(ResourceLocation id, int tier, int gridSize, List<List<ItemStack>> inputs, ItemStack output, Component recipeName) {
         this.id = id != null ? id : generateDefaultId(tier, output);
@@ -62,6 +64,25 @@ public class ExtendedCraftingRecipe {
 
     public Component getRecipeName() {
         return recipeName != null ? recipeName : output.getHoverName();
+    }
+
+    /**
+     * Returns an unmodifiable map of required item counts for this recipe.
+     */
+    public Map<net.minecraft.world.item.Item, Integer> getRequiredIngredients() {
+        if (requiredIngredients == null) {
+            Map<net.minecraft.world.item.Item, Integer> map = new java.util.LinkedHashMap<>();
+            for (List<ItemStack> slotList : inputs) {
+                if (slotList != null && !slotList.isEmpty()) {
+                    ItemStack primary = slotList.get(0);
+                    if (!primary.isEmpty()) {
+                        map.put(primary.getItem(), map.getOrDefault(primary.getItem(), 0) + 1);
+                    }
+                }
+            }
+            requiredIngredients = java.util.Collections.unmodifiableMap(map);
+        }
+        return requiredIngredients;
     }
 
     /**

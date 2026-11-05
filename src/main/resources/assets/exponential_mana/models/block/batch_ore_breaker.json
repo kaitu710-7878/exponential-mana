@@ -1,6 +1,12 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "parent": "minecraft:block/cube",
   "textures": {
-    "all": "exponential_mana:block/batch_ore_breaker"
+    "down": "exponential_mana:block/batch_ore_breaker_d",
+    "up": "exponential_mana:block/batch_ore_breaker_u",
+    "north": "exponential_mana:block/batch_ore_breaker_n",
+    "south": "exponential_mana:block/batch_ore_breaker_s",
+    "west": "exponential_mana:block/batch_ore_breaker_w",
+    "east": "exponential_mana:block/batch_ore_breaker_e",
+    "particle": "exponential_mana:block/batch_ore_breaker_n"
   }
 }

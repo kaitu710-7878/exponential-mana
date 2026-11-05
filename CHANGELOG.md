@@ -8,6 +8,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.15.2-beta] - 2026-11-05
+
+### Added / 追加
+- **EN**:
+  - **Six-Directional Face Textures (Neon Cyan Without Black Background)**:
+    - Implemented clean directional face textures (N, S, E, W, U, D) with high-visibility neon cyan pixel badges drawn directly onto the block textures without black bounding boxes.
+    - Fully applied across all 34 side-configurable machine blocks: Extended Crafting Tables (Tier 1-10), Fairy Blocks & Compressed Fairies (Tier 0-10), Fairy Attractor & Compressed Fairy Attractors (Tier 0-10), Batch Ore Breaker, and Thawer.
+    - Updated all corresponding block model JSON definitions to map respective directional textures to absolute world orientations.
+  - **Overhauled Extended Crafting Table Auto-Crafting Engine**:
+    - Automatic recipe discovery: Placing raw ingredients into the Material Buffer (or grid) now automatically detects matching tiered recipes without requiring a pre-laid grid pattern.
+    - Integrated Result Slot: The primary craft result slot in the UI is now directly bound to the BlockEntity's internal item handler (`resultSlotIndex`), persisting across GUI closing/reopening and continuous background ticks.
+    - Direct Result Slot Yield: Auto-crafted yields are immediately deposited into the UI Result Slot and overflow into the 9 auto-output buffer slots, both supporting `Integer.MAX_VALUE` capacity.
+    - Full Auto-Eject integration: Automatically ejects finished products from both the UI result slot and auto-output slots to adjacent inventories based on side configuration.
+
+- **JA**:
+  - **全サイド制御対応ブロックへの背景黒塗りなし方角テクスチャ適用**:
+    - 黒色の背景ボックスを排除し、視認性の高いネオンシアン色のピクセル文字（N, S, E, W, U, D）をベーステクスチャ各面に直接描画したクリーンな方角別テクスチャを全適用。
+    - 対象全34ブロック（拡張作業台 Tier 1〜10、妖精ブロックおよび圧縮妖精 Tier 0〜10、妖精誘引機および圧縮妖精誘引機 Tier 0〜10、一括破壊機、解凍機）のテクスチャ（計204面分）およびブロックモデルJSON定義を完備。
+  - **拡張作業台の自動クラフト機能の抜本的刷新**:
+    - 自動レシピ検出: 型紙をグリッドに配置しなくても、素材置場（Material Buffer）またはインベントリに素材を投入するだけで作れるレシピを自動判別しクラフトを開始。
+    - 成果物欄のBlockEntity統合: UI上の成果物スロットを一時的なコンテナからBlockEntityの内部スロット（`resultSlotIndex`）に直接統合。UIの開閉やつけっぱなしに関わらず `serverTick` で常に成果物が蓄積・保持される仕様に改修。
+    - 成果物欄への直接出力: 自動クラフトされた成果物はUI上の成果物欄（Result Slot）に即座に出現し、溢れた分は9枠の自動出力バッファへ格納（どちらも1枠あたり `Integer.MAX_VALUE` 個対応）。
+    - 自動搬出（Auto Eject）連携: サイド設定に従い、成果物欄および自動出力バッファの両方から隣接チェスト等の外部インベントリへ完成品を自動搬出。
+
+---
+
 ## [0.15.1-beta] - 2026-11-05
 
 ### Added / 追加

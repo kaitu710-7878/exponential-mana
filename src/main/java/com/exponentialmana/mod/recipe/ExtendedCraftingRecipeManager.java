@@ -47,6 +47,32 @@ public class ExtendedCraftingRecipeManager {
         return null;
     }
 
+    /**
+     * Finds a recipe for the given tier whose ingredient requirements are fully satisfied
+     * by the provided pool of available materials (e.g. from material buffer and grid).
+     */
+    public static ExtendedCraftingRecipe findMatchingRecipeFromMaterials(int tier, Map<net.minecraft.world.item.Item, Long> availableMaterials) {
+        init();
+        List<ExtendedCraftingRecipe> list = RECIPES_BY_TIER.get(tier);
+        if (list == null) return null;
+
+        for (ExtendedCraftingRecipe recipe : list) {
+            Map<net.minecraft.world.item.Item, Integer> req = recipe.getRequiredIngredients();
+            if (req.isEmpty()) continue;
+            boolean canCraft = true;
+            for (Map.Entry<net.minecraft.world.item.Item, Integer> entry : req.entrySet()) {
+                if (availableMaterials.getOrDefault(entry.getKey(), 0L) < entry.getValue()) {
+                    canCraft = false;
+                    break;
+                }
+            }
+            if (canCraft) {
+                return recipe;
+            }
+        }
+        return null;
+    }
+
     private static void populateRecipes(Map<Integer, List<ExtendedCraftingRecipe>> map) {
         // ==========================================
         // Tier 1 Extended Crafting Table (4x4 Grid - 16 slots)

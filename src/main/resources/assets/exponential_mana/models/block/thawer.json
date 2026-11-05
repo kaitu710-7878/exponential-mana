@@ -1,6 +1,12 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "parent": "minecraft:block/cube",
   "textures": {
-    "all": "exponential_mana:block/thawer"
+    "down": "exponential_mana:block/thawer_d",
+    "up": "exponential_mana:block/thawer_u",
+    "north": "exponential_mana:block/thawer_n",
+    "south": "exponential_mana:block/thawer_s",
+    "west": "exponential_mana:block/thawer_w",
+    "east": "exponential_mana:block/thawer_e",
+    "particle": "exponential_mana:block/thawer_n"
   }
 }

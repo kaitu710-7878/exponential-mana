@@ -19,6 +19,7 @@ import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -48,6 +49,7 @@ public class ExtendedCraftingTableBlockEntity extends BlockEntity implements Men
     private final int tier;
     private final int gridSize;
     private final int totalInputSlots;
+    private final int resultSlotIndex;
     private final int bufferSlotStart;
     private final int autoOutputSlotStart;
     private final int totalSlots;
@@ -65,11 +67,13 @@ public class ExtendedCraftingTableBlockEntity extends BlockEntity implements Men
         this.tier = tier;
         this.gridSize = tier + 3;
         this.totalInputSlots = gridSize * gridSize;
-        this.bufferSlotStart = totalInputSlots;
+        this.resultSlotIndex = totalInputSlots;
+        this.bufferSlotStart = resultSlotIndex + 1;
         this.autoOutputSlotStart = bufferSlotStart + BUFFER_SLOTS;
         this.totalSlots = autoOutputSlotStart + AUTO_OUTPUT_SLOTS;
 
-        List<Integer> outList = new ArrayList<>(AUTO_OUTPUT_SLOTS);
+        List<Integer> outList = new ArrayList<>(1 + AUTO_OUTPUT_SLOTS);
+        outList.add(resultSlotIndex);
         for (int i = autoOutputSlotStart; i < totalSlots; i++) {
             outList.add(i);
         }
@@ -83,16 +87,16 @@ public class ExtendedCraftingTableBlockEntity extends BlockEntity implements Men
 
             @Override
             public int getSlotLimit(int slot) {
-                if (slot >= bufferSlotStart) {
-                    return Integer.MAX_VALUE; // Both Material Buffer and Auto-Output buffer hold up to Int_MAX
+                if (slot >= resultSlotIndex) {
+                    return Integer.MAX_VALUE; // Result slot, Material Buffer and Auto-Output buffer hold up to Int_MAX
                 }
-                return 64; // Grid slots hold normal 64 for recipe pattern
+                return 64; // Grid slots hold normal 64
             }
 
             @Override
             public boolean isItemValid(int slot, @NotNull ItemStack stack) {
-                // Auto-output buffer slots cannot be inserted into externally
-                if (slot >= autoOutputSlotStart) {
+                // Result slot and auto-output buffer slots cannot be inserted into externally
+                if (slot == resultSlotIndex || slot >= autoOutputSlotStart) {
                     return false;
                 }
                 return true;
@@ -112,7 +116,7 @@ public class ExtendedCraftingTableBlockEntity extends BlockEntity implements Men
                     dir,
                     sideConfig,
                     slot -> slot >= bufferSlotStart && slot < autoOutputSlotStart, // Input -> Material Buffer (18 slots)
-                    slot -> slot >= autoOutputSlotStart && slot < totalSlots       // Output -> Auto Output Buffer (9 slots)
+                    slot -> slot == resultSlotIndex || (slot >= autoOutputSlotStart && slot < totalSlots) // Output -> Result slot + Auto Output Buffer (9 slots)
             )));
         }
     }
@@ -127,11 +131,11 @@ public class ExtendedCraftingTableBlockEntity extends BlockEntity implements Men
 
     /**
      * Crafts as many items as possible in 1 tick based on materials in the material buffer
-     * and surplus materials in the crafting grid (count > 1).
-     * Outputs to the 9 auto-craft output buffer slots.
+     * and crafting grid. Outputs directly into the result slot (displayed in UI) and auto-output buffer.
      */
     private void tickAutoCraft() {
-        ExtendedCraftingRecipe recipe = ExtendedCraftingRecipeManager.findMatchingRecipe(tier, new IItemHandler() {
+        // 1. Check if grid forms an explicit recipe
+        ExtendedCraftingRecipe activeRecipe = ExtendedCraftingRecipeManager.findMatchingRecipe(tier, new IItemHandler() {
             @Override
             public int getSlots() { return totalInputSlots; }
             @Override
@@ -146,45 +150,56 @@ public class ExtendedCraftingTableBlockEntity extends BlockEntity implements Men
             public boolean isItemValid(int slot, @NotNull ItemStack stack) { return true; }
         });
 
-        if (recipe == null) return;
-
-        ItemStack output = recipe.getOutput();
-        if (output.isEmpty()) return;
-
-        // Count required items for this recipe (per single craft)
-        Map<ItemStackKey, Integer> required = new HashMap<>();
-        for (int i = 0; i < totalInputSlots; i++) {
-            ItemStack inGrid = itemHandler.getStackInSlot(i);
-            if (!inGrid.isEmpty()) {
-                ItemStackKey key = new ItemStackKey(inGrid);
-                required.put(key, required.getOrDefault(key, 0) + 1);
+        // 2. If no valid recipe in grid, search recipe pool using items available in Material Buffer + Grid
+        boolean fromGridPattern = (activeRecipe != null);
+        if (activeRecipe == null) {
+            Map<Item, Long> pool = new HashMap<>();
+            for (int b = bufferSlotStart; b < autoOutputSlotStart; b++) {
+                ItemStack stack = itemHandler.getStackInSlot(b);
+                if (!stack.isEmpty()) {
+                    pool.put(stack.getItem(), pool.getOrDefault(stack.getItem(), 0L) + stack.getCount());
+                }
             }
+            for (int g = 0; g < totalInputSlots; g++) {
+                ItemStack stack = itemHandler.getStackInSlot(g);
+                if (!stack.isEmpty()) {
+                    pool.put(stack.getItem(), pool.getOrDefault(stack.getItem(), 0L) + stack.getCount());
+                }
+            }
+            activeRecipe = ExtendedCraftingRecipeManager.findMatchingRecipeFromMaterials(tier, pool);
         }
 
+        if (activeRecipe == null) return;
+
+        ItemStack output = activeRecipe.getOutput();
+        if (output.isEmpty()) return;
+
+        Map<Item, Integer> required = activeRecipe.getRequiredIngredients();
         if (required.isEmpty()) return;
 
-        // Count available items from BOTH:
-        // 1. Material Buffer (bufferSlotStart .. autoOutputSlotStart - 1): full amount
-        // 2. Crafting Grid (0 .. totalInputSlots - 1): surplus amount (count - 1), preserving the pattern template!
-        Map<ItemStackKey, Long> available = new HashMap<>();
+        // Count available items (Item -> Long)
+        Map<Item, Long> available = new HashMap<>();
+        // From Material Buffer: full amount
         for (int b = bufferSlotStart; b < autoOutputSlotStart; b++) {
             ItemStack stack = itemHandler.getStackInSlot(b);
             if (!stack.isEmpty()) {
-                ItemStackKey key = new ItemStackKey(stack);
-                available.put(key, available.getOrDefault(key, 0L) + stack.getCount());
+                available.put(stack.getItem(), available.getOrDefault(stack.getItem(), 0L) + stack.getCount());
             }
         }
+        // From Grid:
         for (int g = 0; g < totalInputSlots; g++) {
             ItemStack inGrid = itemHandler.getStackInSlot(g);
-            if (!inGrid.isEmpty() && inGrid.getCount() > 1) {
-                ItemStackKey key = new ItemStackKey(inGrid);
-                available.put(key, available.getOrDefault(key, 0L) + (inGrid.getCount() - 1));
+            if (!inGrid.isEmpty()) {
+                // If crafting from grid pattern, preserve 1 item template if buffer has items,
+                // but if buffer does not have it, allow consuming the grid items directly!
+                long count = fromGridPattern ? (inGrid.getCount() > 1 ? inGrid.getCount() - 1 : 1) : inGrid.getCount();
+                available.put(inGrid.getItem(), available.getOrDefault(inGrid.getItem(), 0L) + count);
             }
         }
 
-        // Determine maximum possible crafts in this tick based on available materials
+        // Determine maximum possible crafts based on materials
         long maxCrafts = Long.MAX_VALUE;
-        for (Map.Entry<ItemStackKey, Integer> req : required.entrySet()) {
+        for (Map.Entry<Item, Integer> req : required.entrySet()) {
             long avail = available.getOrDefault(req.getKey(), 0L);
             long possible = avail / req.getValue();
             if (possible < maxCrafts) {
@@ -194,9 +209,19 @@ public class ExtendedCraftingTableBlockEntity extends BlockEntity implements Men
 
         if (maxCrafts <= 0) return;
 
-        // Calculate available output capacity in the 9 auto-output slots
+        // Calculate available output capacity (Result Slot + 9 Auto-Output slots)
         int outPerCraft = Math.max(1, output.getCount());
         long space = 0;
+
+        // Check Result Slot capacity
+        ItemStack inRes = itemHandler.getStackInSlot(resultSlotIndex);
+        if (inRes.isEmpty()) {
+            space += Integer.MAX_VALUE;
+        } else if (ItemStack.isSameItemSameTags(inRes, output)) {
+            space += ((long) Integer.MAX_VALUE - inRes.getCount());
+        }
+
+        // Check Auto-Output slots capacity
         for (int o = autoOutputSlotStart; o < totalSlots; o++) {
             ItemStack inSlot = itemHandler.getStackInSlot(o);
             if (inSlot.isEmpty()) {
@@ -212,36 +237,51 @@ public class ExtendedCraftingTableBlockEntity extends BlockEntity implements Men
         if (maxCrafts <= 0) return;
 
         // Consume required materials:
-        // Prioritize consuming from Material Buffer, then consume surplus from Grid!
-        for (Map.Entry<ItemStackKey, Integer> req : required.entrySet()) {
+        // Prioritize consuming from Material Buffer, then consume from Grid!
+        for (Map.Entry<Item, Integer> req : required.entrySet()) {
             long toConsume = (long) req.getValue() * maxCrafts;
 
             // 1. From Material Buffer
             for (int b = bufferSlotStart; b < autoOutputSlotStart && toConsume > 0; b++) {
                 ItemStack inSlot = itemHandler.getStackInSlot(b);
-                if (!inSlot.isEmpty() && req.getKey().matches(inSlot)) {
+                if (!inSlot.isEmpty() && inSlot.is(req.getKey())) {
                     int taken = (int) Math.min((long) inSlot.getCount(), toConsume);
                     inSlot.shrink(taken);
                     toConsume -= taken;
                 }
             }
 
-            // 2. From Grid surplus (leaving 1 item to maintain template)
+            // 2. From Grid
             for (int g = 0; g < totalInputSlots && toConsume > 0; g++) {
                 ItemStack inGrid = itemHandler.getStackInSlot(g);
-                if (!inGrid.isEmpty() && inGrid.getCount() > 1 && req.getKey().matches(inGrid)) {
-                    int surplus = inGrid.getCount() - 1;
-                    int taken = (int) Math.min((long) surplus, toConsume);
+                if (!inGrid.isEmpty() && inGrid.is(req.getKey())) {
+                    int taken = (int) Math.min((long) inGrid.getCount(), toConsume);
                     inGrid.shrink(taken);
                     toConsume -= taken;
                 }
             }
         }
 
-        // Add produced output into the 9 auto-output slots
+        // Add produced output:
+        // 1. Into Result Slot (primary UI display slot)
         long toAdd = (long) outPerCraft * maxCrafts;
+        ItemStack resSlot = itemHandler.getStackInSlot(resultSlotIndex);
+        if (!resSlot.isEmpty() && ItemStack.isSameItemSameTags(resSlot, output)) {
+            long room = (long) Integer.MAX_VALUE - resSlot.getCount();
+            if (room > 0) {
+                int add = (int) Math.min(room, toAdd);
+                resSlot.grow(add);
+                toAdd -= add;
+            }
+        } else if (resSlot.isEmpty()) {
+            int add = (int) Math.min((long) Integer.MAX_VALUE, toAdd);
+            ItemStack newStack = output.copy();
+            newStack.setCount(add);
+            itemHandler.setStackInSlot(resultSlotIndex, newStack);
+            toAdd -= add;
+        }
 
-        // 1. Merge with existing matching stacks
+        // 2. Into 9 Auto-Output Buffer slots (merge existing)
         for (int o = autoOutputSlotStart; o < totalSlots && toAdd > 0; o++) {
             ItemStack inSlot = itemHandler.getStackInSlot(o);
             if (!inSlot.isEmpty() && ItemStack.isSameItemSameTags(inSlot, output)) {
@@ -254,7 +294,7 @@ public class ExtendedCraftingTableBlockEntity extends BlockEntity implements Men
             }
         }
 
-        // 2. Put into empty slots
+        // 3. Into empty Auto-Output Buffer slots
         for (int o = autoOutputSlotStart; o < totalSlots && toAdd > 0; o++) {
             ItemStack inSlot = itemHandler.getStackInSlot(o);
             if (inSlot.isEmpty()) {
@@ -279,6 +319,10 @@ public class ExtendedCraftingTableBlockEntity extends BlockEntity implements Men
 
     public int getTotalInputSlots() {
         return totalInputSlots;
+    }
+
+    public int getResultSlotIndex() {
+        return resultSlotIndex;
     }
 
     public int getBufferSlotStart() {

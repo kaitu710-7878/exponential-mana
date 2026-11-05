@@ -28,7 +28,7 @@ public class ExtendedCraftingMenu extends AbstractContainerMenu {
 
     // Slot Indices in Menu:
     // 0 .. totalInputSlots - 1: Grid
-    // totalInputSlots: Manual Result Slot
+    // totalInputSlots: Result Slot (from BlockEntity, index = resultSlotIndex)
     // manualResultMenuIndex = totalInputSlots
     // bufferMenuStart = totalInputSlots + 1
     // autoOutputMenuStart = totalInputSlots + 19
@@ -37,8 +37,6 @@ public class ExtendedCraftingMenu extends AbstractContainerMenu {
     private final int bufferMenuStart;
     private final int autoOutputMenuStart;
     private final int playerInvMenuStart;
-
-    private final ResultContainer resultContainer = new ResultContainer();
 
     private final int gridStartX = 10;
     private final int gridStartY = 20;
@@ -99,20 +97,23 @@ public class ExtendedCraftingMenu extends AbstractContainerMenu {
             }
         }
 
-        // 2. Manual Result Slot (index: manualResultMenuIndex)
+        // 2. Result Slot (index: manualResultMenuIndex, synced directly with BlockEntity resultSlotIndex)
         int outX = gridStartX + gridWidth + 38;
         int outY = gridStartY + gridHeight / 2 - 8;
-        this.addSlot(new Slot(resultContainer, 0, outX, outY) {
+        this.addSlot(new SlotItemHandler(blockEntity.getItemHandler(), blockEntity.getResultSlotIndex(), outX, outY) {
             @Override
             public boolean mayPlace(@NotNull ItemStack stack) {
                 return false;
             }
 
             @Override
-            public void onTake(@NotNull Player pPlayer, @NotNull ItemStack pStack) {
-                consumeGridItems();
-                super.onTake(pPlayer, pStack);
-                refreshRecipeResult();
+            public int getMaxStackSize() {
+                return Integer.MAX_VALUE;
+            }
+
+            @Override
+            public int getMaxStackSize(@NotNull ItemStack stack) {
+                return Integer.MAX_VALUE;
             }
         });
 
@@ -170,51 +171,24 @@ public class ExtendedCraftingMenu extends AbstractContainerMenu {
             this.addSlot(new Slot(inv, col, playerInvX + col * 18, hotbarY));
         }
 
-        // Initial recipe check
-        refreshRecipeResult();
+        // Initial setup complete
     }
 
     public void refreshRecipeResult() {
-        ExtendedCraftingRecipe recipe = ExtendedCraftingRecipeManager.findMatchingRecipe(tier, new IItemHandler() {
-            @Override
-            public int getSlots() { return totalInputSlots; }
-            @Override
-            public @NotNull ItemStack getStackInSlot(int slot) { return blockEntity.getItemHandler().getStackInSlot(slot); }
-            @Override
-            public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) { return stack; }
-            @Override
-            public @NotNull ItemStack extractItem(int slot, int amount, boolean simulate) { return ItemStack.EMPTY; }
-            @Override
-            public int getSlotLimit(int slot) { return 64; }
-            @Override
-            public boolean isItemValid(int slot, @NotNull ItemStack stack) { return true; }
-        });
-
-        if (recipe != null) {
-            resultContainer.setItem(0, recipe.getOutput().copy());
-        } else {
-            resultContainer.setItem(0, ItemStack.EMPTY);
-        }
+        // Result slot is maintained and produced directly by BlockEntity serverTick!
     }
 
     private void consumeGridItems() {
-        for (int i = 0; i < totalInputSlots; i++) {
-            ItemStack stack = blockEntity.getItemHandler().getStackInSlot(i);
-            if (!stack.isEmpty()) {
-                blockEntity.getItemHandler().extractItem(i, 1, false);
-            }
-        }
+        // Handled automatically by BlockEntity tickAutoCraft
     }
 
     @Override
     public void slotsChanged(Container container) {
         super.slotsChanged(container);
-        refreshRecipeResult();
     }
 
     @Override
     public void broadcastChanges() {
-        refreshRecipeResult();
         super.broadcastChanges();
     }
 
@@ -234,22 +208,17 @@ public class ExtendedCraftingMenu extends AbstractContainerMenu {
             int playerInvEnd = playerInvMenuStart + 36;
 
             if (index == manualResultMenuIndex) {
-                // Taking from manual craft result slot (craft as many as possible or 1 full stack)
+                // Taking from result slot -> To Player Inventory
                 if (!this.moveItemStackTo(slotStack, playerInvMenuStart, playerInvEnd, true)) {
                     return ItemStack.EMPTY;
                 }
                 slot.onQuickCraft(slotStack, itemstack);
-                consumeGridItems();
-                refreshRecipeResult();
                 slot.onTake(player, slotStack);
                 return itemstack;
             } else if (index < playerInvMenuStart) {
                 // From Grid, Buffer, or Auto Output -> To Player Inventory
                 if (!this.moveItemStackTo(slotStack, playerInvMenuStart, playerInvEnd, true)) {
                     return ItemStack.EMPTY;
-                }
-                if (index < totalInputSlots) {
-                    refreshRecipeResult();
                 }
             } else {
                 // From Player Inventory -> Try Material Buffer first (supporting Int_MAX)

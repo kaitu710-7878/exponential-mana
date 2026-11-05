@@ -1,6 +1,12 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "parent": "minecraft:block/cube",
   "textures": {
-    "all": "exponential_mana:block/tier6_extended_crafting_table"
+    "down": "exponential_mana:block/tier6_extended_crafting_table_d",
+    "up": "exponential_mana:block/tier6_extended_crafting_table_u",
+    "north": "exponential_mana:block/tier6_extended_crafting_table_n",
+    "south": "exponential_mana:block/tier6_extended_crafting_table_s",
+    "west": "exponential_mana:block/tier6_extended_crafting_table_w",
+    "east": "exponential_mana:block/tier6_extended_crafting_table_e",
+    "particle": "exponential_mana:block/tier6_extended_crafting_table_n"
   }
 }
