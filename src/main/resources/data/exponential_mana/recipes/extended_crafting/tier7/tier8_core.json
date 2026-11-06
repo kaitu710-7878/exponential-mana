@@ -5,12 +5,12 @@
   "pattern": [
     "OOOOOOOOOO",
     "OOOOOOOOOO",
-    "OOOOOOOOOO",
-    "OOOOOOOOOO",
-    "OOOOCCOOOO",
-    "OOOOCCOOOO",
-    "OOOOOOOOOO",
-    "OOOOOOOOOO",
+    "OOCCCCCCOO",
+    "OOCCCCCCOO",
+    "OOCCCCCCOO",
+    "OOCCCCCCOO",
+    "OOCCCCCCOO",
+    "OOCCCCCCOO",
     "OOOOOOOOOO",
     "OOOOOOOOOO"
   ],
@@ -19,7 +19,7 @@
       "item": "exponential_mana:tier8_mana"
     },
     "C": {
-      "item": "minecraft:emerald"
+      "item": "minecraft:obsidian"
     }
   },
   "result": {

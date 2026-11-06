@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 @Mod(ExponentialMana.MOD_ID)
 public class ExponentialMana {
     public static final String MOD_ID = "exponential_mana";
-    public static final String VERSION = "0.15.9-beta";
+    public static final String VERSION = "0.16.1-beta";
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public ExponentialMana() {

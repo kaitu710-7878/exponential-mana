@@ -7,9 +7,9 @@
     "OOOOOOOOOOO",
     "OOOOOOOOOOO",
     "OOOOOOOOOOO",
-    "OOOOOOOOOOO",
-    "OOOOOCOOOOO",
-    "OOOOOOOOOOO",
+    "OOOOCCCOOOO",
+    "OOOOCCCOOOO",
+    "OOOOCCCOOOO",
     "OOOOOOOOOOO",
     "OOOOOOOOOOO",
     "OOOOOOOOOOO",
@@ -20,7 +20,7 @@
       "item": "exponential_mana:tier8_mana"
     },
     "C": {
-      "item": "minecraft:netherite_ingot"
+      "item": "minecraft:emerald"
     }
   },
   "result": {

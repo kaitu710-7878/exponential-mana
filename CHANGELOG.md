@@ -8,6 +8,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.16.1-beta] - 2026-11-06
+
+### Fixed / 修正
+- **EN**:
+  - **Updated Infinite Mana Recipe to Match Final Design Specification & Screenshots**:
+    - Restored the 9-slot layout for "Infinite Mana": 4 Origin Armor pieces at the 4 corners, Origin Sword at the center, surrounded by 4 Mana Roots (cross), leaving all other slots empty as designed.
+    - Verified and confirmed full consistency for all Tier 10 endgame recipes (Mana Root, Origin Sword, Helmet, Chestplate, Leggings, Boots, and Infinite Mana) and progression recipes (Tier 3 Core, etc.) against reference layouts.
+- **JA**:
+  - **「無限のマナ」レシピの仕様書・リファレンス画像準拠への更新**:
+    - 「無限のマナ」のレシピを、四隅に根源装備4点（ヘルメット、チェストプレート、レギンス、ブーツ）、中央に根源の剣、その上下左右にマナの根源×4を配置し、その他のスロットを空欄とする9スロット構成（仕様書・画像準拠）に更新しました。
+    - エンドゲームレシピ全種（マナの根源、根源の剣、ヘルメット、チェストプレート、レギンス、ブーツ、無限のマナ）および階層進行レシピ（Tier3コア等）がリファレンス画像および企画書と完全に一致していることを確認・整合しました。
+
+---
+
+## [0.16.0-beta] - 2026-11-06
+
+### Fixed / 修正
+- **EN**:
+  - **Corrected Progression Crafting Materials According to Specification**:
+    - Fixed recipe materials for advancing to Tier 8, Tier 9, and Tier 10:
+      - Tier 8 Mana/Core/Equipment (crafted on Tier 7 10x10 Table): uses **Obsidian** (center 2x2 for Mana, 6x6 for Core).
+      - Tier 9 Mana/Core/Equipment (crafted on Tier 8 11x11 Table): uses **Emerald** (center 3x3 for Mana and Core).
+      - Tier 10 Mana/Core/Equipment (crafted on Tier 9 12x12 Table): uses **Netherite Ingot** (center 4x4 for Mana and Core).
+    - Verified strict conformance to the master design doc: `Coal(T1) -> Copper(T2) -> Redstone(T3) -> Glowstone(T4) -> Iron(T5) -> Gold(T6) -> Diamond(T7) -> Obsidian(T8) -> Emerald(T9) -> Netherite(T10)`.
+
+- **JA**:
+  - **仕様書に準拠した階層進行素材（マナ・コア等）の修正**:
+    - Tier 8、Tier 9、Tier 10 への進行レシピにおけるバニラ要求素材のズレを完全修正：
+      - Tier 8 マナ/コア/設備（Tier 7 10×10作業台）: 要求素材を **黒曜石（Obsidian）** に修正（マナ: 2×2、コア: 6×6）。
+      - Tier 9 マナ/コア/設備（Tier 8 11×11作業台）: 要求素材を **エメラルド（Emerald）** に修正（マナ: 3×3、コア: 3×3）。
+      - Tier 10 マナ/コア/設備（Tier 9 12×12作業台）: 要求素材を **ネザライトインゴット（Netherite Ingot）** に修正（マナ: 4×4、コア: 4×4）。
+    - 企画書通りの正規進行 `石炭(T1) → 銅(T2) → 赤石(T3) → グロウストーン(T4) → 鉄(T5) → 金(T6) → ダイヤ(T7) → 黒曜石(T8) → エメラルド(T9) → ネザライト(T10)` に完全合致させました。
+
+---
+
 ## [0.15.9-beta] - 2026-11-06
 
 ### Fixed / 修正
