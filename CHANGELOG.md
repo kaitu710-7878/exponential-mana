@@ -8,6 +8,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.15.9-beta] - 2026-11-06
+
+### Fixed / 修正
+- **EN**:
+  - **Fixed Mana Material Recipes (Tier 1-10)**:
+    - Corrected center materials and symmetric square dimensions for Mana Material recipes:
+      - Tier 8 Mana Material: Center 5x5 Obsidian on 11x11 grid with Tier 8 Mana border.
+      - Tier 9 Mana Material: Center 4x4 Emerald on 12x12 grid with Tier 9 Mana border.
+      - Tier 10 Mana Material: Center 5x5 Netherite Ingot on 13x13 grid with Tier 10 Mana border.
+    - Verified all Tier 1..10 progression materials and center box dimensions.
+
+- **JA**:
+  - **マナ素材レシピの修正（Tier 1〜10）**:
+    - JSON化に伴いズレが生じていたマナ素材の中央バニラ素材および正方形中心サイズを正確に修正：
+      - Tier 8 マナ素材: 11×11作業台の中央5×5に **黒曜石（Obsidian）**、外枠にTier 8 マナ。
+      - Tier 9 マナ素材: 12×12作業台の中央4×4に **エメラルド（Emerald）**、外枠にTier 9 マナ。
+      - Tier 10 マナ素材: 13×13作業台の中央5×5に **ネザライトインゴット（Netherite Ingot）**、外枠にTier 10 マナ。
+    - 全Tier（1〜10）のマナ素材が左右・上下対称の美しい正方形中心レシピであることを検証・修正完了。
+
+---
+
 ## [0.15.8-beta] - 2026-11-06
 
 ### Added / 追加

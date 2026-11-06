@@ -6,9 +6,9 @@
     "OOOOOOOOO",
     "OOOOOOOOO",
     "OOOOOOOOO",
-    "OOOOOOOOO",
-    "OOOOCOOOO",
-    "OOOOOOOOO",
+    "OOOCCCOOO",
+    "OOOCCCOOO",
+    "OOOCCCOOO",
     "OOOOOOOOO",
     "OOOOOOOOO",
     "OOOOOOOOO"
@@ -18,7 +18,7 @@
       "item": "exponential_mana:tier6_mana"
     },
     "C": {
-      "item": "minecraft:lapis_lazuli"
+      "item": "minecraft:gold_ingot"
     }
   },
   "result": {

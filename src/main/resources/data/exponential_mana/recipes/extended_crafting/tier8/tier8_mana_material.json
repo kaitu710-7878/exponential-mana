@@ -6,11 +6,11 @@
     "OOOOOOOOOOO",
     "OOOOOOOOOOO",
     "OOOOOOOOOOO",
-    "OOOOOOOOOOO",
-    "OOOOOOOOOOO",
-    "OOOOOCOOOOO",
-    "OOOOOOOOOOO",
-    "OOOOOOOOOOO",
+    "OOOCCCCCOOO",
+    "OOOCCCCCOOO",
+    "OOOCCCCCOOO",
+    "OOOCCCCCOOO",
+    "OOOCCCCCOOO",
     "OOOOOOOOOOO",
     "OOOOOOOOOOO",
     "OOOOOOOOOOO"
@@ -20,7 +20,7 @@
       "item": "exponential_mana:tier8_mana"
     },
     "C": {
-      "item": "minecraft:emerald"
+      "item": "minecraft:obsidian"
     }
   },
   "result": {

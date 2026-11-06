@@ -5,9 +5,9 @@
   "pattern": [
     "OOOOOOO",
     "OOOOOOO",
-    "OOOOOOO",
-    "OOOCOOO",
-    "OOOOOOO",
+    "OOCCCOO",
+    "OOCCCOO",
+    "OOCCCOO",
     "OOOOOOO",
     "OOOOOOO"
   ],
@@ -16,7 +16,7 @@
       "item": "exponential_mana:tier4_mana"
     },
     "C": {
-      "item": "minecraft:gold_ingot"
+      "item": "minecraft:glowstone_dust"
     }
   },
   "result": {
