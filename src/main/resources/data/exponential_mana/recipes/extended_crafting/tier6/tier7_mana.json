@@ -1,0 +1,28 @@
+{
+  "type": "exponential_mana:extended_crafting",
+  "tier": 6,
+  "shapeless": false,
+  "pattern": [
+    "OOOOOOOOO",
+    "OOOOOOOOO",
+    "OOOOOOOOO",
+    "OOOOOOOOO",
+    "OOOOCOOOO",
+    "OOOOOOOOO",
+    "OOOOOOOOO",
+    "OOOOOOOOO",
+    "OOOOOOOOO"
+  ],
+  "key": {
+    "O": {
+      "item": "exponential_mana:tier6_mana"
+    },
+    "C": {
+      "item": "minecraft:diamond"
+    }
+  },
+  "result": {
+    "item": "exponential_mana:tier7_mana",
+    "count": 1
+  }
+}

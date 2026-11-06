@@ -1,0 +1,68 @@
+{
+  "type": "exponential_mana:extended_crafting",
+  "tier": 10,
+  "shapeless": false,
+  "pattern": [
+    "P1234567890LA",
+    "QP1234567890L",
+    "AQP1234567890",
+    "LAQP123456789",
+    "0LAQP12345678",
+    "90LAQP1234567",
+    "890LAQP123456",
+    "7890LAQP12345",
+    "67890LAQP1234",
+    "567890LAQP123",
+    "4567890LAQP12",
+    "34567890LAQP1",
+    "234567890LAQP"
+  ],
+  "key": {
+    "P": {
+      "item": "exponential_mana:pure_mana"
+    },
+    "1": {
+      "item": "exponential_mana:compressed_tier1_mana_material"
+    },
+    "2": {
+      "item": "exponential_mana:compressed_tier2_mana_material"
+    },
+    "3": {
+      "item": "exponential_mana:compressed_tier3_mana_material"
+    },
+    "4": {
+      "item": "exponential_mana:compressed_tier4_mana_material"
+    },
+    "5": {
+      "item": "exponential_mana:compressed_tier5_mana_material"
+    },
+    "6": {
+      "item": "exponential_mana:compressed_tier6_mana_material"
+    },
+    "7": {
+      "item": "exponential_mana:compressed_tier7_mana_material"
+    },
+    "8": {
+      "item": "exponential_mana:compressed_tier8_mana_material"
+    },
+    "9": {
+      "item": "exponential_mana:compressed_tier9_mana_material"
+    },
+    "0": {
+      "item": "exponential_mana:compressed_tier10_mana_material"
+    },
+    "L": {
+      "item": "exponential_mana:compressed_lapis"
+    },
+    "A": {
+      "item": "exponential_mana:compressed_amethyst"
+    },
+    "Q": {
+      "item": "exponential_mana:compressed_quartz"
+    }
+  },
+  "result": {
+    "item": "exponential_mana:origin_alloy",
+    "count": 1
+  }
+}

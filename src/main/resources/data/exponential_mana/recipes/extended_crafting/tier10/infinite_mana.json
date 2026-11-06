@@ -1,0 +1,44 @@
+{
+  "type": "exponential_mana:extended_crafting",
+  "tier": 10,
+  "shapeless": false,
+  "pattern": [
+    "HRRRRRRRRRRRC",
+    "RRRRRRRRRRRRR",
+    "RRRRRRRRRRRRR",
+    "RRRRRRRRRRRRR",
+    "RRRRRRRRRRRRR",
+    "RRRRRRRRRRRRR",
+    "RRRRRRSRRRRRR",
+    "RRRRRRRRRRRRR",
+    "RRRRRRRRRRRRR",
+    "RRRRRRRRRRRRR",
+    "RRRRRRRRRRRRR",
+    "RRRRRRRRRRRRR",
+    "LRRRRRRRRRRRB"
+  ],
+  "key": {
+    "H": {
+      "item": "exponential_mana:origin_helmet"
+    },
+    "C": {
+      "item": "exponential_mana:origin_chestplate"
+    },
+    "L": {
+      "item": "exponential_mana:origin_leggings"
+    },
+    "B": {
+      "item": "exponential_mana:origin_boots"
+    },
+    "S": {
+      "item": "exponential_mana:origin_sword"
+    },
+    "R": {
+      "item": "exponential_mana:mana_root"
+    }
+  },
+  "result": {
+    "item": "exponential_mana:infinite_mana",
+    "count": 1
+  }
+}

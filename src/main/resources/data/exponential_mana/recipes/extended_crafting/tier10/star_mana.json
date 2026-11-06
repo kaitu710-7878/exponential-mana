@@ -1,0 +1,12 @@
+{
+  "type": "exponential_mana:extended_crafting",
+  "tier": 10,
+  "full_grid": true,
+  "ingredient": {
+    "item": "exponential_mana:uncompressed_star_mana"
+  },
+  "result": {
+    "item": "exponential_mana:star_mana",
+    "count": 1
+  }
+}

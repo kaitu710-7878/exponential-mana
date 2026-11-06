@@ -1,0 +1,12 @@
+{
+  "type": "exponential_mana:extended_crafting",
+  "tier": 10,
+  "full_grid": true,
+  "ingredient": {
+    "item": "minecraft:amethyst_shard"
+  },
+  "result": {
+    "item": "exponential_mana:compressed_amethyst",
+    "count": 1
+  }
+}

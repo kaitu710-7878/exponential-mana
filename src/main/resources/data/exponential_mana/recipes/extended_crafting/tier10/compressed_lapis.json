@@ -1,0 +1,12 @@
+{
+  "type": "exponential_mana:extended_crafting",
+  "tier": 10,
+  "full_grid": true,
+  "ingredient": {
+    "item": "minecraft:lapis_lazuli"
+  },
+  "result": {
+    "item": "exponential_mana:compressed_lapis",
+    "count": 1
+  }
+}

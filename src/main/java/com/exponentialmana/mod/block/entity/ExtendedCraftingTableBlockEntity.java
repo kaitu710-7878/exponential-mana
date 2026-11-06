@@ -119,6 +119,8 @@ public class ExtendedCraftingTableBlockEntity extends BlockEntity implements Men
     }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, ExtendedCraftingTableBlockEntity be) {
+        ExtendedCraftingRecipeManager.ensureLoaded(level);
+
         // 1. Auto-crafting (Crafts from Material Buffer into Auto-Output Buffer, never touching the grid)
         be.tickAutoCraft();
 

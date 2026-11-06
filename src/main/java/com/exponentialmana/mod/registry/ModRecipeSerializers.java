@@ -17,6 +17,10 @@ public class ModRecipeSerializers {
             RECIPE_SERIALIZERS.register("crafting_special_infinite_mana_duplication",
                     () -> new SimpleCraftingRecipeSerializer<>(InfiniteManaDuplicationRecipe::new));
 
+    public static final RegistryObject<RecipeSerializer<com.exponentialmana.mod.recipe.ExtendedCraftingRecipe>> EXTENDED_CRAFTING =
+            RECIPE_SERIALIZERS.register("extended_crafting",
+                    () -> new com.exponentialmana.mod.recipe.ExtendedCraftingRecipe.Serializer());
+
     public static void register(IEventBus eventBus) {
         RECIPE_SERIALIZERS.register(eventBus);
     }

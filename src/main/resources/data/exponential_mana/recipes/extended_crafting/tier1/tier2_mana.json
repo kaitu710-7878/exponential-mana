@@ -1,0 +1,23 @@
+{
+  "type": "exponential_mana:extended_crafting",
+  "tier": 1,
+  "shapeless": false,
+  "pattern": [
+    "OOOO",
+    "OCCO",
+    "OCCO",
+    "OOOO"
+  ],
+  "key": {
+    "O": {
+      "item": "exponential_mana:tier1_mana"
+    },
+    "C": {
+      "item": "minecraft:copper_ingot"
+    }
+  },
+  "result": {
+    "item": "exponential_mana:tier2_mana",
+    "count": 1
+  }
+}

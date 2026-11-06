@@ -1,0 +1,32 @@
+{
+  "type": "exponential_mana:extended_crafting",
+  "tier": 10,
+  "shapeless": false,
+  "pattern": [
+    "OOOOOOOOOOOOO",
+    "OOOOOOOOOOOOO",
+    "OOOOOOOOOOOOO",
+    "OOOOOOOOOOOOO",
+    "OOOOOOOOOOOOO",
+    "OOOOOOOOOOOOO",
+    "OOOOOOCOOOOOO",
+    "OOOOOOOOOOOOO",
+    "OOOOOOOOOOOOO",
+    "OOOOOOOOOOOOO",
+    "OOOOOOOOOOOOO",
+    "OOOOOOOOOOOOO",
+    "OOOOOOOOOOOOO"
+  ],
+  "key": {
+    "O": {
+      "item": "exponential_mana:pure_mana"
+    },
+    "C": {
+      "item": "minecraft:nether_star"
+    }
+  },
+  "result": {
+    "item": "exponential_mana:uncompressed_star_mana",
+    "count": 1
+  }
+}

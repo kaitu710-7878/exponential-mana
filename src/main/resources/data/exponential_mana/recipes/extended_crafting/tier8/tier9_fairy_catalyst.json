@@ -1,0 +1,30 @@
+{
+  "type": "exponential_mana:extended_crafting",
+  "tier": 8,
+  "shapeless": false,
+  "pattern": [
+    "OOOOOOOOOOO",
+    "OOOOOOOOOOO",
+    "OOOOOOOOOOO",
+    "OOOOOOOOOOO",
+    "OOOOOOOOOOO",
+    "OOOOOCOOOOO",
+    "OOOOOOOOOOO",
+    "OOOOOOOOOOO",
+    "OOOOOOOOOOO",
+    "OOOOOOOOOOO",
+    "OOOOOOOOOOO"
+  ],
+  "key": {
+    "O": {
+      "item": "exponential_mana:tier9_core"
+    },
+    "C": {
+      "item": "exponential_mana:tier8_fairy_catalyst"
+    }
+  },
+  "result": {
+    "item": "exponential_mana:tier9_fairy_catalyst",
+    "count": 1
+  }
+}

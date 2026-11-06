@@ -1,0 +1,23 @@
+{
+  "type": "exponential_mana:extended_crafting",
+  "tier": 1,
+  "shapeless": false,
+  "pattern": [
+    "OOOO",
+    "OCCO",
+    "OCCO",
+    "OOOO"
+  ],
+  "key": {
+    "O": {
+      "item": "exponential_mana:tier2_core"
+    },
+    "C": {
+      "item": "exponential_mana:tier1_fairy_catalyst_shard"
+    }
+  },
+  "result": {
+    "item": "exponential_mana:tier2_fairy_catalyst",
+    "count": 1
+  }
+}

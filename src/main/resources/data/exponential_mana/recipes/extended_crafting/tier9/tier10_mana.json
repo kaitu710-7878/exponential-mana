@@ -1,0 +1,31 @@
+{
+  "type": "exponential_mana:extended_crafting",
+  "tier": 9,
+  "shapeless": false,
+  "pattern": [
+    "OOOOOOOOOOOO",
+    "OOOOOOOOOOOO",
+    "OOOOOOOOOOOO",
+    "OOOOOOOOOOOO",
+    "OOOOOOOOOOOO",
+    "OOOOOCCOOOOO",
+    "OOOOOCCOOOOO",
+    "OOOOOOOOOOOO",
+    "OOOOOOOOOOOO",
+    "OOOOOOOOOOOO",
+    "OOOOOOOOOOOO",
+    "OOOOOOOOOOOO"
+  ],
+  "key": {
+    "O": {
+      "item": "exponential_mana:tier9_mana"
+    },
+    "C": {
+      "item": "minecraft:nether_star"
+    }
+  },
+  "result": {
+    "item": "exponential_mana:tier10_mana",
+    "count": 1
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "type": "exponential_mana:extended_crafting",
+  "tier": 10,
+  "shapeless": false,
+  "pattern": [
+    ".............",
+    ".............",
+    ".............",
+    ".............",
+    ".............",
+    "..AAAA.AAAA..",
+    "..ARRA.ARRA..",
+    "..ARRAQARRA..",
+    "..ARRA.ARRA..",
+    ".ARRRA.ARRRA.",
+    "ARRRAA..ARRRA",
+    "ARRRA...ARRRA",
+    "AAAAA...AAAAA"
+  ],
+  "key": {
+    "A": {
+      "item": "exponential_mana:compressed_origin_alloy"
+    },
+    "R": {
+      "item": "exponential_mana:mana_root"
+    },
+    "Q": {
+      "item": "exponential_mana:quantum_mana"
+    }
+  },
+  "result": {
+    "item": "exponential_mana:origin_boots",
+    "count": 1
+  }
+}

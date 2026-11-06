@@ -1,0 +1,26 @@
+{
+  "type": "exponential_mana:extended_crafting",
+  "tier": 4,
+  "shapeless": false,
+  "pattern": [
+    "OOOOOOO",
+    "OOOOOOO",
+    "OOCCCOO",
+    "OOCCCOO",
+    "OOCCCOO",
+    "OOOOOOO",
+    "OOOOOOO"
+  ],
+  "key": {
+    "O": {
+      "item": "exponential_mana:tier5_mana"
+    },
+    "C": {
+      "item": "minecraft:iron_ingot"
+    }
+  },
+  "result": {
+    "item": "exponential_mana:tier5_core",
+    "count": 1
+  }
+}

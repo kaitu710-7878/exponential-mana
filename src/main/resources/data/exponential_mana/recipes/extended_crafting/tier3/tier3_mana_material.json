@@ -1,0 +1,25 @@
+{
+  "type": "exponential_mana:extended_crafting",
+  "tier": 3,
+  "shapeless": false,
+  "pattern": [
+    "OOOOOO",
+    "OOOOOO",
+    "OOCCOO",
+    "OOCCOO",
+    "OOOOOO",
+    "OOOOOO"
+  ],
+  "key": {
+    "O": {
+      "item": "exponential_mana:tier3_mana"
+    },
+    "C": {
+      "item": "minecraft:iron_ingot"
+    }
+  },
+  "result": {
+    "item": "exponential_mana:tier3_mana_material",
+    "count": 1
+  }
+}

@@ -174,6 +174,9 @@ public class ExtendedCraftingMenu extends AbstractContainerMenu {
         refreshRecipeResult();
     }
 
+    private long lastGridHash = -1L;
+    private ExtendedCraftingRecipe cachedMatchedRecipe = null;
+
     public void refreshRecipeResult() {
         ExtendedCraftingRecipe recipe = getMatchedRecipe();
         if (recipe != null) {
@@ -184,7 +187,12 @@ public class ExtendedCraftingMenu extends AbstractContainerMenu {
     }
 
     private ExtendedCraftingRecipe getMatchedRecipe() {
-        return ExtendedCraftingRecipeManager.findMatchingRecipe(tier, new IItemHandler() {
+        long currentHash = computeGridHash();
+        if (currentHash == lastGridHash) {
+            return cachedMatchedRecipe;
+        }
+        lastGridHash = currentHash;
+        cachedMatchedRecipe = ExtendedCraftingRecipeManager.findMatchingRecipe(tier, new IItemHandler() {
             @Override public int getSlots() { return totalInputSlots; }
             @Override public @NotNull ItemStack getStackInSlot(int slot) { return blockEntity.getItemHandler().getStackInSlot(slot); }
             @Override public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) { return stack; }
@@ -192,6 +200,20 @@ public class ExtendedCraftingMenu extends AbstractContainerMenu {
             @Override public int getSlotLimit(int slot) { return 64; }
             @Override public boolean isItemValid(int slot, @NotNull ItemStack stack) { return true; }
         });
+        return cachedMatchedRecipe;
+    }
+
+    private long computeGridHash() {
+        long h = 1L;
+        for (int i = 0; i < totalInputSlots; i++) {
+            ItemStack stack = blockEntity.getItemHandler().getStackInSlot(i);
+            if (!stack.isEmpty()) {
+                h = h * 31L + (long) System.identityHashCode(stack.getItem()) * 37L + stack.getCount();
+            } else {
+                h = h * 31L;
+            }
+        }
+        return h;
     }
 
     private void consumeGridItems() {
@@ -221,6 +243,7 @@ public class ExtendedCraftingMenu extends AbstractContainerMenu {
                 }
             }
         }
+        lastGridHash = -1L; // Invalidate cache after consumption
     }
 
     @Override

@@ -1,0 +1,32 @@
+{
+  "type": "exponential_mana:extended_crafting",
+  "tier": 10,
+  "shapeless": false,
+  "pattern": [
+    "...........RR",
+    "..........RRR",
+    ".........RRR.",
+    "........RRR..",
+    "R......RRR...",
+    "RR....RRR....",
+    ".RRRRRRR.....",
+    "..RRRRR......",
+    "...RWRR......",
+    "...RRRR......",
+    "..R..RR......",
+    "RR....RR.....",
+    "RR.....RR...."
+  ],
+  "key": {
+    "R": {
+      "item": "exponential_mana:mana_root"
+    },
+    "W": {
+      "item": "exponential_mana:mana_wisdom"
+    }
+  },
+  "result": {
+    "item": "exponential_mana:origin_sword",
+    "count": 1
+  }
+}

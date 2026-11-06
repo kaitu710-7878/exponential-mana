@@ -1,0 +1,23 @@
+{
+  "type": "exponential_mana:extended_crafting",
+  "tier": 1,
+  "shapeless": false,
+  "pattern": [
+    "OOOO",
+    "OCCO",
+    "OCCO",
+    "OOOO"
+  ],
+  "key": {
+    "O": {
+      "item": "exponential_mana:tier1_mana"
+    },
+    "C": {
+      "item": "minecraft:coal"
+    }
+  },
+  "result": {
+    "item": "exponential_mana:tier1_mana_material",
+    "count": 1
+  }
+}

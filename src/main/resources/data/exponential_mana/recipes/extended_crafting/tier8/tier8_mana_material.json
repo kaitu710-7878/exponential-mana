@@ -1,0 +1,30 @@
+{
+  "type": "exponential_mana:extended_crafting",
+  "tier": 8,
+  "shapeless": false,
+  "pattern": [
+    "OOOOOOOOOOO",
+    "OOOOOOOOOOO",
+    "OOOOOOOOOOO",
+    "OOOOOOOOOOO",
+    "OOOOOOOOOOO",
+    "OOOOOCOOOOO",
+    "OOOOOOOOOOO",
+    "OOOOOOOOOOO",
+    "OOOOOOOOOOO",
+    "OOOOOOOOOOO",
+    "OOOOOOOOOOO"
+  ],
+  "key": {
+    "O": {
+      "item": "exponential_mana:tier8_mana"
+    },
+    "C": {
+      "item": "minecraft:emerald"
+    }
+  },
+  "result": {
+    "item": "exponential_mana:tier8_mana_material",
+    "count": 1
+  }
+}

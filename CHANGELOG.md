@@ -8,6 +8,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.15.8-beta] - 2026-11-06
+
+### Added / 追加
+- **EN**:
+  - **Complete Data-Driven Recipe Architecture**:
+    - Converted all Extended Crafting Table recipes across Tier 1 (4x4) to Tier 10 (13x13) to Minecraft's standard data-driven JSON system (`data/exponential_mana/recipes/extended_crafting/...`).
+    - Implemented custom `RecipeType<ExtendedCraftingRecipe>` and `RecipeSerializer<ExtendedCraftingRecipe>`, allowing datapack authors and modpack creators to customize, add, or override extended crafting recipes easily via JSON.
+  - **Performance Optimization**:
+    - Introduced intelligent material and grid hashing caches in `ExtendedCraftingTableBlockEntity` and `ExtendedCraftingMenu`, virtually eliminating recipe scanning overhead during idle ticks and menu synchronization.
+
+- **JA**:
+  - **完全JSON駆動レシピシステムへの移行**:
+    - Tier 1（4×4）〜 Tier 10（13×13）までのすべての拡張作業台レシピを、Minecraft標準のデータパックJSON方式（`data/exponential_mana/recipes/extended_crafting/...`）へ完全移行。
+    - 専用の `RecipeType` および `RecipeSerializer` を実装し、データパックやMODパック製作者がJSONを通じて自由に拡張作業台のレシピを追加・変更・削除できる柔軟な設計を確立。
+  - **コード全体の最適化・高速化**:
+    - `ExtendedCraftingTableBlockEntity`（自動クラフト）および `ExtendedCraftingMenu`（手動クラフト）にハッシュベースのレシピ照合キャッシュを導入。インベントリやバッファに変更がない場合の毎tick・毎同期時の不要なレシピ走査負荷をゼロに削減。
+
+---
+
 ## [0.15.7-beta] - 2026-11-06
 
 ### Changed / 変更

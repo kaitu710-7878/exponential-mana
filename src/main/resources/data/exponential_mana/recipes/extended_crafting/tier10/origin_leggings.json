@@ -1,0 +1,35 @@
+{
+  "type": "exponential_mana:extended_crafting",
+  "tier": 10,
+  "shapeless": false,
+  "pattern": [
+    ".............",
+    "AAAAAAAAAAAAA",
+    "ARRRRRRRRRRRA",
+    "ARRRRRMRRRRRA",
+    "ARRRRRRRRRRRA",
+    "ARRRAAAAARRRA",
+    "ARRRA...ARRRA",
+    "ARRRA...ARRRA",
+    "ARRRA...ARRRA",
+    "ARRRA...ARRRA",
+    "ARRRA...ARRRA",
+    "ARRRA...ARRRA",
+    "AAAAA...AAAAA"
+  ],
+  "key": {
+    "A": {
+      "item": "exponential_mana:compressed_origin_alloy"
+    },
+    "R": {
+      "item": "exponential_mana:mana_root"
+    },
+    "M": {
+      "item": "exponential_mana:marine_mana"
+    }
+  },
+  "result": {
+    "item": "exponential_mana:origin_leggings",
+    "count": 1
+  }
+}
