@@ -19,9 +19,13 @@ public class ClientEventHandler {
 
     /**
      * Shows the exact count in the tooltip when hovering over large stacks.
+     * When BiggerStacks is loaded, delegates tooltip formatting to BiggerStacks.
      */
     @SubscribeEvent
     public static void onItemTooltip(ItemTooltipEvent event) {
+        if (net.minecraftforge.fml.ModList.get().isLoaded("biggerstacks")) {
+            return;
+        }
         ItemStack stack = event.getItemStack();
         if (stack.getCount() >= 1000) {
             String exactFormatted = String.format("%,d", stack.getCount());

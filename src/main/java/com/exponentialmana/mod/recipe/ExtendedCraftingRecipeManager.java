@@ -679,13 +679,12 @@ public class ExtendedCraftingRecipeManager {
 
     /**
      * Mana Root:
-     * - Compressed Origin Alloy x25 (center 5x5)
-     * - Mana Wisdom x24 (concentric ring around center 5x5, i.e., 7x7 outer border)
-     * - Star Mana x30 (outer 2 rows: top)
-     * - Quantum Mana x30 (outer 2 columns: right)
-     * - Abyssal Mana x30 (outer 2 rows: bottom)
-     * - Marine Mana x30 (outer 2 columns: left)
-     * Total = 25 + 24 + 30 + 30 + 30 + 30 = 169 slots.
+     * - Center Cross (Row 6, Col 6): Compressed Origin Alloy
+     * - Diagonals (X pattern): Mana Wisdom
+     * - Top quadrant: Abyssal Mana
+     * - Bottom quadrant: Star Mana
+     * - Left quadrant: Quantum Mana
+     * - Right quadrant: Marine Mana
      */
     private static ExtendedCraftingRecipe createManaRootRecipe(ItemStack output, Component name) {
         int gridSize = 13;
@@ -697,122 +696,198 @@ public class ExtendedCraftingRecipeManager {
         ItemStack abyssal = new ItemStack(ModItems.ABYSSAL_MANA.get());
         ItemStack marine = new ItemStack(ModItems.MARINE_MANA.get());
 
-        // Center 5x5: start 4, end 9
-        // 7x7 border: start 3, end 10
-        // Outer 120 slots (rings 0..2)
-        int starCount = 0;
-        int quantumCount = 0;
-        int abyssalCount = 0;
-        int marineCount = 0;
-
         for (int r = 0; r < gridSize; r++) {
             for (int c = 0; c < gridSize; c++) {
-                if (r >= 4 && r <= 8 && c >= 4 && c <= 8) {
+                if (r == 6 || c == 6) {
                     inputs.add(Collections.singletonList(alloy.copy()));
-                } else if (r >= 3 && r <= 9 && c >= 3 && c <= 9) {
+                } else if (r == c || r + c == 12) {
                     inputs.add(Collections.singletonList(wisdom.copy()));
+                } else if (r < 6 && c > r && c < 12 - r) {
+                    // Top quadrant
+                    inputs.add(Collections.singletonList(abyssal.copy()));
+                } else if (r > 6 && c < r && c > 12 - r) {
+                    // Bottom quadrant
+                    inputs.add(Collections.singletonList(star.copy()));
+                } else if (c < 6 && r > c && r < 12 - c) {
+                    // Left quadrant
+                    inputs.add(Collections.singletonList(quantum.copy()));
                 } else {
-                    // Outer 120 slots allocated evenly: Top 30, Right 30, Bottom 30, Left 30
-                    if (r < 3 && starCount < 30) {
-                        inputs.add(Collections.singletonList(star.copy()));
-                        starCount++;
-                    } else if (c >= 10 && quantumCount < 30) {
-                        inputs.add(Collections.singletonList(quantum.copy()));
-                        quantumCount++;
-                    } else if (r >= 10 && abyssalCount < 30) {
-                        inputs.add(Collections.singletonList(abyssal.copy()));
-                        abyssalCount++;
-                    } else {
-                        inputs.add(Collections.singletonList(marine.copy()));
-                        marineCount++;
-                    }
+                    // Right quadrant
+                    inputs.add(Collections.singletonList(marine.copy()));
                 }
             }
         }
-        return new ExtendedCraftingRecipe(10, gridSize, inputs, output, name);
+        return new ExtendedCraftingRecipe(10, gridSize, inputs, output, name, false);
     }
 
     /**
-     * Origin Sword: Vanilla sword pattern scaled on 13x13 grid.
+     * Origin Sword: Diagonal broadsword pattern on 13x13 grid.
+     * Blade and hilt made of Mana Root with Mana Wisdom core in guard.
      */
     private static ExtendedCraftingRecipe createOriginSwordRecipe(ItemStack output, Component name) {
         int gridSize = 13;
         List<List<ItemStack>> inputs = new ArrayList<>(gridSize * gridSize);
         ItemStack root = new ItemStack(ModItems.MANA_ROOT.get());
+        ItemStack wisdom = new ItemStack(ModItems.MANA_WISDOM.get());
+
+        String[] pattern = {
+            "...........RR", // 0
+            "..........RRR", // 1
+            ".........RRR.", // 2
+            "........RRR..", // 3
+            "R......RRR...", // 4
+            "RR....RRR....", // 5
+            ".RRRRRRR.....", // 6
+            "..RRRRR......", // 7
+            "...RWRR......", // 8
+            "...RRRR......", // 9
+            "..R..RR......", // 10
+            "RR....RR.....", // 11
+            "RR.....RR...."  // 12
+        };
 
         for (int r = 0; r < gridSize; r++) {
             for (int c = 0; c < gridSize; c++) {
-                // Blade: Column 6, rows 1..8; Guard: Row 9, cols 4..8; Handle: Col 6, rows 10..11
-                boolean isBlade = (c == 6 && r >= 1 && r <= 8);
-                boolean isGuard = (r == 9 && c >= 4 && c <= 8);
-                boolean isHandle = (c == 6 && r >= 10 && r <= 11);
-                boolean isPart = isBlade || isGuard || isHandle;
-                inputs.add(isPart ? Collections.singletonList(root.copy()) : Collections.emptyList());
+                char ch = pattern[r].charAt(c);
+                if (ch == 'R') {
+                    inputs.add(Collections.singletonList(root.copy()));
+                } else if (ch == 'W') {
+                    inputs.add(Collections.singletonList(wisdom.copy()));
+                } else {
+                    inputs.add(Collections.emptyList());
+                }
             }
         }
-        return new ExtendedCraftingRecipe(10, gridSize, inputs, output, name);
+        return new ExtendedCraftingRecipe(10, gridSize, inputs, output, name, false);
     }
 
     /**
-     * Origin Helmet: Vanilla helmet shape scaled on 13x13.
+     * Origin Helmet: Scaled helmet with Compressed Origin Alloy outline, Mana Root interior, and Star Mana forehead core.
      */
     private static ExtendedCraftingRecipe createOriginHelmetRecipe(ItemStack output, Component name) {
         int gridSize = 13;
         List<List<ItemStack>> inputs = new ArrayList<>(gridSize * gridSize);
+        ItemStack alloy = new ItemStack(ModItems.COMPRESSED_ORIGIN_ALLOY.get());
         ItemStack root = new ItemStack(ModItems.MANA_ROOT.get());
+        ItemStack star = new ItemStack(ModItems.STAR_MANA.get());
+
+        String[] pattern = {
+            ".............", // 0
+            "AAAAAAAAAAAAA", // 1
+            "ARRRRRRRRRRRA", // 2
+            "ARRRRRSRRRRRA", // 3
+            "ARRRRRRRRRRRA", // 4
+            "ARRRAAAAARRRA", // 5
+            "ARRRA...ARRRA", // 6
+            "ARRRA...ARRRA", // 7
+            "ARRRA...ARRRA", // 8
+            "ARRRA...ARRRA", // 9
+            "AAAAA...AAAAA", // 10
+            ".............", // 11
+            "............."  // 12
+        };
 
         for (int r = 0; r < gridSize; r++) {
             for (int c = 0; c < gridSize; c++) {
-                // Helmet arc: Rows 3..5 across cols 3..9, and ears down on rows 6..8 cols 3..4 and 8..9
-                boolean top = (r >= 3 && r <= 4 && c >= 3 && c <= 9);
-                boolean ears = (r >= 5 && r <= 8 && ((c >= 3 && c <= 4) || (c >= 8 && c <= 9)));
-                boolean isPart = top || ears;
-                inputs.add(isPart ? Collections.singletonList(root.copy()) : Collections.emptyList());
+                char ch = pattern[r].charAt(c);
+                if (ch == 'A') {
+                    inputs.add(Collections.singletonList(alloy.copy()));
+                } else if (ch == 'R') {
+                    inputs.add(Collections.singletonList(root.copy()));
+                } else if (ch == 'S') {
+                    inputs.add(Collections.singletonList(star.copy()));
+                } else {
+                    inputs.add(Collections.emptyList());
+                }
             }
         }
-        return new ExtendedCraftingRecipe(10, gridSize, inputs, output, name);
+        return new ExtendedCraftingRecipe(10, gridSize, inputs, output, name, false);
     }
 
     /**
-     * Origin Chestplate: Vanilla chestplate shape scaled on 13x13.
+     * Origin Chestplate: Scaled chestplate with Compressed Origin Alloy outline, Mana Root interior, and Abyssal Mana chest core.
      */
     private static ExtendedCraftingRecipe createOriginChestplateRecipe(ItemStack output, Component name) {
         int gridSize = 13;
         List<List<ItemStack>> inputs = new ArrayList<>(gridSize * gridSize);
+        ItemStack alloy = new ItemStack(ModItems.COMPRESSED_ORIGIN_ALLOY.get());
         ItemStack root = new ItemStack(ModItems.MANA_ROOT.get());
+        ItemStack abyssal = new ItemStack(ModItems.ABYSSAL_MANA.get());
+
+        String[] pattern = {
+            "AAAAA...AAAAA", // 0
+            "ARRRA...ARRRA", // 1
+            "ARRRAA.AARRRA", // 2
+            "AARRRAAARRRAA", // 3
+            ".ARRRRARRRRA.", // 4
+            ".ARRRRRRRRRA.", // 5
+            ".ARRRRBRRRRA.", // 6
+            ".ARRRRRRRRRA.", // 7
+            ".ARRRRRRRRRA.", // 8
+            ".ARRRRRRRRRA.", // 9
+            ".ARRRRRRRRRA.", // 10
+            ".AAAAAAAAAAA.", // 11
+            "............."  // 12
+        };
 
         for (int r = 0; r < gridSize; r++) {
             for (int c = 0; c < gridSize; c++) {
-                // Shoulders: row 2..3 cols 2..4 and 8..10
-                // Body: rows 4..10 cols 2..10
-                boolean shoulders = (r >= 2 && r <= 3 && ((c >= 2 && c <= 4) || (c >= 8 && c <= 10)));
-                boolean body = (r >= 4 && r <= 10 && c >= 2 && c <= 10);
-                boolean isPart = shoulders || body;
-                inputs.add(isPart ? Collections.singletonList(root.copy()) : Collections.emptyList());
+                char ch = pattern[r].charAt(c);
+                if (ch == 'A') {
+                    inputs.add(Collections.singletonList(alloy.copy()));
+                } else if (ch == 'R') {
+                    inputs.add(Collections.singletonList(root.copy()));
+                } else if (ch == 'B') {
+                    inputs.add(Collections.singletonList(abyssal.copy()));
+                } else {
+                    inputs.add(Collections.emptyList());
+                }
             }
         }
-        return new ExtendedCraftingRecipe(10, gridSize, inputs, output, name);
+        return new ExtendedCraftingRecipe(10, gridSize, inputs, output, name, false);
     }
 
     /**
-     * Origin Leggings: Vanilla leggings shape scaled on 13x13.
+     * Origin Leggings: Scaled leggings with Compressed Origin Alloy outline, Mana Root interior, and Marine Mana belt core.
      */
     private static ExtendedCraftingRecipe createOriginLeggingsRecipe(ItemStack output, Component name) {
         int gridSize = 13;
         List<List<ItemStack>> inputs = new ArrayList<>(gridSize * gridSize);
+        ItemStack alloy = new ItemStack(ModItems.COMPRESSED_ORIGIN_ALLOY.get());
         ItemStack root = new ItemStack(ModItems.MANA_ROOT.get());
+        ItemStack marine = new ItemStack(ModItems.MARINE_MANA.get());
+
+        String[] pattern = {
+            ".............", // 0
+            "AAAAAAAAAAAAA", // 1
+            "ARRRRRRRRRRRA", // 2
+            "ARRRRRMRRRRRA", // 3
+            "ARRRRRRRRRRRA", // 4
+            "ARRRAAAAARRRA", // 5
+            "ARRRA...ARRRA", // 6
+            "ARRRA...ARRRA", // 7
+            "ARRRA...ARRRA", // 8
+            "ARRRA...ARRRA", // 9
+            "ARRRA...ARRRA", // 10
+            "ARRRA...ARRRA", // 11
+            "AAAAA...AAAAA"  // 12
+        };
 
         for (int r = 0; r < gridSize; r++) {
             for (int c = 0; c < gridSize; c++) {
-                // Waist: rows 2..4 cols 3..9
-                // Legs: rows 5..10 cols 3..5 and 7..9
-                boolean waist = (r >= 2 && r <= 4 && c >= 3 && c <= 9);
-                boolean legs = (r >= 5 && r <= 10 && ((c >= 3 && c <= 5) || (c >= 7 && c <= 9)));
-                boolean isPart = waist || legs;
-                inputs.add(isPart ? Collections.singletonList(root.copy()) : Collections.emptyList());
+                char ch = pattern[r].charAt(c);
+                if (ch == 'A') {
+                    inputs.add(Collections.singletonList(alloy.copy()));
+                } else if (ch == 'R') {
+                    inputs.add(Collections.singletonList(root.copy()));
+                } else if (ch == 'M') {
+                    inputs.add(Collections.singletonList(marine.copy()));
+                } else {
+                    inputs.add(Collections.emptyList());
+                }
             }
         }
-        return new ExtendedCraftingRecipe(10, gridSize, inputs, output, name);
+        return new ExtendedCraftingRecipe(10, gridSize, inputs, output, name, false);
     }
 
     /**

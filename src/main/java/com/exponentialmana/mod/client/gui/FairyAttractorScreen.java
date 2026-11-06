@@ -77,18 +77,21 @@ public class FairyAttractorScreen extends AbstractContainerScreen<FairyAttractor
         super.render(guiGraphics, mouseX, mouseY, partialTick);
 
         // Compact stack numbers for >= 1,000 counts
-        for (int i = 0; i < FairyAttractorMenu.SLOTS; i++) {
-            Slot slot = menu.slots.get(i);
-            if (slot.hasItem()) {
-                ItemStack stack = slot.getItem();
-                if (stack.getCount() >= 1000) {
-                    String formatted = CompactStackFormatter.formatCount(stack.getCount());
-                    int textX = leftPos + slot.x + 19 - this.font.width(formatted);
-                    int textY = topPos + slot.y + 16 - 9;
-                    guiGraphics.pose().pushPose();
-                    guiGraphics.pose().translate(0.0F, 0.0F, 250.0F);
-                    guiGraphics.drawString(this.font, formatted, textX, textY, 0xFFFFFF, true);
-                    guiGraphics.pose().popPose();
+        // Delegate to BiggerStacks when loaded
+        if (!net.minecraftforge.fml.ModList.get().isLoaded("biggerstacks")) {
+            for (int i = 0; i < FairyAttractorMenu.SLOTS; i++) {
+                Slot slot = menu.slots.get(i);
+                if (slot.hasItem()) {
+                    ItemStack stack = slot.getItem();
+                    if (stack.getCount() >= 1000) {
+                        String formatted = CompactStackFormatter.formatCount(stack.getCount());
+                        int textX = leftPos + slot.x + 19 - this.font.width(formatted);
+                        int textY = topPos + slot.y + 16 - 9;
+                        guiGraphics.pose().pushPose();
+                        guiGraphics.pose().translate(0.0F, 0.0F, 250.0F);
+                        guiGraphics.drawString(this.font, formatted, textX, textY, 0xFFFFFF, true);
+                        guiGraphics.pose().popPose();
+                    }
                 }
             }
         }

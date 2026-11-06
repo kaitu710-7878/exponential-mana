@@ -8,6 +8,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.15.6-beta] - 2026-11-06
+
+### Changed / 変更
+- **EN**:
+  - **BiggerStacks Compatibility**:
+    - When the `biggerstacks` mod is present, compact stack number rendering on GUI slots (Extended Crafting Screen, Fairy Attractor Screen) and custom large stack tooltips now gracefully delegate to BiggerStacks, eliminating duplicate number overlaps.
+  - **New Pixel-Art Recipes for Mana Root & Origin Equipment**:
+    - **Mana Root (`mana_root`)**: Updated 13x13 recipe featuring a center cross of Compressed Origin Alloy, diagonals of Mana Wisdom, and the four quadrants filled with Abyssal, Quantum, Marine, and Star Mana.
+    - **Origin Sword (`origin_sword`)**: Updated 13x13 recipe depicting a diagonal broadsword forged of Mana Root with a Mana Wisdom gem inlaid in the crossguard.
+    - **Origin Helmet (`origin_helmet`)**: Updated 13x13 recipe with Compressed Origin Alloy outline, Mana Root padding, and a Star Mana crest at the forehead.
+    - **Origin Leggings (`origin_leggings`)**: Updated 13x13 recipe with Compressed Origin Alloy outline, Mana Root fabric, and a Marine Mana gem at the belt center.
+    - **Origin Chestplate (`origin_chestplate`)**: Updated 13x13 recipe with Compressed Origin Alloy armor plating, Mana Root interior, and an Abyssal Mana heart core.
+
+- **JA**:
+  - **BiggerStacks 互換性の向上**:
+    - `biggerstacks` MOD導入環境において、拡張作業台および妖精誘引機画面での独自スタック数値描画（K/M/B）を停止し、アイテムツールチップのスタック詳細表示も含めて BiggerStacks 側の表示機能に一任。数値が二重に重なって表示される問題を解消。
+  - **マナの根源および根源装備レシピの刷新（新ドットアートレシピ）**:
+    - **マナの根源（Mana Root）**: 中央十字に圧縮された根源の合金、X字対角線にマナの叡智、上下左右の4象限にそれぞれ深淵・恒星・量子・海洋のマナを配した新レシピへ更新。
+    - **根源の剣（Origin Sword）**: マナの根源で精緻に描かれた斜めの大剣デザイン、鍔（つば）の中心にマナの叡智をはめ込んだ新レシピへ更新。
+    - **根源の兜（Origin Helmet）**: 外枠を圧縮された根源の合金、内部をマナの根源、額の中心に恒星のマナを配した新レシピへ更新。
+    - **根源の脚甲（Origin Leggings）**: 外枠を圧縮された根源の合金、内部をマナの根源、ベルトの中心に海洋のマナを配した新レシピへ更新。
+    - **根源の胸当て（Origin Chestplate）**: 外枠を圧縮された根源の合金、内部をマナの根源、胸の核に深淵のマナを配した新レシピへ更新。
+
+---
+
 ## [0.15.5-beta] - 2026-11-06
 
 ### Changed / 変更

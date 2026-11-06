@@ -112,17 +112,20 @@ public class ExtendedCraftingScreen extends AbstractContainerScreen<ExtendedCraf
         super.render(guiGraphics, mouseX, mouseY, partialTick);
 
         // Render compact stack text (K, M, B) for slots with >= 1000 items
-        for (Slot slot : menu.slots) {
-            if (slot.hasItem()) {
-                int count = slot.getItem().getCount();
-                if (count >= 1000) {
-                    String formatted = com.exponentialmana.mod.util.CompactStackFormatter.formatCount(count);
-                    int textX = this.leftPos + slot.x + 19 - this.font.width(formatted);
-                    int textY = this.topPos + slot.y + 16 - 9;
-                    guiGraphics.pose().pushPose();
-                    guiGraphics.pose().translate(0.0F, 0.0F, 250.0F);
-                    guiGraphics.drawString(this.font, formatted, textX, textY, 0xFFFFFF, true);
-                    guiGraphics.pose().popPose();
+        // Delegate to BiggerStacks when biggerstacks mod is loaded to prevent duplicate count display
+        if (!net.minecraftforge.fml.ModList.get().isLoaded("biggerstacks")) {
+            for (Slot slot : menu.slots) {
+                if (slot.hasItem()) {
+                    int count = slot.getItem().getCount();
+                    if (count >= 1000) {
+                        String formatted = com.exponentialmana.mod.util.CompactStackFormatter.formatCount(count);
+                        int textX = this.leftPos + slot.x + 19 - this.font.width(formatted);
+                        int textY = this.topPos + slot.y + 16 - 9;
+                        guiGraphics.pose().pushPose();
+                        guiGraphics.pose().translate(0.0F, 0.0F, 250.0F);
+                        guiGraphics.drawString(this.font, formatted, textX, textY, 0xFFFFFF, true);
+                        guiGraphics.pose().popPose();
+                    }
                 }
             }
         }
