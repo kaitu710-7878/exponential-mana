@@ -891,21 +891,46 @@ public class ExtendedCraftingRecipeManager {
     }
 
     /**
-     * Origin Boots: Vanilla boots shape scaled on 13x13.
+     * Origin Boots: Scaled boots with Compressed Origin Alloy outline, Mana Root interior, and Quantum Mana center core.
      */
     private static ExtendedCraftingRecipe createOriginBootsRecipe(ItemStack output, Component name) {
         int gridSize = 13;
         List<List<ItemStack>> inputs = new ArrayList<>(gridSize * gridSize);
+        ItemStack alloy = new ItemStack(ModItems.COMPRESSED_ORIGIN_ALLOY.get());
         ItemStack root = new ItemStack(ModItems.MANA_ROOT.get());
+        ItemStack quantum = new ItemStack(ModItems.QUANTUM_MANA.get());
+
+        String[] pattern = {
+            ".............", // 0
+            ".............", // 1
+            ".............", // 2
+            ".............", // 3
+            ".............", // 4
+            "..AAAA.AAAA..", // 5
+            "..ARRA.ARRA..", // 6
+            "..ARRAQARRA..", // 7
+            "..ARRA.ARRA..", // 8
+            ".ARRRA.ARRRA.", // 9
+            "ARRRAA..ARRRA", // 10
+            "ARRRA...ARRRA", // 11
+            "AAAAA...AAAAA"  // 12
+        };
 
         for (int r = 0; r < gridSize; r++) {
             for (int c = 0; c < gridSize; c++) {
-                // Two boots: rows 5..9 cols 3..5 and 7..9
-                boolean isPart = (r >= 5 && r <= 9 && ((c >= 3 && c <= 5) || (c >= 7 && c <= 9)));
-                inputs.add(isPart ? Collections.singletonList(root.copy()) : Collections.emptyList());
+                char ch = pattern[r].charAt(c);
+                if (ch == 'A') {
+                    inputs.add(Collections.singletonList(alloy.copy()));
+                } else if (ch == 'R') {
+                    inputs.add(Collections.singletonList(root.copy()));
+                } else if (ch == 'Q') {
+                    inputs.add(Collections.singletonList(quantum.copy()));
+                } else {
+                    inputs.add(Collections.emptyList());
+                }
             }
         }
-        return new ExtendedCraftingRecipe(10, gridSize, inputs, output, name);
+        return new ExtendedCraftingRecipe(10, gridSize, inputs, output, name, false);
     }
 
     /**

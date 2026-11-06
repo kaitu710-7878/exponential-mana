@@ -8,6 +8,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.15.7-beta] - 2026-11-06
+
+### Changed / 変更
+- **EN**:
+  - **Origin Boots Recipe Update**:
+    - Updated 13x13 recipe for Origin Boots (`origin_boots`) with Compressed Origin Alloy outline, Mana Root interior, and Quantum Mana (`quantum_mana`) as the center core between the boots, completing the unified set of pixel-art recipes for all Origin Equipment.
+
+- **JA**:
+  - **「根源の靴」レシピの刷新（新ドットアートレシピ）**:
+    - 13×13「根源の靴（Origin Boots）」レシピを更新。外枠を圧縮された根源の合金、内部をマナの根源で構成し、両足の間の中央コアに **量子のマナ（Quantum Mana）** を配置。これにより、根源装備一式（剣＝叡智、兜＝恒星、脚甲＝海洋、胸当て＝深淵、靴＝量子）の統一ドットアートレシピが全て完成。
+
+---
+
 ## [0.15.6-beta] - 2026-11-06
 
 ### Changed / 変更
