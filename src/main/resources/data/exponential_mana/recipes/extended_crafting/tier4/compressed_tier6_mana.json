@@ -3,7 +3,7 @@
   "tier": 4,
   "full_grid": true,
   "ingredient": {
-    "item": "exponential_mana:tier6_mana"
+    "item": "exponential_mana:mana_symbol_tier6"
   },
   "result": {
     "item": "exponential_mana:compressed_tier6_mana",

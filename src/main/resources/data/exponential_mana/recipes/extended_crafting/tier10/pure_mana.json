@@ -1,0 +1,22 @@
+{
+  "type": "exponential_mana:extended_crafting",
+  "tier": 10,
+  "shapeless": true,
+  "ingredients": [
+    { "item": "exponential_mana:compressed_tier0_mana", "count": 15 },
+    { "item": "exponential_mana:compressed_tier1_mana", "count": 15 },
+    { "item": "exponential_mana:compressed_tier2_mana", "count": 15 },
+    { "item": "exponential_mana:compressed_tier3_mana", "count": 15 },
+    { "item": "exponential_mana:compressed_tier4_mana", "count": 15 },
+    { "item": "exponential_mana:compressed_tier5_mana", "count": 15 },
+    { "item": "exponential_mana:compressed_tier6_mana", "count": 15 },
+    { "item": "exponential_mana:compressed_tier7_mana", "count": 15 },
+    { "item": "exponential_mana:compressed_tier8_mana", "count": 15 },
+    { "item": "exponential_mana:compressed_tier9_mana", "count": 15 },
+    { "item": "exponential_mana:compressed_tier10_mana", "count": 15 }
+  ],
+  "result": {
+    "item": "exponential_mana:pure_mana",
+    "count": 1
+  }
+}

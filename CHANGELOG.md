@@ -8,6 +8,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.17.0-beta] - 2026-11-06
+
+### Added / 追加
+- **EN**:
+  - **Endgame Recipes & Progression Realignment (Specification Part 2 Conformance)**:
+    - **Mana Symbols (Tier 0-10)**: Added 11 full-grid 13x13 (169-slot) Tier 10 Extended Crafting recipes to compress 169 of each Tier Mana into their corresponding Mana Symbol.
+    - **Compressed Tier Mana Recipes**: Aligned all 11 Compressed Tier Mana recipes strictly with their corresponding table dimensions:
+      - Tier 0: Mana Symbol T0 x 169 (Tier 10 13x13 table - 13x13 twice compression).
+      - Tiers 1-9: Mana Symbol x matching table slots (T1 uses 12x12/144 down to T9 using 4x4/16).
+      - Tier 10: Mana Symbol T10 x 9 (Vanilla 3x3 table - 13x13 once + 3x3 once).
+    - **Pure Mana & Pure Equipment Recipes**: Added 13x13 recipes for Pure Mana (11 compressed mana types x 15 each = 165 total in shapeless 13x13 grid), Pure Mana Ore (Tier 10 Mana Ore surrounded by 168 Pure Mana), and Pure Fairy Catalyst (Tier 10 Fairy Catalyst surrounded by 168 Pure Mana).
+    - **Infinite Mana Recipe Fully Filled**: The 13x13 Infinite Mana recipe now completely fills all 169 slots: 4 Origin Armor pieces at the 4 corners, Origin Sword at the center, and all remaining 164 slots filled with Mana Root.
+    - **Full Pure Mana Ore Machine Integration**: Batch Ore Breaker, Thawer, and Batch Compressed Mana items now fully support Pure Mana Ore (virtual mining, batch inactivation, thawing, and multi-tier extraction).
+    - **Compressed Fairy Attractor Formalization**: Formally confirmed Compressed Fairy Attractors (Tiers 1-10) as official mod features.
+- **JA**:
+  - **エンドゲームレシピおよび階層進行の完全整合・仕様書（第2部）準拠**:
+    - **マナの象徴 (Tier 0〜10)**: 各Tierのマナ169個をTier 10作業台（13×13）で全グリッド圧縮し、各Tierの「マナの象徴」へ変換するレシピ11種を追加。
+    - **圧縮Tierマナの階層整合**: 各作業台の全スロット数に合わせ、T0象徴×169（13×13作業台）、T1象徴×144（12×12作業台）〜T9象徴×16（4×4作業台）、T10象徴×9（バニラ3×3作業台）による圧縮Tierマナのクラフト体制を完全確立（「Tier 0は13×13を2回、Tier 10は13×13と3×3を1回ずつ」を完全具現化）。
+    - **無垢のマナおよび無垢設備レシピ追加**: 無垢のマナ（圧縮Tier0〜10マナ計11種×各15個＝165個消費の不定形13×13レシピ）、無垢のマナ鉱石（中央にTier10鉱石＋周囲168個の無垢マナ）、無垢の妖精活発化触媒（中央にTier10触媒＋周囲168個の無垢マナ）のレシピを正式実装。
+    - **無限のマナの全スロット充足**: 13×13の全169スロットを完全に埋める仕様として、四隅に根源防具4点、中央に根源の剣、残り164スロットをすべて「マナの根源」で埋め尽くすレシピに更新。
+    - **無垢鉱石のマシン完全対応**: 一括破壊機および解凍機、一括圧縮マナにおいて無垢のマナ鉱石（Tier11）の仮想採掘・一括非活性化・解凍・ツールチップ多言語表示に完全対応。
+    - **圧縮妖精誘引機の正式仕様化**: 圧縮妖精誘引機（Tier 1〜10）を正式な機能として確定・統合。
+
+---
+
 ## [0.16.2-beta] - 2026-11-06
 
 ### Fixed / 修正

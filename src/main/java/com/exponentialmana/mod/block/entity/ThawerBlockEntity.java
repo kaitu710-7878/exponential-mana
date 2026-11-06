@@ -196,6 +196,7 @@ public class ThawerBlockEntity extends BlockEntity implements MenuProvider, ISid
             case 8 -> ModItems.TIER8_MANA.get();
             case 9 -> ModItems.TIER9_MANA.get();
             case 10 -> ModItems.TIER10_MANA.get();
+            case 11 -> ModItems.PURE_MANA.get();
             default -> ModItems.TIER0_MANA.get();
         };
     }

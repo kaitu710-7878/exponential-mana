@@ -1,12 +1,12 @@
 {
   "type": "exponential_mana:extended_crafting",
-  "tier": 9,
+  "tier": 10,
   "full_grid": true,
   "ingredient": {
-    "item": "exponential_mana:tier9_mana"
+    "item": "exponential_mana:tier1_mana"
   },
   "result": {
-    "item": "exponential_mana:compressed_tier9_mana",
+    "item": "exponential_mana:mana_symbol_tier1",
     "count": 1
   }
 }

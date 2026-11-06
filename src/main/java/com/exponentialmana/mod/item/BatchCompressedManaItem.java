@@ -39,11 +39,14 @@ public class BatchCompressedManaItem extends Item {
         if (tag != null && tag.contains("ManaCounts")) {
             CompoundTag manaTag = tag.getCompound("ManaCounts");
             boolean hasMana = false;
-            for (int tier = 0; tier <= 10; tier++) {
+            for (int tier = 0; tier <= 11; tier++) {
                 long count = manaTag.getLong("Tier" + tier);
                 if (count > 0) {
                     hasMana = true;
-                    tooltip.add(Component.literal(" - Tier " + tier + " Mana: ")
+                    Component nameComp = (tier == 11)
+                            ? Component.translatable("item.exponential_mana.pure_mana")
+                            : Component.translatable("item.exponential_mana.tier" + tier + "_mana");
+                    tooltip.add(Component.literal(" - ").append(nameComp).append(Component.literal(": "))
                             .append(Component.literal(CompactStackFormatter.formatCount(count) + " (" + String.format("%,d", count) + ")")
                                     .withStyle(ChatFormatting.AQUA)));
                 }

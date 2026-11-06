@@ -56,7 +56,7 @@ public class BatchOreBreakerBlockEntity extends BlockEntity implements MenuProvi
     public static final int CYCLE_TICKS = 6000; // 5 minutes (300 sec * 20 ticks)
 
     private int timer = CYCLE_TICKS;
-    private final long[] manaPool = new long[11];
+    private final long[] manaPool = new long[12];
     private final SideConfig sideConfig = new SideConfig();
 
     private final ContainerData dataAccess = new ContainerData() {
@@ -200,7 +200,7 @@ public class BatchOreBreakerBlockEntity extends BlockEntity implements MenuProvi
         ItemStack existing = itemHandler.getStackInSlot(OUTPUT_SLOT);
         if (existing.isEmpty()) {
             ItemStack newStack = new ItemStack(ModItems.BATCH_COMPRESSED_MANA.get(), 1);
-            for (int t = 0; t <= 10; t++) {
+            for (int t = 0; t <= 11; t++) {
                 if (manaPool[t] > 0) {
                     BatchCompressedManaItem.addMana(newStack, t, manaPool[t]);
                     manaPool[t] = 0;
@@ -209,7 +209,7 @@ public class BatchOreBreakerBlockEntity extends BlockEntity implements MenuProvi
             itemHandler.setStackInSlot(OUTPUT_SLOT, newStack);
             setChanged();
         } else if (existing.is(ModItems.BATCH_COMPRESSED_MANA.get())) {
-            for (int t = 0; t <= 10; t++) {
+            for (int t = 0; t <= 11; t++) {
                 if (manaPool[t] > 0) {
                     BatchCompressedManaItem.addMana(existing, t, manaPool[t]);
                     manaPool[t] = 0;
@@ -236,6 +236,7 @@ public class BatchOreBreakerBlockEntity extends BlockEntity implements MenuProvi
         if (item == ModBlocks.TIER8_MANA_ORE.get().asItem()) return 8;
         if (item == ModBlocks.TIER9_MANA_ORE.get().asItem()) return 9;
         if (item == ModBlocks.TIER10_MANA_ORE.get().asItem()) return 10;
+        if (item == ModBlocks.PURE_MANA_ORE.get().asItem()) return 11;
         return -1;
     }
 
@@ -252,6 +253,7 @@ public class BatchOreBreakerBlockEntity extends BlockEntity implements MenuProvi
         if (item == ModBlocks.INACTIVE_TIER8_MANA_ORE.get().asItem()) return 8;
         if (item == ModBlocks.INACTIVE_TIER9_MANA_ORE.get().asItem()) return 9;
         if (item == ModBlocks.INACTIVE_TIER10_MANA_ORE.get().asItem()) return 10;
+        if (item == ModBlocks.INACTIVE_PURE_MANA_ORE.get().asItem()) return 11;
         return -1;
     }
 
@@ -268,6 +270,7 @@ public class BatchOreBreakerBlockEntity extends BlockEntity implements MenuProvi
             case 8 -> ModBlocks.INACTIVE_TIER8_MANA_ORE.get();
             case 9 -> ModBlocks.INACTIVE_TIER9_MANA_ORE.get();
             case 10 -> ModBlocks.INACTIVE_TIER10_MANA_ORE.get();
+            case 11 -> ModBlocks.INACTIVE_PURE_MANA_ORE.get();
             default -> null;
         };
     }

@@ -1,0 +1,32 @@
+{
+  "type": "exponential_mana:extended_crafting",
+  "tier": 10,
+  "shapeless": false,
+  "pattern": [
+    "PPPPPPPPPPPPP",
+    "PPPPPPPPPPPPP",
+    "PPPPPPPPPPPPP",
+    "PPPPPPPPPPPPP",
+    "PPPPPPPPPPPPP",
+    "PPPPPPPPPPPPP",
+    "PPPPPPOPPPPPP",
+    "PPPPPPPPPPPPP",
+    "PPPPPPPPPPPPP",
+    "PPPPPPPPPPPPP",
+    "PPPPPPPPPPPPP",
+    "PPPPPPPPPPPPP",
+    "PPPPPPPPPPPPP"
+  ],
+  "key": {
+    "O": {
+      "item": "exponential_mana:tier10_mana_ore"
+    },
+    "P": {
+      "item": "exponential_mana:pure_mana"
+    }
+  },
+  "result": {
+    "item": "exponential_mana:pure_mana_ore",
+    "count": 1
+  }
+}

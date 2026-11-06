@@ -1,0 +1,32 @@
+{
+  "type": "exponential_mana:extended_crafting",
+  "tier": 10,
+  "shapeless": false,
+  "pattern": [
+    "PPPPPPPPPPPPP",
+    "PPPPPPPPPPPPP",
+    "PPPPPPPPPPPPP",
+    "PPPPPPPPPPPPP",
+    "PPPPPPPPPPPPP",
+    "PPPPPPPPPPPPP",
+    "PPPPPPCPPPPPP",
+    "PPPPPPPPPPPPP",
+    "PPPPPPPPPPPPP",
+    "PPPPPPPPPPPPP",
+    "PPPPPPPPPPPPP",
+    "PPPPPPPPPPPPP",
+    "PPPPPPPPPPPPP"
+  ],
+  "key": {
+    "C": {
+      "item": "exponential_mana:tier10_fairy_catalyst"
+    },
+    "P": {
+      "item": "exponential_mana:pure_mana"
+    }
+  },
+  "result": {
+    "item": "exponential_mana:pure_fairy_catalyst",
+    "count": 1
+  }
+}
