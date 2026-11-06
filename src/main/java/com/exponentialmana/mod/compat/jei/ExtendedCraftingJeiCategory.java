@@ -40,8 +40,8 @@ public class ExtendedCraftingJeiCategory implements IRecipeCategory<ExtendedCraf
         this.recipeType = RecipeType.create(ExponentialMana.MOD_ID, "extended_crafting_tier_" + tier, ExtendedCraftingRecipe.class);
 
         int gridPixels = gridSize * 18;
-        // Ample width so grid, arrow, output slot, and "+" button do not crowd or overlap
-        this.width = Math.max(186, gridPixels + 94);
+        // Ample width (grid + 120px) to ensure output slot and transfer button never overlap with JEI bookmark/favorite/config widgets on the top-right
+        this.width = Math.max(220, gridPixels + 120);
         this.height = Math.max(110, gridPixels + 32);
 
         this.background = guiHelper.createBlankDrawable(width, height);
@@ -100,8 +100,10 @@ public class ExtendedCraftingJeiCategory implements IRecipeCategory<ExtendedCraf
             }
         }
 
-        // Output Slot placed cleanly to the right of the grid
-        int outX = startX + gridSize * 18 + 48;
+        // Output Slot placed neatly next to arrow, leaving 50px+ margin on the right for JEI bookmark widgets
+        int arrowX = startX + gridSize * 18 + 14;
+        int outFrameX = arrowX + 28;
+        int outX = outFrameX + 5;
         int outY = startY + (gridSize * 18) / 2 - 8;
 
         builder.addSlot(RecipeIngredientRole.OUTPUT, outX, outY)
@@ -126,7 +128,11 @@ public class ExtendedCraftingJeiCategory implements IRecipeCategory<ExtendedCraf
         guiGraphics.drawString(font, title, 8, 6, 0x1A237E, false);
 
         Component name = recipe.getRecipeName();
-        guiGraphics.drawString(font, name, 8, 15, 0x333333, false);
+        if (recipe.isShapeless()) {
+            guiGraphics.drawString(font, Component.literal("").append(name).append(" §7(不定形 / Shapeless)"), 8, 15, 0x333333, false);
+        } else {
+            guiGraphics.drawString(font, name, 8, 15, 0x333333, false);
+        }
 
         // Crafting Arrow
         int startX = 8;
@@ -136,7 +142,7 @@ public class ExtendedCraftingJeiCategory implements IRecipeCategory<ExtendedCraf
         guiGraphics.blit(CRAFTING_TEXTURE, arrowX, arrowY, 90, 35, 22, 15);
 
         // Big 26x26 output slot frame around the output slot
-        int outFrameX = startX + gridSize * 18 + 43;
+        int outFrameX = arrowX + 28;
         int outFrameY = startY + (gridSize * 18) / 2 - 13;
         guiGraphics.blit(CRAFTING_TEXTURE, outFrameX, outFrameY, 119, 30, 26, 26);
     }

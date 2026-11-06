@@ -373,33 +373,16 @@ public class ExtendedCraftingRecipeManager {
         }
 
         // Compressed Mana recipes from Symbols:
-        // T0: 169 (13x13 full)
-        // T1: 144 (Tier 9 table full, or Tier 10 center 12x12)
-        // T2: 121 (Tier 8 table full, or Tier 10 center 11x11)
-        // T3: 100 (Tier 7 table full, or Tier 10 center 10x10)
-        // T4: 81 (Tier 6 table full, or Tier 10 center 9x9)
-        // T5: 64 (Tier 5 table full, or Tier 10 center 8x8)
-        // T6: 49 (Tier 4 table full, or Tier 10 center 7x7)
-        // T7: 36 (Tier 3 table full, or Tier 10 center 6x6)
-        // T8: 25 (Tier 2 table full, or Tier 10 center 5x5)
-        // T9: 16 (Tier 1 table full, or Tier 10 center 4x4)
-        // T10: 9 (Vanilla 3x3 table, or Tier 10 center 3x3)
-        int[] symbolCounts = new int[]{ 169, 144, 121, 100, 81, 64, 49, 36, 25, 16, 9 };
-        int[] symbolDims = new int[]{ 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3 };
+        // Tier 0: 169 (Tier 10 table 13x13 full, shapeless)
+        map.get(10).add(createFullGridRecipe(10, 13, allSymbols[0], allCompressedMana[0],
+                Component.translatable("item.exponential_mana.compressed_tier0_mana")));
 
-        for (int t = 0; t <= 10; t++) {
-            int dim = symbolDims[t];
-            // Provide on Tier 10 Table (centered)
-            map.get(10).add(createCenteredSubGridRecipe(10, 13, dim, allSymbols[t], allCompressedMana[t],
+        // Tier 1 to 10: native matching tier table (Tier 1: 4x4, Tier 2: 5x5, ..., Tier 10: 13x13 full, shapeless)
+        for (int t = 1; t <= 10; t++) {
+            int tableTier = t;
+            int dim = t + 3; // Tier 1: 4, Tier 2: 5, ..., Tier 10: 13
+            map.get(tableTier).add(createFullGridRecipe(tableTier, dim, allSymbols[t], allCompressedMana[t],
                     Component.translatable("item.exponential_mana.compressed_tier" + t + "_mana")));
-
-            // Also provide on the native matching tier table if tier >= 1
-            if (t >= 1 && t <= 9) {
-                // Tier 1 table matches dim 4, Tier 2 matches dim 5, ..., Tier 9 matches dim 12
-                int tableTier = 10 - t; // t=1 -> table 9 (12x12), t=9 -> table 1 (4x4)
-                map.get(tableTier).add(createFullGridRecipe(tableTier, dim, allSymbols[t], allCompressedMana[t],
-                        Component.translatable("item.exponential_mana.compressed_tier" + t + "_mana")));
-            }
         }
 
         // 2. Pure Mana & Pure Blocks
@@ -418,7 +401,8 @@ public class ExtendedCraftingRecipeManager {
                 new ItemStack(ModItems.PURE_FAIRY_CATALYST.get()), Component.translatable("item.exponential_mana.pure_fairy_catalyst")));
 
         // 3. Mana Materials & Compressed Materials
-        // Tier 1 to 10 Mana Materials: Mana x144 (outer) + Vanilla Material x25 (center 5x5)
+        // Tier 1 to 10 Mana Materials & Compressed Mana Materials
+        // Placed on native matching tier tables (Tier 1: 4x4 up to Tier 10: 13x13)
         ItemStack[] vanillaMaterials = new ItemStack[]{
                 new ItemStack(Items.COAL),
                 new ItemStack(Items.COPPER_INGOT),
@@ -457,15 +441,20 @@ public class ExtendedCraftingRecipeManager {
         };
 
         for (int i = 0; i < 10; i++) {
-            // Mana Material: Mana x144 (outer) + Vanilla Material x25 (center 5x5)
-            map.get(10).add(createCenterBoxRecipe(10, 13, 5,
-                    allMana[i + 1], vanillaMaterials[i], manaMaterials[i],
-                    Component.translatable("item.exponential_mana.tier" + (i + 1) + "_mana_material")));
+            int tier = i + 1; // Tier 1 to 10
+            int tableTier = tier;
+            int gridSize = tier + 3; // Tier 1: 4, Tier 2: 5, ..., Tier 10: 13
+            int centerBox = (gridSize >= 10) ? 4 : (gridSize >= 6 ? 2 : 1);
 
-            // Compressed Mana Material: Mana Material x169 (full grid)
-            map.get(10).add(createFullGridRecipe(10, 13,
+            // Mana Material: Mana (outer) + Vanilla Material (center)
+            map.get(tableTier).add(createCenterBoxRecipe(tableTier, gridSize, centerBox,
+                    allMana[tier], vanillaMaterials[i], manaMaterials[i],
+                    Component.translatable("item.exponential_mana.tier" + tier + "_mana_material")));
+
+            // Compressed Mana Material: Full grid compression (shapeless)
+            map.get(tableTier).add(createFullGridRecipe(tableTier, gridSize,
                     manaMaterials[i], compManaMaterials[i],
-                    Component.translatable("item.exponential_mana.compressed_tier" + (i + 1) + "_mana_material")));
+                    Component.translatable("item.exponential_mana.compressed_tier" + tier + "_mana_material")));
         }
 
         // Compressed Minerals (Lapis, Amethyst, Quartz x169)
@@ -570,14 +559,14 @@ public class ExtendedCraftingRecipeManager {
     }
 
     /**
-     * Creates a full-grid uniform recipe.
+     * Creates a full-grid uniform compression recipe (shapeless, requires gridSize*gridSize of the fill item).
      */
     private static ExtendedCraftingRecipe createFullGridRecipe(int tier, int gridSize, ItemStack fill, ItemStack output, Component name) {
         List<List<ItemStack>> inputs = new ArrayList<>(gridSize * gridSize);
         for (int i = 0; i < gridSize * gridSize; i++) {
             inputs.add(Collections.singletonList(fill.copy()));
         }
-        return new ExtendedCraftingRecipe(tier, gridSize, inputs, output, name);
+        return new ExtendedCraftingRecipe(tier, gridSize, inputs, output, name, true);
     }
 
     /**
@@ -866,10 +855,8 @@ public class ExtendedCraftingRecipeManager {
 
     private static ExtendedCraftingRecipe createManaKnowledgeRecipe() {
         int gridSize = 13;
-        List<List<ItemStack>> inputs = new ArrayList<>(gridSize * gridSize);
-        for (int i = 0; i < gridSize * gridSize; i++) {
-            inputs.add(Collections.emptyList());
-        }
+        int totalSlots = gridSize * gridSize; // 169
+        List<List<ItemStack>> inputs = new ArrayList<>(totalSlots);
 
         Item[] manas = new Item[]{
                 ModItems.TIER0_MANA.get(), ModItems.TIER1_MANA.get(), ModItems.TIER2_MANA.get(),
@@ -888,7 +875,7 @@ public class ExtendedCraftingRecipeManager {
         };
 
         Item[] catalysts = new Item[]{
-                ModBlocks.FAIRY_BLOCK.get().asItem(),
+                ModBlocks.FAIRY_BLOCK.get().asItem(), // Tier 0 catalyst slot is Fairy
                 ModItems.TIER1_FAIRY_CATALYST.get(), ModItems.TIER2_FAIRY_CATALYST.get(),
                 ModItems.TIER3_FAIRY_CATALYST.get(), ModItems.TIER4_FAIRY_CATALYST.get(),
                 ModItems.TIER5_FAIRY_CATALYST.get(), ModItems.TIER6_FAIRY_CATALYST.get(),
@@ -897,17 +884,26 @@ public class ExtendedCraftingRecipeManager {
                 ModItems.PURE_FAIRY_CATALYST.get()
         };
 
-        for (int t = 0; t <= 11; t++) {
-            int col = 1 + t;
-            inputs.set(5 * gridSize + col, Collections.singletonList(new ItemStack(manas[t])));
-            inputs.set(6 * gridSize + col, Collections.singletonList(new ItemStack(ores[t])));
-            inputs.set(7 * gridSize + col, Collections.singletonList(new ItemStack(catalysts[t])));
+        // Combine all 36 items: 12 manas, 12 ores, 12 catalysts
+        List<ItemStack> pool = new ArrayList<>();
+        for (int i = 0; i < 12; i++) {
+            pool.add(new ItemStack(manas[i]));
+            pool.add(new ItemStack(ores[i]));
+            pool.add(new ItemStack(catalysts[i]));
+        }
+
+        // Fill all 169 slots cyclically with the 36 items
+        for (int i = 0; i < totalSlots; i++) {
+            ItemStack item = pool.get(i % pool.size());
+            inputs.add(Collections.singletonList(item.copy()));
         }
 
         return new ExtendedCraftingRecipe(
+                new net.minecraft.resources.ResourceLocation(com.exponentialmana.mod.ExponentialMana.MOD_ID, "extended_crafting/tier10/mana_knowledge"),
                 10, gridSize, inputs,
                 new ItemStack(ModItems.MANA_KNOWLEDGE.get()),
-                Component.translatable("item.exponential_mana.mana_knowledge")
+                Component.translatable("item.exponential_mana.mana_knowledge"),
+                true // Shapeless: 13x13 (169 items required) can be placed in any arrangement!
         );
     }
 }

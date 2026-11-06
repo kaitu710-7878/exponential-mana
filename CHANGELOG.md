@@ -8,6 +8,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.15.3-beta] - 2026-11-06
+
+### Added / 追加
+- **EN**:
+  - **Separation of Manual vs Automated Crafting Pipelines**:
+    - **Manual Crafting (Grid)**: Crafting on the table grid now operates purely as manual crafting. Items transferred or placed into the grid (e.g. from JEI) are never consumed automatically on placement; instead, the result is previewed in the main craft result slot and crafted on take/shift-click.
+    - **Automated Crafting (Material Buffer)**: Automated continuous crafting is strictly confined to the Material Buffer (18 slots). Finished items output exclusively into the Auto-Output Buffer (9 slots) without cluttering the manual crafting result slot.
+  - **Repositioned Tier 1-10 Compression Recipes**:
+    - Fixed an issue where Tier 2-8 compression recipes (Compressed Mana, Mana Materials, and Compressed Mana Materials) were improperly registered to Tier 10 tables. Now accurately configured to their native tier tables (Tier 1: 4x4, Tier 2: 5x5, ..., Tier 8: 11x11, Tier 9: 12x12, Tier 10: 13x13).
+  - **Shapeless Transformation for Full-Grid Compression & Mana Knowledge**:
+    - All uniform full-grid compression recipes (Compressed Mana, Compressed Mana Materials, Compressed Minerals, Compressed Origin Alloy, Mana Wisdom, and Root Manas) are now Shapeless recipes requiring the exact quantity anywhere across the grid.
+    - Mana Knowledge is now a Shapeless 13x13 recipe (requiring all 169 ingredients across all tiers of mana, ore, and catalysts) that can be arranged freely.
+  - **JEI Layout Deconfliction**:
+    - Expanded layout width and repositioned output slot/transfer button in `ExtendedCraftingJeiCategory`, eliminating overlaps with JEI's top-right bookmark, favorite, and config widgets.
+  - **Texture Differentiation Proposal for Mana Knowledge & Mana Wisdom**:
+    - Generated distinctive designs for Mana Knowledge (Arcane Tome) and Mana Wisdom (Crystalline Radiance Orb).
+
+- **JA**:
+  - **手動クラフトと自動クラフトの2系統完全分離**:
+    - **手動クラフト（作業台グリッド）**: JEIからの転送や手動配置時に素材が勝手に自動クラフトで消費されてしまう事故を防止。矢印の先の成果物スロットに完成品がプレビューされ、クリックまたはシフトクリックした時のみ素材を消費してクラフトする方式へ回帰。
+    - **自動クラフト（素材置き場）**: 自動クラフトの対象を素材置き場（下段18スロット）のみに完全限定。自動クラフトされた成果物は自動出力バッファ（9スロット）へ直接出力され、手動クラフト側の成果物スロットを一切占拠しない構造に改修。
+  - **Tier 2〜8の圧縮レシピの適正Tier作業台への再配置**:
+    - 圧縮マナ、マナ素材、圧縮マナ素材が誤って全てTier 10作業台で行われていた不具合を修正。各対応Tier（Tier 1: 4x4、Tier 2: 5x5、...、Tier 8: 11x11、Tier 9: 12x12、Tier 10: 13x13）の拡張作業台へ適正配置。
+  - **全マス敷き詰め圧縮およびマナの知識の不定形（Shapeless）化**:
+    - すべてのマスに同じアイテムを配置して圧縮する形式（圧縮マナ、圧縮マナ素材、圧縮鉱石、圧縮オリジン合金、マナの叡智、4つの根源マナ等）を全て不定形レシピ化。
+    - マナの知識（13x13全169マス要求）も配置不問の不定形レシピ化（全Tierのマナ・鉱石・触媒の合計169個要求を維持）。
+  - **JEI画面におけるブックマーク系UIとの重なり解消**:
+    - `ExtendedCraftingJeiCategory` の横幅および成果物スロット・転送ボタンの位置を調整し、JEIの右上に表示されるブックマーク・お気に入り・設定ウィジェットとの重なりを完全解消。
+  - **マナの知識・マナの叡智のテクスチャ差別化案の提示**:
+    - 重複していたテクスチャを解消し、マナの知識（全Tierの叡智を記した魔導書）とマナの叡智（169個の知識が結晶化した至高の宝珠）の差別化デザインを作成・提示。
+
+---
+
 ## [0.15.2-beta] - 2026-11-05
 
 ### Added / 追加

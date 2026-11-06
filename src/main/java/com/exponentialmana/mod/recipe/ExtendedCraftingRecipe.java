@@ -21,19 +21,29 @@ public class ExtendedCraftingRecipe {
     private final List<List<ItemStack>> inputs; // gridSize * gridSize list of valid items per slot
     private final ItemStack output;
     private final Component recipeName;
+    private final boolean shapeless;
     private Map<net.minecraft.world.item.Item, Integer> requiredIngredients = null;
 
-    public ExtendedCraftingRecipe(ResourceLocation id, int tier, int gridSize, List<List<ItemStack>> inputs, ItemStack output, Component recipeName) {
+    public ExtendedCraftingRecipe(ResourceLocation id, int tier, int gridSize, List<List<ItemStack>> inputs, ItemStack output, Component recipeName, boolean shapeless) {
         this.id = id != null ? id : generateDefaultId(tier, output);
         this.tier = tier;
         this.gridSize = gridSize;
         this.inputs = inputs;
         this.output = output;
         this.recipeName = recipeName;
+        this.shapeless = shapeless;
+    }
+
+    public ExtendedCraftingRecipe(ResourceLocation id, int tier, int gridSize, List<List<ItemStack>> inputs, ItemStack output, Component recipeName) {
+        this(id, tier, gridSize, inputs, output, recipeName, false);
+    }
+
+    public ExtendedCraftingRecipe(int tier, int gridSize, List<List<ItemStack>> inputs, ItemStack output, Component recipeName, boolean shapeless) {
+        this(null, tier, gridSize, inputs, output, recipeName, shapeless);
     }
 
     public ExtendedCraftingRecipe(int tier, int gridSize, List<List<ItemStack>> inputs, ItemStack output, Component recipeName) {
-        this(null, tier, gridSize, inputs, output, recipeName);
+        this(null, tier, gridSize, inputs, output, recipeName, false);
     }
 
     private static ResourceLocation generateDefaultId(int tier, ItemStack output) {
@@ -52,6 +62,10 @@ public class ExtendedCraftingRecipe {
 
     public int getGridSize() {
         return gridSize;
+    }
+
+    public boolean isShapeless() {
+        return shapeless;
     }
 
     public List<List<ItemStack>> getInputs() {
@@ -91,7 +105,38 @@ public class ExtendedCraftingRecipe {
      */
     public boolean matches(IItemHandler grid) {
         int totalSlots = gridSize * gridSize;
-        if (grid.getSlots() < totalSlots || inputs.size() < totalSlots) {
+        if (grid.getSlots() < totalSlots) {
+            return false;
+        }
+
+        if (shapeless) {
+            Map<net.minecraft.world.item.Item, Integer> req = getRequiredIngredients();
+            Map<net.minecraft.world.item.Item, Integer> found = new java.util.HashMap<>();
+            int totalFound = 0;
+            int totalReq = 0;
+            for (int count : req.values()) {
+                totalReq += count;
+            }
+
+            for (int i = 0; i < totalSlots; i++) {
+                ItemStack inGrid = grid.getStackInSlot(i);
+                if (!inGrid.isEmpty()) {
+                    found.put(inGrid.getItem(), found.getOrDefault(inGrid.getItem(), 0) + inGrid.getCount());
+                    totalFound += inGrid.getCount();
+                }
+            }
+
+            if (totalFound < totalReq) return false;
+
+            for (Map.Entry<net.minecraft.world.item.Item, Integer> entry : req.entrySet()) {
+                if (found.getOrDefault(entry.getKey(), 0) < entry.getValue()) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        if (inputs.size() < totalSlots) {
             return false;
         }
 
