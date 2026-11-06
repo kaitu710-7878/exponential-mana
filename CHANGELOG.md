@@ -8,6 +8,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.17.1-beta] - 2026-11-06
+
+### Removed / 削除
+- **EN**:
+  - **Removed Erroneous Ore Shard Compression Recipes**:
+    - Deleted the 5 unintended full-grid recipes under `tier8` (`tier1_mana_from_shards` through `tier9_mana_from_shards`) that erroneously compressed 121 ore shards into 1 tiered mana item.
+    - Verified that ore shards now strictly adhere to the master rule: disassembled into 4 shards from previous-tier machines, then combined with next-tier cores to forge even-tier machines.
+- **JA**:
+  - **誤って混入していた鉱石の欠片圧縮レシピの完全削除**:
+    - `tier8` 作業台フォルダ内に残っていた「鉱石の欠片121個を圧縮して各Tierマナ1個にする」意図しない旧テストレシピ（`tier1_mana_from_shards` 〜 `tier9_mana_from_shards` 計5種）を完全に削除しました。
+    - 鉱石の欠片の役割を「前Tier設備から4個に分解し、次Tierコアと合わせて偶数Tier設備を合成する」正規の基本ルールに完全に統一・整合しました。
+
+---
+
 ## [0.17.0-beta] - 2026-11-06
 
 ### Added / 追加
