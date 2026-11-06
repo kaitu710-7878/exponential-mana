@@ -1,0 +1,32 @@
+﻿{
+    "type":  "exponential_mana:extended_crafting",
+    "tier":  10,
+    "shapeless":  false,
+    "pattern":  [
+                    "OOOOOOOOOOOOO",
+                    "OOOOOOOOOOOOO",
+                    "OOOOOOOOOOOOO",
+                    "OOOOOOOOOOOOO",
+                    "OOOOCCCCCOOOO",
+                    "OOOOCCCCCOOOO",
+                    "OOOOCCCCCOOOO",
+                    "OOOOCCCCCOOOO",
+                    "OOOOCCCCCOOOO",
+                    "OOOOOOOOOOOOO",
+                    "OOOOOOOOOOOOO",
+                    "OOOOOOOOOOOOO",
+                    "OOOOOOOOOOOOO"
+                ],
+    "key":  {
+                "O":  {
+                          "item":  "exponential_mana:tier4_mana"
+                      },
+                "C":  {
+                          "item":  "minecraft:glowstone_dust"
+                      }
+            },
+    "result":  {
+                   "item":  "exponential_mana:tier4_mana_material",
+                   "count":  1
+               }
+}

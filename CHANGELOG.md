@@ -8,6 +8,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.16.2-beta] - 2026-11-06
+
+### Fixed / 修正
+- **EN**:
+  - **Moved all Mana Materials and Compressed Mana Materials to Tier 10 (13x13 Table)**:
+    - In accordance with the specification document (Part 2: Endgame Compression), all 10 types of Mana Materials (Tier 1-10) are now crafted in the 13x13 Tier 10 Extended Crafting Table.
+    - Layout: Central 5x5 (25 slots) corresponds to the vanilla material (`Coal`, `Copper`, `Redstone`, `Glowstone`, `Iron`, `Gold`, `Diamond`, `Obsidian`, `Emerald`, `Netherite`), surrounded by 144 slots of the respective Tier Mana (total 169 slots).
+    - All 10 types of Compressed Mana Materials are also crafted by compressing 169 Mana Materials in the 13x13 Tier 10 table.
+- **JA**:
+  - **全マナ素材および圧縮マナ素材をTier 10（13×13作業台）レシピへ移行・統一**:
+    - 企画書第2部（エンドゲーム 13×13作業台）の仕様に基づき、Tier 1〜10 のマナ素材（計10種）のクラフトをすべてTier 10（13×13作業台）レシピへ移行しました。
+    - レシピ配置: 中央5×5（25マス）に対応するバニラ素材（石炭、銅、赤石、グロウストーン、鉄、金、ダイヤ、黒曜石、エメラルド、ネザライト）、周囲144マスに各Tierのマナを配置（計169スロット完全充足）。
+    - 圧縮マナ素材（計10種）も同様にすべてTier 10作業台にて169個全スロット圧縮レシピに統一しました。
+
+---
+
 ## [0.16.1-beta] - 2026-11-06
 
 ### Fixed / 修正
