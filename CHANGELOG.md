@@ -8,6 +8,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.15.4-beta] - 2026-11-06
+
+### Added / 追加
+- **EN**:
+  - **JEI Transfer & Output Button Layout Overhaul**:
+    - Expanded width (`Math.max(260, gridPixels + 140)`) and height to provide extensive margins.
+    - Repositioned recipe transfer button ("+") to the right side of the output slot (`outX + 32, outY + 4`), completely clearing JEI's bottom-right bookmark (ribbon) and favorite (star) widgets.
+  - **Correct Inverted Scaling for Compressed Mana**:
+    - Re-aligned compressed mana requirements according to proper inverse tier scaling (higher tiers require smaller compression grids, lower tiers require larger compression grids).
+    - Tier 2 Compressed Mana is now crafted on Tier 9 Table (12x12), and Tier 8 Compressed Mana is crafted on Tier 2 Table (5x5).
+    - Removed duplicate 13x13 recipe for Tier 10 Compressed Mana from Extended Crafting Tables (strictly unified into the vanilla 3x3 crafting table recipe).
+  - **Symmetric Centered Square Recipes for Mana Materials**:
+    - Corrected grid centering for Netherite, Obsidian, Gold, Glowstone, and Coal Mana Material recipes.
+    - Odd-sized grids use odd-sized center boxes (1x1, 3x3, 5x5) and even-sized grids use even-sized center boxes (2x2, 4x4), guaranteeing perfect bilateral and radial symmetry.
+  - **Tier 10 Mana Fill for Infinite Mana Recipe**:
+    - Filled all previously empty background slots in the 13x13 "Infinite Mana" recipe with Tier 10 Mana.
+  - **Applied Distinct Textures for Mana Knowledge & Mana Wisdom**:
+    - Officially updated game assets with dedicated icons: Mana Knowledge (Arcane Tome) and Mana Wisdom (Transcendental Crystalline Orb).
+
+- **JA**:
+  - **拡張作業台JEI画面のボタン・成果物配置の抜本的改善**:
+    - 横幅（`gridPixels + 140px`）および高さを拡大し、右下に十分なクリアランスを確保。
+    - レシピ転送ボタン（"+"）を出力スロットの右横（`outX + 32, outY + 4`）に逃がすことで、JEI右下に表示されるブックマーク（栞）やお気に入り（星）ボタンとの重なり・干渉を完全解消。
+  - **圧縮マナの反比例スケール適正化**:
+    - 高Tierマナほど小規模作業台で圧縮し、低Tierマナほど大規模作業台で圧縮する仕様を正確に適用。
+    - Tier 2 圧縮マナは Tier 9 拡張作業台 (12×12)、Tier 8 圧縮マナは Tier 2 拡張作業台 (5×5) での圧縮に再設定。
+    - Tier 10 圧縮マナの拡張作業台（13×13）重複レシピを撤廃し、バニラ作業台（3×3）の1系統に一本化。
+  - **マナ素材レシピの中心ズレ解消・正方形対称化**:
+    - ネザライト、黒曜石、金、グロウストーン、石炭などのマナ素材レシピにおいて、中心ボックスの偶数・奇数のズレを修正。
+    - 偶数グリッドには偶数の中心正方形（2×2, 4×4）、奇数グリッドには奇数の中心正方形（1×1, 3×3, 5×5）を割り当て、上下左右の余白が完全一致する対称正方形レシピに統一。
+  - **無限のマナレシピへのTier 10マナ敷き詰め**:
+    - 13×13「無限のマナ」レシピの空きマス全枠に Tier 10 マナを敷き詰めるよう改修。
+  - **マナの知識・マナの叡智のテクスチャ確定登録**:
+    - マナの知識（全Tierの知識を記した魔導書）およびマナの叡智（169個の知識が結晶化した至高の宝珠）の個別テクスチャを正式アセットへ反映。
+
+---
+
 ## [0.15.3-beta] - 2026-11-06
 
 ### Added / 追加

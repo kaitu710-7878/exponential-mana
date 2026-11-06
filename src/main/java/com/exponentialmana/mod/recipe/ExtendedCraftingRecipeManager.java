@@ -373,14 +373,24 @@ public class ExtendedCraftingRecipeManager {
         }
 
         // Compressed Mana recipes from Symbols:
-        // Tier 0: 169 (Tier 10 table 13x13 full, shapeless)
-        map.get(10).add(createFullGridRecipe(10, 13, allSymbols[0], allCompressedMana[0],
-                Component.translatable("item.exponential_mana.compressed_tier0_mana")));
+        // Inverse scaling: lower tiers require larger grids, higher tiers require smaller grids!
+        // Tier 0: 169 (Tier 10 table 13x13)
+        // Tier 1: 169 (Tier 10 table 13x13)
+        // Tier 2: 144 (Tier 9 table 12x12)
+        // Tier 3: 121 (Tier 8 table 11x11)
+        // Tier 4: 100 (Tier 7 table 10x10)
+        // Tier 5: 81 (Tier 6 table 9x9)
+        // Tier 6: 64 (Tier 5 table 8x8)
+        // Tier 7: 49 (Tier 4 table 7x7)
+        // Tier 8: 25 (Tier 2 table 5x5)
+        // Tier 9: 16 (Tier 1 table 4x4)
+        // Tier 10: 9 (Vanilla 3x3 table only, defined in compressed_tier10_mana.json)
+        int[] compTableTiers = new int[]{ 10, 10, 9, 8, 7, 6, 5, 4, 2, 1 };
+        int[] compDims = new int[]{ 13, 13, 12, 11, 10, 9, 8, 7, 5, 4 };
 
-        // Tier 1 to 10: native matching tier table (Tier 1: 4x4, Tier 2: 5x5, ..., Tier 10: 13x13 full, shapeless)
-        for (int t = 1; t <= 10; t++) {
-            int tableTier = t;
-            int dim = t + 3; // Tier 1: 4, Tier 2: 5, ..., Tier 10: 13
+        for (int t = 0; t <= 9; t++) {
+            int tableTier = compTableTiers[t];
+            int dim = compDims[t];
             map.get(tableTier).add(createFullGridRecipe(tableTier, dim, allSymbols[t], allCompressedMana[t],
                     Component.translatable("item.exponential_mana.compressed_tier" + t + "_mana")));
         }
@@ -403,6 +413,9 @@ public class ExtendedCraftingRecipeManager {
         // 3. Mana Materials & Compressed Materials
         // Tier 1 to 10 Mana Materials & Compressed Mana Materials
         // Placed on native matching tier tables (Tier 1: 4x4 up to Tier 10: 13x13)
+        // Center boxes perfectly centered: Even grids use even box sizes, odd grids use odd box sizes
+        int[] centerBoxSizes = new int[]{ 2, 1, 2, 3, 2, 3, 4, 5, 4, 5 };
+
         ItemStack[] vanillaMaterials = new ItemStack[]{
                 new ItemStack(Items.COAL),
                 new ItemStack(Items.COPPER_INGOT),
@@ -444,7 +457,7 @@ public class ExtendedCraftingRecipeManager {
             int tier = i + 1; // Tier 1 to 10
             int tableTier = tier;
             int gridSize = tier + 3; // Tier 1: 4, Tier 2: 5, ..., Tier 10: 13
-            int centerBox = (gridSize >= 10) ? 4 : (gridSize >= 6 ? 2 : 1);
+            int centerBox = centerBoxSizes[i];
 
             // Mana Material: Mana (outer) + Vanilla Material (center)
             map.get(tableTier).add(createCenterBoxRecipe(tableTier, gridSize, centerBox,
@@ -835,6 +848,7 @@ public class ExtendedCraftingRecipeManager {
         ItemStack chest = new ItemStack(ModItems.ORIGIN_CHESTPLATE.get());
         ItemStack leggings = new ItemStack(ModItems.ORIGIN_LEGGINGS.get());
         ItemStack boots = new ItemStack(ModItems.ORIGIN_BOOTS.get());
+        ItemStack t10Mana = new ItemStack(ModItems.TIER10_MANA.get());
 
         for (int r = 0; r < gridSize; r++) {
             for (int c = 0; c < gridSize; c++) {
@@ -846,7 +860,8 @@ public class ExtendedCraftingRecipeManager {
                 else if ((r == 5 && c == 6) || (r == 7 && c == 6) || (r == 6 && c == 5) || (r == 6 && c == 7)) {
                     inputs.add(Collections.singletonList(root.copy()));
                 } else {
-                    inputs.add(Collections.emptyList());
+                    // Fill all other empty slots with Tier 10 Mana
+                    inputs.add(Collections.singletonList(t10Mana.copy()));
                 }
             }
         }

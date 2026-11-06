@@ -40,9 +40,9 @@ public class ExtendedCraftingJeiCategory implements IRecipeCategory<ExtendedCraf
         this.recipeType = RecipeType.create(ExponentialMana.MOD_ID, "extended_crafting_tier_" + tier, ExtendedCraftingRecipe.class);
 
         int gridPixels = gridSize * 18;
-        // Ample width (grid + 120px) to ensure output slot and transfer button never overlap with JEI bookmark/favorite/config widgets on the top-right
-        this.width = Math.max(220, gridPixels + 120);
-        this.height = Math.max(110, gridPixels + 32);
+        // Extra width and height to ensure output slot, transfer button, and JEI bookmark widgets never crowd or overlap
+        this.width = Math.max(260, gridPixels + 140);
+        this.height = Math.max(120, gridPixels + 36);
 
         this.background = guiHelper.createBlankDrawable(width, height);
         this.icon = guiHelper.createDrawableItemStack(new ItemStack(ModBlocks.EXTENDED_CRAFTING_TABLES.get(tier - 1).get()));
@@ -100,18 +100,19 @@ public class ExtendedCraftingJeiCategory implements IRecipeCategory<ExtendedCraf
             }
         }
 
-        // Output Slot placed neatly next to arrow, leaving 50px+ margin on the right for JEI bookmark widgets
+        // Output Slot placed neatly next to arrow, with generous clearance from the bottom-right corner
         int arrowX = startX + gridSize * 18 + 14;
         int outFrameX = arrowX + 28;
         int outX = outFrameX + 5;
-        int outY = startY + (gridSize * 18) / 2 - 8;
+        int outY = startY + (gridSize * 18) / 2 - 12;
 
         builder.addSlot(RecipeIngredientRole.OUTPUT, outX, outY)
                 .addItemStack(recipe.getOutput())
                 .setBackground(slotDrawable, -1, -1);
 
-        // Move Recipe Transfer ("+") button cleanly beneath the output slot
-        builder.moveRecipeTransferButton(outX, outY + 28);
+        // Move Recipe Transfer ("+") button cleanly to the right of the output slot (X: outX + 32, Y: outY + 4)
+        // so it NEVER overlaps with the output slot or JEI bookmark/favorite buttons at the bottom right!
+        builder.moveRecipeTransferButton(outX + 32, outY + 4);
     }
 
     @Override
@@ -138,12 +139,12 @@ public class ExtendedCraftingJeiCategory implements IRecipeCategory<ExtendedCraf
         int startX = 8;
         int startY = 24;
         int arrowX = startX + gridSize * 18 + 14;
-        int arrowY = startY + (gridSize * 18) / 2 - 7;
+        int arrowY = startY + (gridSize * 18) / 2 - 11;
         guiGraphics.blit(CRAFTING_TEXTURE, arrowX, arrowY, 90, 35, 22, 15);
 
         // Big 26x26 output slot frame around the output slot
         int outFrameX = arrowX + 28;
-        int outFrameY = startY + (gridSize * 18) / 2 - 13;
+        int outFrameY = startY + (gridSize * 18) / 2 - 17;
         guiGraphics.blit(CRAFTING_TEXTURE, outFrameX, outFrameY, 119, 30, 26, 26);
     }
 
