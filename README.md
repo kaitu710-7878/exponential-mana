@@ -28,6 +28,9 @@
   - Mana Alloys, Origin Alloy, Wisdom of Mana, and 4 Root Manas (Star, Quantum, Abyssal, Marine).
   - **Origin Equipment**: Creative flight, absolute invulnerability, and instant-kill attacks.
   - **Infinite Mana**: Duplicates any single non-NBT item stack into 64 items.
+- **KubeJS Integration**:
+  - Full support for adding, removing, and modifying Tier 1-10 Extended Crafting recipes via JavaScript.
+  - Custom Fairy Catalyst and Custom Ore registration APIs. See [KUBEJS.md](KUBEJS.md) for detailed syntax.
 
 ### Installation
 1. Install **Minecraft Forge 1.20.1** (Recommended 47.3.0+).
@@ -63,6 +66,9 @@ This project is licensed under the **GNU General Public License v3.0 (GPL-3.0)**
   - マナ素材圧縮、無垢のマナ、オリジン合金、マナの叡智、4つの根源マナ（星・量子・深淵・海洋）。
   - **根源装備**: クリエイティブ飛行、完全無敵（`/kill` 無効）、即死攻撃。
   - **無限のマナ**: NBT無しの任意アイテムを1スタック（64個）に複製。
+- **KubeJS 連携**:
+  - JavaScriptからTier 1〜10拡張作業台レシピの追加・削除・素材置換に完全対応。
+  - 任意のカスタム妖精触媒やカスタム鉱石を登録できるAPIを提供。詳細は [KUBEJS.md](KUBEJS.md) を参照。
 
 ### 導入手順
 1. **Minecraft Forge 1.20.1** (47.3.0以上推奨) を導入します。

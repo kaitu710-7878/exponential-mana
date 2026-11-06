@@ -208,7 +208,31 @@ public class FairyBlockEntity extends BlockEntity implements MenuProvider, ISide
         }
     }
 
+    public static final java.util.Map<Item, Item> CUSTOM_CATALYSTS = new java.util.concurrent.ConcurrentHashMap<>();
+
+    public static void registerCustomCatalyst(Object catalystObj, Object manaObj) {
+        Item catalyst = resolveItem(catalystObj);
+        Item mana = resolveItem(manaObj);
+        if (catalyst != null && mana != null) {
+            CUSTOM_CATALYSTS.put(catalyst, mana);
+        }
+    }
+
+    private static Item resolveItem(Object obj) {
+        if (obj instanceof Item item) return item;
+        if (obj instanceof ItemStack stack) return stack.getItem();
+        if (obj instanceof java.util.function.Supplier<?> sup && sup.get() instanceof Item item) return item;
+        if (obj instanceof String str) {
+            net.minecraft.resources.ResourceLocation rl = net.minecraft.resources.ResourceLocation.tryParse(str);
+            if (rl != null && net.minecraftforge.registries.ForgeRegistries.ITEMS.containsKey(rl)) {
+                return net.minecraftforge.registries.ForgeRegistries.ITEMS.getValue(rl);
+            }
+        }
+        return null;
+    }
+
     public static boolean isCatalyst(Item item) {
+        if (item != null && CUSTOM_CATALYSTS.containsKey(item)) return true;
         return item == ModItems.TIER1_FAIRY_CATALYST.get() ||
                 item == ModItems.TIER2_FAIRY_CATALYST.get() ||
                 item == ModItems.TIER3_FAIRY_CATALYST.get() ||
@@ -223,6 +247,7 @@ public class FairyBlockEntity extends BlockEntity implements MenuProvider, ISide
     }
 
     public static Item getManaForCatalyst(Item item) {
+        if (item != null && CUSTOM_CATALYSTS.containsKey(item)) return CUSTOM_CATALYSTS.get(item);
         if (item == ModItems.TIER1_FAIRY_CATALYST.get()) return ModItems.TIER1_MANA.get();
         if (item == ModItems.TIER2_FAIRY_CATALYST.get()) return ModItems.TIER2_MANA.get();
         if (item == ModItems.TIER3_FAIRY_CATALYST.get()) return ModItems.TIER3_MANA.get();

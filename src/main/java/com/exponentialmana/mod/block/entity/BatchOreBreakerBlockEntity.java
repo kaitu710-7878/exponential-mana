@@ -155,9 +155,9 @@ public class BatchOreBreakerBlockEntity extends BlockEntity implements MenuProvi
                 if (activeTier >= 0) {
                     int count = stack.getCount();
                     manaPool[activeTier] += count;
-                    Block inactiveBlock = getInactiveBlockForTier(activeTier);
-                    if (inactiveBlock != null) {
-                        itemHandler.setStackInSlot(i, new ItemStack(inactiveBlock, count));
+                    ItemStack inactiveStack = getInactiveStackForActive(stack.getItem(), activeTier, count);
+                    if (!inactiveStack.isEmpty()) {
+                        itemHandler.setStackInSlot(i, inactiveStack);
                     }
                     changed = true;
                 }
@@ -223,8 +223,35 @@ public class BatchOreBreakerBlockEntity extends BlockEntity implements MenuProvi
         return getActiveOreTier(stack) >= 0 || getInactiveOreTier(stack) >= 0;
     }
 
+    public record CustomOreEntry(Item activeOre, Item inactiveOre, int tier) {}
+    public static final java.util.List<CustomOreEntry> CUSTOM_ORES = new java.util.concurrent.CopyOnWriteArrayList<>();
+
+    public static void registerCustomOre(Object activeObj, Object inactiveObj, int tier) {
+        Item active = resolveItem(activeObj);
+        Item inactive = resolveItem(inactiveObj);
+        if (active != null && inactive != null && tier >= 0 && tier <= 11) {
+            CUSTOM_ORES.add(new CustomOreEntry(active, inactive, tier));
+        }
+    }
+
+    private static Item resolveItem(Object obj) {
+        if (obj instanceof Item item) return item;
+        if (obj instanceof ItemStack stack) return stack.getItem();
+        if (obj instanceof java.util.function.Supplier<?> sup && sup.get() instanceof Item item) return item;
+        if (obj instanceof String str) {
+            net.minecraft.resources.ResourceLocation rl = net.minecraft.resources.ResourceLocation.tryParse(str);
+            if (rl != null && net.minecraftforge.registries.ForgeRegistries.ITEMS.containsKey(rl)) {
+                return net.minecraftforge.registries.ForgeRegistries.ITEMS.getValue(rl);
+            }
+        }
+        return null;
+    }
+
     public static int getActiveOreTier(ItemStack stack) {
         Item item = stack.getItem();
+        for (CustomOreEntry entry : CUSTOM_ORES) {
+            if (item == entry.activeOre()) return entry.tier();
+        }
         if (item == ModBlocks.TIER0_MANA_ORE.get().asItem()) return 0;
         if (item == ModBlocks.TIER1_MANA_ORE.get().asItem()) return 1;
         if (item == ModBlocks.TIER2_MANA_ORE.get().asItem()) return 2;
@@ -242,6 +269,9 @@ public class BatchOreBreakerBlockEntity extends BlockEntity implements MenuProvi
 
     public static int getInactiveOreTier(ItemStack stack) {
         Item item = stack.getItem();
+        for (CustomOreEntry entry : CUSTOM_ORES) {
+            if (item == entry.inactiveOre()) return entry.tier();
+        }
         if (item == ModBlocks.INACTIVE_TIER0_MANA_ORE.get().asItem()) return 0;
         if (item == ModBlocks.INACTIVE_TIER1_MANA_ORE.get().asItem()) return 1;
         if (item == ModBlocks.INACTIVE_TIER2_MANA_ORE.get().asItem()) return 2;
@@ -273,6 +303,19 @@ public class BatchOreBreakerBlockEntity extends BlockEntity implements MenuProvi
             case 11 -> ModBlocks.INACTIVE_PURE_MANA_ORE.get();
             default -> null;
         };
+    }
+
+    private ItemStack getInactiveStackForActive(Item activeItem, int tier, int count) {
+        for (CustomOreEntry entry : CUSTOM_ORES) {
+            if (activeItem == entry.activeOre()) {
+                return new ItemStack(entry.inactiveOre(), count);
+            }
+        }
+        Block inactiveBlock = getInactiveBlockForTier(tier);
+        if (inactiveBlock != null) {
+            return new ItemStack(inactiveBlock, count);
+        }
+        return ItemStack.EMPTY;
     }
 
     public int getTimer() {

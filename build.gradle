@@ -63,6 +63,18 @@ repositories {
         name = "ModMaven"
         url = "https://modmaven.dev"
     }
+    maven {
+        name = "Latvian.dev"
+        url = "https://maven.latvian.dev/releases"
+        content {
+            includeGroup "dev.latvian.mods"
+            includeGroup "dev.latvian.apps"
+        }
+    }
+    maven {
+        name = "Architectury"
+        url = "https://maven.architectury.dev/"
+    }
 }
 
 dependencies {
@@ -71,6 +83,11 @@ dependencies {
     // JEI API for 1.20.1 Forge (compileOnly for optional compatibility, not locked to latest version)
     compileOnly fg.deobf("mezz.jei:jei-1.20.1-common-api:15.3.0.4")
     compileOnly fg.deobf("mezz.jei:jei-1.20.1-forge-api:15.3.0.4")
+
+    // KubeJS and its dependencies for 1.20.1 Forge (compileOnly for optional compatibility)
+    compileOnly fg.deobf("dev.architectury:architectury-forge:9.1.12")
+    compileOnly fg.deobf("dev.latvian.mods:rhino-forge:2001.2.2-build.17")
+    compileOnly fg.deobf("dev.latvian.mods:kubejs-forge:2001.6.5-build.16")
 }
 
 tasks.named('processResources', ProcessResources).configure {

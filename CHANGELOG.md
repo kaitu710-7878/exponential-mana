@@ -8,6 +8,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.18.0-beta] - 2026-11-06
+
+### Added / 追加
+- **EN**:
+  - **Full KubeJS 6 Integration (1.20.1 Forge)**:
+    - **Extended Crafting Table Recipe Support**:
+      - Registered custom `RecipeSchema` and `RecipeJS` builder (`ExtendedCraftingRecipeSchema`) for all 10 tiers of Extended Crafting Tables (4x4 to 13x13).
+      - Added direct tier-specific builders in `server_scripts`: `event.recipes.exponential_mana.tier1(...)` through `tier10(...)` matching standard shaped crafting syntax.
+      - Added general builders: `event.recipes.exponential_mana.extended_crafting(...)`, `event.recipes.exponential_mana.full_grid(...)`, and `event.recipes.exponential_mana.shapeless(...)`.
+      - Full compatibility with KubeJS recipe removal (`event.remove(...)`) and item replacements (`event.replaceInput(...)`, `event.replaceOutput(...)`).
+    - **KubeJS Global Bindings & API Wrappers**:
+      - Exposed `EMItems` and `EMBlocks` to JavaScript global context for direct item/block symbol references.
+      - Exposed `ExponentialMana.registerCatalyst(catalystItem, manaItem)` to allow adding custom fairy catalysts dynamically.
+      - Exposed `ExponentialMana.registerOre(activeOre, inactiveOre, tier)` to support custom ores in the Batch Ore Breaker.
+- **JA**:
+  - **KubeJS 6 完全連携対応 (1.20.1 Forge)**:
+    - **各Tier拡張作業台レシピのKubeJS完全対応**:
+      - Tier 1〜10（4×4〜13×13）の全拡張作業台に対応した専用の `RecipeSchema` およびビルダー (`ExtendedCraftingRecipeSchema`) を登録。
+      - `server_scripts` 内でバニラのshapedレシピ同様に直感的に書ける専用メソッド `event.recipes.exponential_mana.tier1(...)` 〜 `tier10(...)` を追加。
+      - 汎用ビルダー `event.recipes.exponential_mana.extended_crafting(...)`、全面圧縮用 `full_grid(...)`、不定形用 `shapeless(...)` を提供。
+      - KubeJSの標準レシピ削除 (`event.remove(...)`) や素材一括置換 (`event.replaceInput(...)`, `event.replaceOutput(...)`) に完全対応。
+    - **KubeJS グローバルバインディングおよび拡張API**:
+      - JavaScript環境から直接アイテムやブロックを参照できる `EMItems` および `EMBlocks` をグローバルに公開。
+      - 任意のMODアイテムを妖精活発化触媒として追加できる `ExponentialMana.registerCatalyst(...)` APIを追加。
+      - 一括破壊機にカスタム鉱石を登録できる `ExponentialMana.registerOre(...)` APIを追加。
+
+---
+
 ## [0.17.1-beta] - 2026-11-06
 
 ### Removed / 削除
