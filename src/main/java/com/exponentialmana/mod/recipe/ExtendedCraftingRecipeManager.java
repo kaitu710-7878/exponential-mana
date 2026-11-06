@@ -837,7 +837,7 @@ public class ExtendedCraftingRecipeManager {
      * Infinite Mana:
      * - 4 corners: Origin Armor pieces (Helmet at top-left, Chestplate at top-right, Leggings at bottom-left, Boots at bottom-right)
      * - Center (6,6): Origin Sword
-     * - Cross around center (row 6 col 5, row 6 col 7, row 5 col 6, row 7 col 6): Mana Root x4
+     * - All other 164 slots: Mana Root (マナの根源)
      */
     private static ExtendedCraftingRecipe createInfiniteManaRecipe(ItemStack output, Component name) {
         int gridSize = 13;
@@ -848,7 +848,6 @@ public class ExtendedCraftingRecipeManager {
         ItemStack chest = new ItemStack(ModItems.ORIGIN_CHESTPLATE.get());
         ItemStack leggings = new ItemStack(ModItems.ORIGIN_LEGGINGS.get());
         ItemStack boots = new ItemStack(ModItems.ORIGIN_BOOTS.get());
-        ItemStack t10Mana = new ItemStack(ModItems.TIER10_MANA.get());
 
         for (int r = 0; r < gridSize; r++) {
             for (int c = 0; c < gridSize; c++) {
@@ -857,11 +856,9 @@ public class ExtendedCraftingRecipeManager {
                 else if (r == 12 && c == 0) inputs.add(Collections.singletonList(leggings.copy()));
                 else if (r == 12 && c == 12) inputs.add(Collections.singletonList(boots.copy()));
                 else if (r == 6 && c == 6) inputs.add(Collections.singletonList(sword.copy()));
-                else if ((r == 5 && c == 6) || (r == 7 && c == 6) || (r == 6 && c == 5) || (r == 6 && c == 7)) {
+                else {
+                    // Fill all other 164 slots with Mana Root (マナの根源)
                     inputs.add(Collections.singletonList(root.copy()));
-                } else {
-                    // Fill all other empty slots with Tier 10 Mana
-                    inputs.add(Collections.singletonList(t10Mana.copy()));
                 }
             }
         }

@@ -41,8 +41,8 @@ public class ExtendedCraftingJeiCategory implements IRecipeCategory<ExtendedCraf
 
         int gridPixels = gridSize * 18;
         // Extra width and height to ensure output slot, transfer button, and JEI bookmark widgets never crowd or overlap
-        this.width = Math.max(260, gridPixels + 140);
-        this.height = Math.max(120, gridPixels + 36);
+        this.width = Math.max(280, gridPixels + 140);
+        this.height = Math.max(130, gridPixels + 36);
 
         this.background = guiHelper.createBlankDrawable(width, height);
         this.icon = guiHelper.createDrawableItemStack(new ItemStack(ModBlocks.EXTENDED_CRAFTING_TABLES.get(tier - 1).get()));

@@ -8,6 +8,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.15.5-beta] - 2026-11-06
+
+### Changed / 変更
+- **EN**:
+  - **Infinite Mana Recipe Ingredient Update (Mana Root)**:
+    - Updated the 13x13 "Infinite Mana" recipe: all 164 filler slots now require **Mana Root** (`mana_root`) instead of Tier 10 Mana, elevating the recipe to true endgame difficulty fitting the 4 Origin Armors and Origin Sword.
+  - **Enhanced JEI Margin Clearance**:
+    - Increased minimum recipe area width to `280px` and minimum height to `130px` across all tiers, ensuring ample clearance between the output slot, the recipe transfer ("+") button, and JEI's bottom-right bookmark and favorite widgets even on smaller grids (Tier 1-3).
+
+- **JA**:
+  - **「無限のマナ」レシピの要求素材を「マナの根源」に変更**:
+    - 13×13「無限のマナ」レシピの空きスロット（164マス）の要求素材を Tier 10 マナから **マナの根源（Mana Root）** に変更。4隅の根源防具4種および中央の根源の剣に見合う最高峰のエンドゲームレシピに調整。
+  - **JEI拡張作業台カテゴリの余白・クリアランス強化**:
+    - レシピ領域の最小幅を `280px`、最小高さを `130px` に拡大。小規模なTier 1〜3（4×4, 5×5等）でも、成果物スロットやレシピ転送（"+"）ボタンがJEI右下の星ボタン（お気に入り）・栞ボタン（ブックマーク）と絶対に干渉・重複しないよう余白を確保。
+
+---
+
 ## [0.15.4-beta] - 2026-11-06
 
 ### Added / 追加
