@@ -1,12 +1,12 @@
 {
   "parent": "minecraft:block/cube",
   "textures": {
-    "down": "exponential_mana:block/tier2_extended_crafting_table_d",
-    "up": "exponential_mana:block/tier2_extended_crafting_table_u",
-    "north": "exponential_mana:block/tier2_extended_crafting_table_n",
-    "south": "exponential_mana:block/tier2_extended_crafting_table_s",
-    "west": "exponential_mana:block/tier2_extended_crafting_table_w",
-    "east": "exponential_mana:block/tier2_extended_crafting_table_e",
-    "particle": "exponential_mana:block/tier2_extended_crafting_table_n"
+    "down": "exponential_mana:block/tier2_extended_crafting_table_down",
+    "up": "exponential_mana:block/tier2_extended_crafting_table_up",
+    "north": "exponential_mana:block/tier2_extended_crafting_table_north",
+    "south": "exponential_mana:block/tier2_extended_crafting_table_south",
+    "west": "exponential_mana:block/tier2_extended_crafting_table_west",
+    "east": "exponential_mana:block/tier2_extended_crafting_table_east",
+    "particle": "exponential_mana:block/tier2_extended_crafting_table_north"
   }
 }

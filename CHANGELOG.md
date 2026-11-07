@@ -8,6 +8,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.18.1-beta] - 2026-11-07
+
+### Fixed / 修正
+- **EN**:
+  - **Oculus / Iris Shader Compatibility (PBR Texture Suffix Conflict)**:
+    - Fixed missing textures (black/purple checkerboard) on North and South faces of machines and extended crafting tables when running alongside Oculus / Iris shader mods.
+    - Renamed directional texture suffixes from short forms (`_d`, `_u`, `_n`, `_s`, `_w`, `_e`) to full cardinal direction names (`_down`, `_up`, `_north`, `_south`, `_west`, `_east`) across 34 block models and 204 texture files.
+    - Resolved collision with Iris/Oculus hardcoded PBR texture naming conventions where `_n` and `_s` were intercepted as Normal maps and Specular maps and stripped from the standard diffuse block atlas (`blocks.png`).
+- **JA**:
+  - **Oculus / Iris シェーダーMOD併用時のテクスチャ欠落修正 (PBRサフィックス競合の解消)**:
+    - Oculus等のシェーダーMODを導入した環境で、作業台や機械設備ブロックの特定面（北面・南面）が紫と黒の市松模様（ミッシングテクスチャ）になる不具合を修正しました。
+    - 方向別テクスチャの接尾辞を従来の短縮名（`_d`, `_u`, `_n`, `_s`, `_w`, `_e`）から完全名（`_down`, `_up`, `_north`, `_south`, `_west`, `_east`）へ変更し、34個のブロックモデル定義および204個のテクスチャファイルを更新しました。
+    - Oculus/Irisが `_n`（法線マップ / Normal map）および `_s`（反射マップ / Specular map）をPBR特殊テクスチャとして自動判定し、通常のブロックアトラス（`blocks.png`）から除外してしまう仕様との命名衝突を解消しました。
+
+---
+
 ## [0.18.0-beta] - 2026-11-06
 
 ### Added / 追加

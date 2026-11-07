@@ -1,12 +1,12 @@
 {
   "parent": "minecraft:block/cube",
   "textures": {
-    "down": "exponential_mana:block/compressed_fairy_attractor_7_d",
-    "up": "exponential_mana:block/compressed_fairy_attractor_7_u",
-    "north": "exponential_mana:block/compressed_fairy_attractor_7_n",
-    "south": "exponential_mana:block/compressed_fairy_attractor_7_s",
-    "west": "exponential_mana:block/compressed_fairy_attractor_7_w",
-    "east": "exponential_mana:block/compressed_fairy_attractor_7_e",
-    "particle": "exponential_mana:block/compressed_fairy_attractor_7_n"
+    "down": "exponential_mana:block/compressed_fairy_attractor_7_down",
+    "up": "exponential_mana:block/compressed_fairy_attractor_7_up",
+    "north": "exponential_mana:block/compressed_fairy_attractor_7_north",
+    "south": "exponential_mana:block/compressed_fairy_attractor_7_south",
+    "west": "exponential_mana:block/compressed_fairy_attractor_7_west",
+    "east": "exponential_mana:block/compressed_fairy_attractor_7_east",
+    "particle": "exponential_mana:block/compressed_fairy_attractor_7_north"
   }
 }
